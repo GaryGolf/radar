@@ -31,6 +31,6 @@ module.exports = {
 	externals: {
 	       // 'react': 'React',
 	        //'react-dom': 'ReactDOM',
-	        'socket.io-client': 'io'
+	        //'socket.io-client': 'io'
 	}
 }
