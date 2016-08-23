@@ -7,7 +7,10 @@ class  Test extends React.Component {
     constructor(props) {
         super(props)
 
-        this.state = {hello: 'Hello World'}
+        this.state = {
+        	hello: 'Hello World',
+        	gmap: ''
+    	}
     }
     componentDidMount(){
     	console.log('components did mount')
@@ -17,10 +20,14 @@ class  Test extends React.Component {
 		    this.setState(data)
 		    this.socket.emit('message', { my: 'ok' })
 		  })
+		this.socket.on('gmap', data => {
+			this.setState(data)
+		})
     }
     render() {
         return ( 
         	<div>
+        		<img src={this.state.gmap} />
         		<h1>{this.state.hello}</h1>
         	</div>
         )

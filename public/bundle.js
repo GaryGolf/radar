@@ -76,7 +76,10 @@
 
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Test).call(this, props));
 
-	        _this.state = { hello: 'Hello World' };
+	        _this.state = {
+	            hello: 'Hello World',
+	            gmap: ''
+	        };
 	        return _this;
 	    }
 
@@ -92,6 +95,9 @@
 	                _this2.setState(data);
 	                _this2.socket.emit('message', { my: 'ok' });
 	            });
+	            this.socket.on('gmap', function (data) {
+	                _this2.setState(data);
+	            });
 	        }
 	    }, {
 	        key: 'render',
@@ -99,6 +105,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                null,
+	                _react2.default.createElement('img', { src: this.state.gmap }),
 	                _react2.default.createElement(
 	                    'h1',
 	                    null,
