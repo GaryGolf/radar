@@ -21,7 +21,7 @@ const picurl = 'http://images-mediawiki-sites.thefullwiki.org/04/1/7/5/620460083
 
 function getmap(socket) {
 
-const mapurl = 'http://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=800x220'
+const mapurl = 'http://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=800x1020'
 
 Jimp.read(mapurl).then(image => {
 		const height = image.bitmap.height-20
@@ -29,7 +29,7 @@ Jimp.read(mapurl).then(image => {
 	    image
 	    //.greyscale()
 	   .crop(0,0,width,height)
-	    .getBase64(Jimp.MIME_JPEG, onBuffer);
+	    .getBase64(Jimp.MIME_PNG, onBuffer);
 	}).catch(function (err) {
 	    console.error(err);
 	})

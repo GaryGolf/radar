@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import io from 'socket.io-client'
 
+import Autocomplete from './components/Autocomplete'
+
 
 class  Test extends React.Component {
     constructor(props) {
@@ -34,4 +36,4 @@ class  Test extends React.Component {
     }
 }
 
-ReactDOM.render(<Test/>,document.getElementById('root'))
+ReactDOM.render(<Autocomplete/>,document.getElementById('root'))

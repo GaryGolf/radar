@@ -60,6 +60,10 @@
 
 	var _socket2 = _interopRequireDefault(_socket);
 
+	var _Autocomplete = __webpack_require__(219);
+
+	var _Autocomplete2 = _interopRequireDefault(_Autocomplete);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -118,7 +122,7 @@
 	    return Test;
 	}(_react2.default.Component);
 
-	_reactDom2.default.render(_react2.default.createElement(Test, null), document.getElementById('root'));
+	_reactDom2.default.render(_react2.default.createElement(_Autocomplete2.default, null), document.getElementById('root'));
 
 /***/ },
 /* 1 */
@@ -28895,6 +28899,103 @@
 	};
 
 
+
+/***/ },
+/* 219 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Autocomplete = function (_React$Component) {
+	    _inherits(Autocomplete, _React$Component);
+
+	    function Autocomplete(props) {
+	        _classCallCheck(this, Autocomplete);
+
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
+
+	        _this.state = { options: [] };
+
+	        return _this;
+	    }
+
+	    /*
+	    Localization
+	    language = ru
+	    region = ru
+	    center: {lat: 36.964 , lang: -122.015}
+	    zoom: 10
+	    mapTypeId: 'satellite'
+	    heading: 90,
+	    	tilt: 45
+	    	Styles: 
+	    	https://developers.google.com/maps/documentation/javascript/style-reference
+	    query
+	    	https://developers.google.com/places/web-service/query
+	            
+	    
+	     */
+
+
+	    _createClass(Autocomplete, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            var options = ['trusting', 'tresspassing', 'transfering', 'tresspassing'
+	            // 'trangladith',
+	            // 'tresures',
+	            // 'transitioning'
+	            ];
+
+	            this.setState({ options: options });
+	        }
+	    }, {
+	        key: 'inputHandler',
+	        value: function inputHandler(event) {
+
+	            if (event.keyCode === 13) {
+	                event.target.value = '';
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'autocomplete' },
+	                _react2.default.createElement('input', { className: 'autocomlete', list: 'autocomlete', onKeyDown: this.inputHandler }),
+	                _react2.default.createElement(
+	                    'datalist',
+	                    { id: 'autocomplete', className: 'autocomplete' },
+	                    this.state.options.map(function (option, index) {
+	                        return _react2.default.createElement('option', { key: index, value: option });
+	                    })
+	                )
+	            );
+	        }
+	    }]);
+
+	    return Autocomplete;
+	}(_react2.default.Component);
+
+	exports.default = Autocomplete;
 
 /***/ }
 /******/ ]);
