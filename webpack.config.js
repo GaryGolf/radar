@@ -20,7 +20,7 @@ module.exports = {
 			},
 			{
 				test: /\.css$/,
-				loader : 'style!css!autoprefixer?browsers=last 2 versions'
+				loader : 'style!css!postcss?browsers=last 2 versions'
 			},
 			{
 				test: /\.(svg|png|jpg)$/,

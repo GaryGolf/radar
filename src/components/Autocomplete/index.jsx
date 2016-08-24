@@ -1,36 +1,17 @@
 import React from 'react'
+import io from 'socket.io-client'
+
+import css from './autocomplete.css'
 
 export default class Autocomplete extends React.Component {
     constructor(props) {
         super(props)
 
+        this.socket = io.connect('/')
         this.state = {options:[]}
 
     }
 
-    /*
-    Localization
-		language = ru
-		region = ru
-
-		center: {lat: 36.964 , lang: -122.015}
-		zoom: 10
-		mapTypeId: 'satellite'
-		heading: 90,
-   		tilt: 45
-
-   	Styles: 
-   		https://developers.google.com/maps/documentation/javascript/style-reference
-	query
-   		https://developers.google.com/places/web-service/query
-            
-
-
-
-
-
-
-    */
     componentWillMount() {
         const options = [
         	'trusting',
@@ -43,19 +24,30 @@ export default class Autocomplete extends React.Component {
         ]
 
         this.setState({options})
+       
+        this.socket.on('autocomplete', data => {
+        	
+        	if(!data) return
+        	var options = JSON.parse(data).data
+        	this.setState({options})
+			console.log('Data from autocomplete:\n'+options)   
+		})
     }
 
     inputHandler(event) {
 
     	if(event.keyCode === 13) {
     		event.target.value=''
+    	}else{
+    		
+    		if(this.socket) this.socket.emit('autocomplete', {data: event.target.value})
     	}
 
     }
     render() {
         return (
         	<div className="autocomplete">
-        		<input className="autocomlete" list="autocomlete" onKeyDown={this.inputHandler}/>
+        		<input className="autocomlete" list="autocomplete" ref="autocomplete" onKeyDown={this.inputHandler.bind(this)}/>
         		<datalist id="autocomplete" className="autocomplete">
         			{this.state.options.map((option, index) => {
         				return <option key={index} value={option}/>
