@@ -13,41 +13,35 @@ export default class Autocomplete extends React.Component {
     }
 
     componentWillMount() {
-        const options = [
-        	'trusting',
-        	'tresspassing',
-        	'transfering',
-        	'tresspassing'
-        	// 'trangladith',
-        	// 'tresures',
-        	// 'transitioning'
-        ]
-
-        this.setState({options})
-       
+     
         this.socket.on('autocomplete', data => {
-        	
+        	// get data from server {data:data} or null
         	if(!data) return
         	var options = JSON.parse(data).data
         	this.setState({options})
-			console.log('Data from autocomplete:\n'+options)   
+			
 		})
     }
 
     inputHandler(event) {
 
     	if(event.keyCode === 13) {
+    		// in case enter key is pressed send special request to server
+
+    		// reset input sring
     		event.target.value=''
     	}else{
     		
-    		if(this.socket) this.socket.emit('autocomplete', {data: event.target.value})
+    		// request more
+    		this.socket.emit('autocomplete', {data: event.target.value})
     	}
 
     }
     render() {
         return (
         	<div className="autocomplete">
-        		<input className="autocomlete" list="autocomplete" ref="autocomplete" onKeyDown={this.inputHandler.bind(this)}/>
+        		<input className="autocomlete" list="autocomplete" 
+        		ref="autocomplete" onKeyDown={this.inputHandler.bind(this)} />
         		<datalist id="autocomplete" className="autocomplete">
         			{this.state.options.map((option, index) => {
         				return <option key={index} value={option}/>

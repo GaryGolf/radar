@@ -28951,20 +28951,11 @@
 	        value: function componentWillMount() {
 	            var _this2 = this;
 
-	            var options = ['trusting', 'tresspassing', 'transfering', 'tresspassing'
-	            // 'trangladith',
-	            // 'tresures',
-	            // 'transitioning'
-	            ];
-
-	            this.setState({ options: options });
-
 	            this.socket.on('autocomplete', function (data) {
-
+	                // get data from server {data:data} or null
 	                if (!data) return;
 	                var options = JSON.parse(data).data;
 	                _this2.setState({ options: options });
-	                console.log('Data from autocomplete:\n' + options);
 	            });
 	        }
 	    }, {
@@ -28972,10 +28963,14 @@
 	        value: function inputHandler(event) {
 
 	            if (event.keyCode === 13) {
+	                // in case enter key is pressed send special request to server
+
+	                // reset input sring
 	                event.target.value = '';
 	            } else {
 
-	                if (this.socket) this.socket.emit('autocomplete', { data: event.target.value });
+	                // request more
+	                this.socket.emit('autocomplete', { data: event.target.value });
 	            }
 	        }
 	    }, {
@@ -28984,7 +28979,8 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'autocomplete' },
-	                _react2.default.createElement('input', { className: 'autocomlete', list: 'autocomplete', ref: 'autocomplete', onKeyDown: this.inputHandler.bind(this) }),
+	                _react2.default.createElement('input', { className: 'autocomlete', list: 'autocomplete',
+	                    ref: 'autocomplete', onKeyDown: this.inputHandler.bind(this) }),
 	                _react2.default.createElement(
 	                    'datalist',
 	                    { id: 'autocomplete', className: 'autocomplete' },
