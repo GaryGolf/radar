@@ -20,7 +20,7 @@ io.on('connection', socket => {
 
 	socket.on('gmap-request', data => {
 		require('./srv/gmap.js').getMapBase64({}, (error, buffer) => {
-			if(!error) socket.emit('gmap', {gmap: buffer})
+			if(!error) socket.emit('gmap', {['gma'+'p']: buffer})
 			else console.error('getMapBase64: '+error)
 		})
 	})

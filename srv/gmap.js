@@ -5,6 +5,8 @@ const qs = require('querystring')
 	@param options object contains size, geoocation lat long or name of the place
 	@callback error, buffer (could be null)
 
+	Google Static Maps API URLs are restricted to 8192 characters in size
+
 */
 
 exports.getMapBase64 = (options, callback) => {
@@ -14,15 +16,32 @@ const uri = 'http://maps.googleapis.com/maps/api/staticmap'
  options = {
 
 	center: 	'56.327530,44.000717',  // 'Нижний Новгород'
-	lang: 		'ru',
+	language: 	'ru',
 	zoom: 		'14',
-	size: 		'250x270',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'roadmap',  
+	size: 		'250x272',
 	format: 	'png',
 	// Letters only , wipe all geometry
 	//style: 		'feature:all|element:geometry|visibility:off'
 	//style: 		'feature:road.local%7Celement:geometry%7Ccolor:0x00ff00%7Cweight:1%7Cvisibility:on'
-	style:     'feature:all|element:geometry|visibility:off'
+	style: [
 
+		'visibility:off',
+		'feature:water|visibility:simplified|saturation:-50',
+		'feature:landscape.man_made|visibility:simplified|saturation:-50'
+	]
+
+/*	// water and base terrain
+	style:     [
+		'feature:transit|visibility:off',
+		'feature:road|visibility:off',
+		'feature:poi|visibility:off',
+		'feature:administrative|visibility:off',
+		'feature:landscape|saturation:50',
+		'feature:water|geometry.fill|saturation:100'
+	]
+*/
 }
 
 var url = uri +'?'+ qs.stringify(options)
@@ -31,7 +50,7 @@ var url = uri +'?'+ qs.stringify(options)
 
 	Jimp.read(url).then(image => {
 		
-		const height = image.bitmap.height-20
+		const height = image.bitmap.height-22
 		const width = image.bitmap.width
 	   
 	    image .crop(0,0,width,height).getBase64(Jimp.MIME_PNG, callback)

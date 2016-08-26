@@ -29333,7 +29333,7 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Gmap).call(this, props));
 
 	        _this.socket = _socket2.default.connect('/');
-	        _this.state = { options: {}, gmap: null };
+	        _this.state = { options: {}, gmap: null, gmap0: null, gmap1: null, gmap2: null };
 
 	        return _this;
 	    }
@@ -29360,7 +29360,11 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'gmap' },
-	                this.state.gmap ? _react2.default.createElement('img', { src: this.state.gmap, className: 'gmap' }) : null
+	                this.state.gmap ? _react2.default.createElement(
+	                    'div',
+	                    { className: 'gmap-level-0' },
+	                    _react2.default.createElement('img', { src: this.state.gmap, className: 'gmap' })
+	                ) : null
 	            );
 	        }
 	    }]);

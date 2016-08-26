@@ -8,7 +8,7 @@ export default class Gmap extends React.Component {
         super(props)
 
         this.socket = io.connect('/')
-        this.state = {options:{}, gmap: null}
+        this.state = {options:{}, gmap: null, gmap0: null, gmap1: null, gmap2: null}
  
     }
 
@@ -29,7 +29,7 @@ export default class Gmap extends React.Component {
     render() {
         return (
         	<div className="gmap">
-        		{this.state.gmap ? <img src={this.state.gmap} className="gmap"/> : null}
+        		{this.state.gmap ?<div className="gmap-level-0"><img src={this.state.gmap} className="gmap"/></div> : null}
         	</div>
         )
     }
