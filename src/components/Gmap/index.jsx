@@ -1,6 +1,8 @@
 import React from 'react'
 import io from 'socket.io-client'
 
+import css from './gmap.css'
+
 export default class Gmap extends React.Component {
     constructor(props) {
         super(props)

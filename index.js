@@ -12,6 +12,7 @@ app.use(express.static('public'))
 
 //const mapurl = 'http://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=600x400'
 
+//require('./srv/gmap.js').test()
 
 io.on('connection', socket => {
 

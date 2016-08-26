@@ -17,15 +17,17 @@ const uri = 'http://maps.googleapis.com/maps/api/staticmap'
 	lang: 		'ru',
 	zoom: 		'14',
 	size: 		'250x270',
-	style: 		'feature:road.local|element:geometry|color:0x00ff00|weight:1|visibility:off'
+	format: 	'png',
+	// Letters only , wipe all geometry
+	//style: 		'feature:all|element:geometry|visibility:off'
 	//style: 		'feature:road.local%7Celement:geometry%7Ccolor:0x00ff00%7Cweight:1%7Cvisibility:on'
+	style:     'feature:all|element:geometry|visibility:off'
 
 }
 
 var url = uri +'?'+ qs.stringify(options)
 //var a = '&style=feature:road.local%7Celement:geometry%7Ccolor:0x00ff00%7Cweight:1%7Cvisibility:on&style=feature:landscape%7Celement:geometry.fill%7Ccolor:0x000000%7Cvisibility:on'
 
-	console.log(url)
 
 	Jimp.read(url).then(image => {
 		
@@ -38,4 +40,23 @@ var url = uri +'?'+ qs.stringify(options)
 	    console.error(error)
 	    callback(error, null)
 	})
+}
+
+
+exports.test = () => {
+
+const uri = 'http://maps.googleapis.com/maps/api/staticmap'
+
+	 options = {
+
+		center: 	'56.327530,44.000717',  // 'Нижний Новгород'
+		lang: 		'ru',
+		zoom: 		'14',
+		size: 		'250x270',
+		format: 	'png',
+		style:    ['first','second','third', 'forth']
+
+	}
+	
+	console.log(qs.stringify(options))
 }

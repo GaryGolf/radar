@@ -68,37 +68,6 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	// class  Test extends React.Component {
-	//     constructor(props) {
-	//         super(props)
-
-	//         this.state = {
-	//         	hello: 'Hello World',
-	//         	gmap: ''
-	//     	}
-	//     }
-	//     componentDidMount(){
-	//     	console.log('components did mount')
-	//     	this.socket = io.connect('/')
-	// 		this.socket.on('message', data => {
-	// 		    console.log(data)
-	// 		    this.setState(data)
-	// 		    this.socket.emit('message', { my: 'ok' })
-	// 		  })
-	// 		this.socket.on('gmap', data => {
-	// 			this.setState(data)
-	// 		})
-	//     }
-	//     render() {
-	//         return ( 
-	//         	<div>
-	//         		<img src={this.state.gmap} />
-	//         		<h1>{this.state.hello}</h1>
-	//         	</div>
-	//         )
-	//     }
-	// }
-
 	//ReactDOM.render(<Autocomplete/>,document.getElementById('root'))
 	_reactDom2.default.render(_react2.default.createElement(_Gmap2.default, null), document.getElementById('map'));
 
@@ -29343,6 +29312,10 @@
 
 	var _socket2 = _interopRequireDefault(_socket);
 
+	var _gmap = __webpack_require__(225);
+
+	var _gmap2 = _interopRequireDefault(_gmap);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29396,6 +29369,46 @@
 	}(_react2.default.Component);
 
 	exports.default = Gmap;
+
+/***/ },
+/* 225 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+
+	// load the styles
+	var content = __webpack_require__(226);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(223)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 226 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(222)();
+	// imports
+
+
+	// module
+	exports.push([module.id, "div.gmap {\n\tposition: absolute;\n\ttop: 0px;\n\tleft: 0px;\n}", ""]);
+
+	// exports
+
 
 /***/ }
 /******/ ]);
