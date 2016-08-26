@@ -25,11 +25,6 @@ io.on('connection', socket => {
 	})
 	
 
-	socket.emit('message', {hello: '+   hello world!  +'})
-
-	socket.on('message', data => {
-		console.log(data)
-	})
 	socket.on('autocomplete', data => {
 		// require('./srv/autocomplete').getLocations(data.data, (error, data) => {
 		// 	if(!error) socket.emit('autocomplete',data)
@@ -38,8 +33,8 @@ io.on('connection', socket => {
 	})
 })
 
-server.listen(3000, () => {
-	console.log('http.server started at port 3000;')
+server.listen(8080, () => {
+	console.log('http.server started at port 8080;')
 })
 
 
