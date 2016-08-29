@@ -1,5 +1,17 @@
 div.gmap {
+
+	overflow: hidden;
+}
+span.gmap {
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	bottom: 20px;
+	right: 20px;
+	margin-right: 4px;
+	margin-bottom: 4px; 
+}
+
+span.gmap:first-child{
+
+	cursor: pointer;
+
 }

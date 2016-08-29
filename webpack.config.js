@@ -1,9 +1,13 @@
 const path = require('path')
+const debug = process.env.NODE_ENV !== 'production'
+
 module.exports = {
-	entry: './src/index.js',
+	context: path.resolve(__dirname,'src'),
+	entry: './index',
 	output: {
 		filename: './public/bundle.js'
 	},
+	devtool:  debug ? 'source-map' : null ,
 	resolve: {
 	        extensions: ['','.js','.jsx']
 	},
@@ -27,6 +31,13 @@ module.exports = {
 				loader: 'file?name=[name].[ext]'
 			}
 		]
+	},
+	devServer: {
+		proxy: [
+			
+        	{path: '/', target: 'http://localhost:3000/', secure: false }
+        ]
+
 	},
 	externals: {
 	       // 'react': 'React',

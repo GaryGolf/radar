@@ -19,7 +19,7 @@ io.on('connection', socket => {
 	//getmap(socket)
 
 	socket.on('gmap-request', data => {
-		require('./srv/gmap.js').getMapBase64({}, (error, buffer) => {
+		require('./srv/gmap.js').getMapBase64(data, (error, buffer) => {
 			if(!error) socket.emit('gmap', {['gma'+'p']: buffer})
 			else console.error('getMapBase64: '+error)
 		})
@@ -34,8 +34,8 @@ io.on('connection', socket => {
 	})
 })
 
-server.listen(8080, () => {
-	console.log('http.server started at port 8080;')
+server.listen(3000, () => {
+	console.log('http.server started at port 3000;')
 })
 
 

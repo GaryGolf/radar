@@ -9,44 +9,121 @@ const qs = require('querystring')
 
 */
 
-exports.getMapBase64 = (options, callback) => {
+options1 = {
 
-const mapurl = 'http://maps.googleapis.com/maps/api/staticmap?center=Berkeley,CA&zoom=14&size=400x270'
-const uri = 'http://maps.googleapis.com/maps/api/staticmap'
- options = {
-
-	center: 	'56.327530,44.000717',  // 'Нижний Новгород'
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
 	language: 	'ru',
 	zoom: 		'14',
 	scale:  	'1',		// change crop height for scale=2
 	maptype:    'roadmap',  
-	size: 		'250x272',
+	size: 		'1024x790',
 	format: 	'png',
-	// Letters only , wipe all geometry
-	//style: 		'feature:all|element:geometry|visibility:off'
-	//style: 		'feature:road.local%7Celement:geometry%7Ccolor:0x00ff00%7Cweight:1%7Cvisibility:on'
 	style: [
 
 		'visibility:off',
 		'feature:water|visibility:simplified|saturation:-50',
 		'feature:landscape.man_made|visibility:simplified|saturation:-50'
 	]
+}
+options2 = {
 
-/*	// water and base terrain
-	style:     [
-		'feature:transit|visibility:off',
-		'feature:road|visibility:off',
-		'feature:poi|visibility:off',
-		'feature:administrative|visibility:off',
-		'feature:landscape|saturation:50',
-		'feature:water|geometry.fill|saturation:100'
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
+	language: 	'ru',
+	zoom: 		'14',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'terrain',  
+	size: 		'1024x790',
+	format: 	'png',
+	style: [
+
+		'visibility:off'
 	]
-*/
+}
+options3 = {
+
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
+	language: 	'ru',
+	zoom: 		'14',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'roadmap',  
+	size: 		'1024x790',
+	format: 	'png',
+	style: [
+
+		'visibility:off',
+		'feature:poi|element:geometry.fill|saturation:-50|visibility:on'
+	]
+}
+options5 = {
+
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
+	language: 	'ru',
+	zoom: 		'14',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'roadmap',  
+	size: 		'1024x790',
+	format: 	'png',
+	style: [
+
+		'visibility:off',
+		'feature:road|element:geometry.fill|saturation:-50|visibility:on'
+	]
+}
+options6 = {
+
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
+	language: 	'ru',
+	zoom: 		'14',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'roadmap',  
+	size: 		'1024x790',
+	format: 	'png',
+	style: [
+
+		'visibility:off',
+		'feature:transit|element:geometry.fill|saturation:-50|visibility:on'
+	]
+}
+options7 = {
+
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
+	language: 	'ru',
+	zoom: 		'14',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'roadmap',  
+	size: 		'1024x790',
+	format: 	'png',
+	style: [
+
+		'visibility:off',
+		'feature:all|element:labels|saturation:-10|visibility:on'
+	]
 }
 
-var url = uri +'?'+ qs.stringify(options)
-//var a = '&style=feature:road.local%7Celement:geometry%7Ccolor:0x00ff00%7Cweight:1%7Cvisibility:on&style=feature:landscape%7Celement:geometry.fill%7Ccolor:0x000000%7Cvisibility:on'
+exports.getMapBase64 = (options, callback) => {
 
+const uri = 'http://maps.googleapis.com/maps/api/staticmap'
+const opts = {
+
+	center: 	'56.317530,44.000717',  // 'Нижний Новгород'
+	language: 	'ru',
+	zoom: 		'15',
+	scale:  	'1',		// change crop height for scale=2
+	maptype:    'roadmap',			//'roadmap','terrain'  
+	size: 		'1000x1022',
+	format: 	'png',
+	style: 		[
+		'feature:all|saturation:-80',
+		'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+		'feature:poi.business|element:labels|visibility:off',
+		'feature:poi|element:geometry|lightness:45'
+	] 
+
+}
+
+//options = options ? options : opts
+
+var url = uri +'?'+ qs.stringify(options)
 
 	Jimp.read(url).then(image => {
 		
