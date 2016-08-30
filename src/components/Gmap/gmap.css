@@ -4,14 +4,26 @@ div.gmap {
 }
 span.gmap {
 	position: absolute;
-	bottom: 20px;
-	right: 20px;
-	margin-right: 4px;
-	margin-bottom: 4px; 
+
+	bottom: 0px;
+	right: 0px;
+	padding-bottom: 30px;
+	padding-right: 35px;
 }
 
-span.gmap:first-child{
 
-	cursor: pointer;
+span.gmap:hover .zoom{
+
+	visibility: visible;
+}
+.zoom {
+
+	opacity: 0.2;
+	visibility: hidden;
+}
+
+.zoom:hover {
+	
+	opacity: 1;
 
 }

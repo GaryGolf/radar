@@ -29314,11 +29314,11 @@
 	
 	__webpack_require__(225);
 	
-	var _plusOutline = __webpack_require__(230);
+	var _plusOutline = __webpack_require__(227);
 	
 	var _plusOutline2 = _interopRequireDefault(_plusOutline);
 	
-	var _minusOutline = __webpack_require__(231);
+	var _minusOutline = __webpack_require__(228);
 	
 	var _minusOutline2 = _interopRequireDefault(_minusOutline);
 	
@@ -29329,19 +29329,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var OPTS = {
-	
-	    center: '56.317530,44.000717', // 'Нижний Новгород'
-	    language: 'ru',
-	    zoom: '12',
-	    scale: '1', // change crop height for scale=2
-	    maptype: 'roadmap', //'roadmap','terrain'  
-	    size: '1000x1022',
-	    format: 'png',
-	    style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45']
-	
-	};
 	
 	var Gmap = function (_React$Component) {
 	    _inherits(Gmap, _React$Component);
@@ -29360,7 +29347,8 @@
 	            maptype: 'roadmap', //'roadmap','terrain'  
 	            size: '600x622',
 	            format: 'png',
-	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45']
+	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45'],
+	            markers: ['color:red|label:A|56.317200,44.000600', 'color:red|label:B|56.319220,44.002000', 'color:red|label:C|56.300477,44.019030']
 	        };
 	
 	        _this.socket = _socket2.default.connect('/');
@@ -29413,12 +29401,12 @@
 	                    { className: 'gmap' },
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'gmap-plus', onClick: this.zoomInHandler.bind(this) },
+	                        { className: 'gmap zoom', onClick: this.zoomInHandler.bind(this) },
 	                        _react2.default.createElement('img', { src: _plusOutline2.default })
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'gmap-minus', onClick: this.zoomOutHandler.bind(this) },
+	                        { className: 'gmap zoom', onClick: this.zoomOutHandler.bind(this) },
 	                        _react2.default.createElement('img', { src: _minusOutline2.default })
 	                    )
 	                ),
@@ -29471,22 +29459,19 @@
 	
 	
 	// module
-	exports.push([module.id, "div.gmap {\n\n\toverflow: hidden;\n}\nspan.gmap {\n\tposition: absolute;\n\tbottom: 20px;\n\tright: 20px;\n\tmargin-right: 4px;\n\tmargin-bottom: 4px; \n}\n\nspan.gmap:first-child{\n\n\tcursor: pointer;\n\n}", ""]);
+	exports.push([module.id, "div.gmap {\n\n\toverflow: hidden;\n}\nspan.gmap {\n\tposition: absolute;\n\n\tbottom: 0px;\n\tright: 0px;\n\tpadding-bottom: 30px;\n\tpadding-right: 35px;\n}\n\n\nspan.gmap:hover .zoom{\n\n\tvisibility: visible;\n}\n.zoom {\n\n\topacity: 0.2;\n\tvisibility: hidden;\n}\n\n.zoom:hover {\n\t\n\topacity: 1;\n\n}", ""]);
 	
 	// exports
 
 
 /***/ },
-/* 227 */,
-/* 228 */,
-/* 229 */,
-/* 230 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "plus-outline.svg";
 
 /***/ },
-/* 231 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "minus-outline.svg";

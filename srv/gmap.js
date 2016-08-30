@@ -127,7 +127,7 @@ var url = uri +'?'+ qs.stringify(options)
 
 	Jimp.read(url).then(image => {
 		
-		const height = image.bitmap.height-22
+		const height = image.bitmap.height-Number(options.scale)*22
 		const width = image.bitmap.width
 	   
 	    image .crop(0,0,width,height).getBase64(Jimp.MIME_PNG, callback)
