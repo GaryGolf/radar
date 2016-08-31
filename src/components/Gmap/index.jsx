@@ -12,7 +12,7 @@ export default class Gmap extends React.Component {
       
         this.options = {
 
-            center:     '56.317530,44.000717',  // 'Нижний Новгород'
+          //  center:     '56.317530,44.000717',  // 'Нижний Новгород'
             language:   'ru',
             zoom:       '12',
             scale:      '1',        // change crop height for scale=2

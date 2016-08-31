@@ -28,6 +28,8 @@ export default class Autocomplete extends React.Component {
     	if(event.keyCode === 13) {
     		// in case enter key is pressed send special request to server
 
+            this.socket.emit('locate', {data:event.target.value})
+
     		// reset input sring
     		event.target.value=''
     	}else{

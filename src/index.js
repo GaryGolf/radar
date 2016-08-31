@@ -7,5 +7,6 @@ import Gmap from './components/Gmap'
 
 
 
-//ReactDOM.render(<Autocomplete/>,document.getElementById('root'))
-ReactDOM.render(<Gmap/>,document.getElementById('map'))
+
+//ReactDOM.render(<Gmap/>,document.getElementById('map'))
+ReactDOM.render(<Autocomplete/>,document.getElementById('root'))

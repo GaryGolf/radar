@@ -10,4 +10,4 @@ INSERT INTO estate VALUES ('магазин, полуподвал', '(56.319220,4
 INSERT INTO estate VALUES ('мастерская, У Джобса', '(56.300477,44.019030)');
 
 
-SELECT name FROM estate WHERE (location <-> point('56.317530,44.000717')) < 0.1;
+SELECT name FROM estate WHERE (location <-> point(56.317530,44.000717)) < 0.1;

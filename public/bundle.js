@@ -68,8 +68,8 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	//ReactDOM.render(<Autocomplete/>,document.getElementById('root'))
-	_reactDom2.default.render(_react2.default.createElement(_Gmap2.default, null), document.getElementById('map'));
+	//ReactDOM.render(<Gmap/>,document.getElementById('map'))
+	_reactDom2.default.render(_react2.default.createElement(_Autocomplete2.default, null), document.getElementById('root'));
 
 /***/ },
 /* 1 */
@@ -28912,6 +28912,8 @@
 	            if (event.keyCode === 13) {
 	                // in case enter key is pressed send special request to server
 	
+	                this.socket.emit('locate', { data: event.target.value });
+	
 	                // reset input sring
 	                event.target.value = '';
 	            } else {
@@ -28979,7 +28981,7 @@
 	
 	
 	// module
-	exports.push([module.id, "input {\n\twidth: 700px\n}", ""]);
+	exports.push([module.id, "input {\n\twidth: 550px;\n}", ""]);
 	
 	// exports
 
@@ -29340,7 +29342,7 @@
 	
 	        _this.options = {
 	
-	            center: '56.317530,44.000717', // 'Нижний Новгород'
+	            //  center:     '56.317530,44.000717',  // 'Нижний Новгород'
 	            language: 'ru',
 	            zoom: '12',
 	            scale: '1', // change crop height for scale=2
