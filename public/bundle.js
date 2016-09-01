@@ -28923,6 +28923,13 @@
 	            }
 	        }
 	    }, {
+	        key: 'datalistClickHandler',
+	        value: function datalistClickHandler(event) {
+	
+	            console.log('click');
+	            console.log(event.target.value);
+	        }
+	    }, {
 	        key: 'render',
 	        value: function render() {
 	            return _react2.default.createElement(
@@ -28932,9 +28939,9 @@
 	                    ref: 'autocomplete', onKeyDown: this.inputHandler.bind(this) }),
 	                _react2.default.createElement(
 	                    'datalist',
-	                    { id: 'autocomplete', className: 'autocomplete' },
-	                    this.state.options.map(function (option, index) {
-	                        return _react2.default.createElement('option', { key: index, value: option });
+	                    { id: 'autocomplete', className: 'autocomplete', onClick: this.datalistClickHandler.bind(this) },
+	                    this.state.options.map(function (option) {
+	                        return _react2.default.createElement('option', { key: option.id, value: option.description });
 	                    })
 	                )
 	            );

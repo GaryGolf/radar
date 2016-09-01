@@ -39,14 +39,20 @@ export default class Autocomplete extends React.Component {
     	}
 
     }
+
+    datalistClickHandler(event) {
+
+        console.log('click')
+        console.log(event.target.value)
+    }
     render() {
         return (
         	<div className="autocomplete">
         		<input className="autocomlete" list="autocomplete" 
         		ref="autocomplete" onKeyDown={this.inputHandler.bind(this)} />
-        		<datalist id="autocomplete" className="autocomplete">
-        			{this.state.options.map((option, index) => {
-        				return <option key={index} value={option}/>
+        		<datalist id="autocomplete" className="autocomplete" onClick={this.datalistClickHandler.bind(this)}>
+        			{this.state.options.map( option => {
+        				return <option key={option.id} value={option.description}/>
         			})}
         		</datalist>
         	</div>
