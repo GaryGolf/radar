@@ -28854,7 +28854,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	  value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -28880,75 +28880,96 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var Autocomplete = function (_React$Component) {
-	    _inherits(Autocomplete, _React$Component);
+	  _inherits(Autocomplete, _React$Component);
 	
-	    function Autocomplete(props) {
-	        _classCallCheck(this, Autocomplete);
+	  function Autocomplete(props) {
+	    _classCallCheck(this, Autocomplete);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
 	
-	        _this.socket = _socket2.default.connect('/');
-	        _this.state = { options: [] };
+	    _this.socket = _socket2.default.connect('/');
+	    _this.state = { options: [] };
 	
-	        return _this;
+	    return _this;
+	  }
+	
+	  _createClass(Autocomplete, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      var _this2 = this;
+	
+	      this.socket.on('autocomplete', function (data) {
+	        // get data from server {data:data} or null
+	        if (!data) return;
+	        var options = JSON.parse(data).data;
+	        _this2.setState({ options: options });
+	      });
 	    }
+	  }, {
+	    key: 'inputHandler',
+	    value: function inputHandler(event) {
 	
-	    _createClass(Autocomplete, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            var _this2 = this;
+	      // request more
+	      this.socket.emit('autocomplete', { data: event.target.value });
+	    }
+	  }, {
+	    key: 'changeHandler',
+	    value: function changeHandler(event) {
+	      if (event.keyCode === 13) {
+	        // in case enter key is pressed send special request to server
+	        console.log(this.refs.acdatalist);
+	        /*
+	        	there is 3 options:
+	        	1. user enter 4 letters then select option then enter
+	        		2. user select option then change it
+	        		3. user enter text despite options 
+	        	*/
+	        // 1.
 	
-	            this.socket.on('autocomplete', function (data) {
-	                // get data from server {data:data} or null
-	                if (!data) return;
-	                var options = JSON.parse(data).data;
-	                _this2.setState({ options: options });
-	            });
-	        }
-	    }, {
-	        key: 'inputHandler',
-	        value: function inputHandler(event) {
+	        this.socket.emit('locate', { data: event.target.value });
+	        // reset input sring
+	        event.target.value = '';
+	      }
+	    }
+	  }, {
+	    key: 'clickHandler',
+	    value: function clickHandler(event) {
 	
-	            if (event.keyCode === 13) {
-	                // in case enter key is pressed send special request to server
+	      console.log('click');
+	      console.log(event.target);
+	    }
+	  }, {
+	    key: 'menu',
+	    value: function menu() {
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'autocompletemenu', onMouseOut: function onMouseOut(event) {
+	            delete event.target;
+	          } },
+	        this.state.options.map(function (option, index) {
+	          return _react2.default.createElement(
+	            'div',
+	            { className: 'acmenuitem', key: index },
+	            ' ',
+	            option.description
+	          );
+	        })
+	      );
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'autocomplete' },
+	        _react2.default.createElement('input', { className: 'autocomlete', type: 'search',
+	          onInput: this.inputHandler.bind(this), onKeyDown: this.changeHandler.bind(this) }),
+	        this.state.options.length ? this.menu() : null
+	      );
+	    }
+	  }]);
 	
-	                this.socket.emit('locate', { data: event.target.value });
-	
-	                // reset input sring
-	                event.target.value = '';
-	            } else {
-	
-	                // request more
-	                this.socket.emit('autocomplete', { data: event.target.value });
-	            }
-	        }
-	    }, {
-	        key: 'datalistClickHandler',
-	        value: function datalistClickHandler(event) {
-	
-	            console.log('click');
-	            console.log(event.target.value);
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'autocomplete' },
-	                _react2.default.createElement('input', { className: 'autocomlete', list: 'autocomplete',
-	                    ref: 'autocomplete', onKeyDown: this.inputHandler.bind(this) }),
-	                _react2.default.createElement(
-	                    'datalist',
-	                    { id: 'autocomplete', className: 'autocomplete', onClick: this.datalistClickHandler.bind(this) },
-	                    this.state.options.map(function (option) {
-	                        return _react2.default.createElement('option', { key: option.id, value: option.description });
-	                    })
-	                )
-	            );
-	        }
-	    }]);
-	
-	    return Autocomplete;
+	  return Autocomplete;
 	}(_react2.default.Component);
 	
 	exports.default = Autocomplete;
@@ -28988,7 +29009,7 @@
 	
 	
 	// module
-	exports.push([module.id, "input {\n\twidth: 550px;\n}", ""]);
+	exports.push([module.id, "input {\n\twidth: 100%;\n}\n\ndiv.autocomplete {\n\twidth: 550px;\n\tbackground-color: white;\n}\n.autocompletemenu {\n\tposition: relative;\n\twidth: 100%;\n\toverflow: hidden;\n\tfont-size: large;\n\twhite-space: nowrap;\n\tborder: 1px solid rgb(82,148,226);\n}\n.acmenuitem {\n\n\tfont-family: monospace;\n\twidth: 100%;\n\toverflow: hidden;\n\tpadding: 3px;\n\n}\n\n.acmenuitem:hover {\n\tbackground-color: navy;\n\tcolor: white;\n}", ""]);
 	
 	// exports
 

@@ -1,3 +1,29 @@
 input {
+	width: 100%;
+}
+
+div.autocomplete {
 	width: 550px;
+	background-color: white;
+}
+.autocompletemenu {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+	font-size: large;
+	white-space: nowrap;
+	border: 1px solid rgb(82,148,226);
+}
+.acmenuitem {
+
+	font-family: monospace;
+	width: 100%;
+	overflow: hidden;
+	padding: 3px;
+
+}
+
+.acmenuitem:hover {
+	background-color: navy;
+	color: white;
 }
