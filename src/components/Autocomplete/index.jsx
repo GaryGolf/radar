@@ -1,104 +1,118 @@
 import React from 'react'
 import io from 'socket.io-client'
-
 import css from './autocomplete.css'
 
 export default class Autocomplete extends React.Component {
     constructor(props) {
         super(props)
 
-		this.currentMenu = -1
-        this.socket = io.connect('/')
-        this.state = {options:[]}
-
+        this.curItem = 0
+		this.socket = io.connect('/')
+        this.state = {menu:[]}
     }
-
     componentWillMount() {
-     
-        this.socket.on('autocomplete', data => {
+        
+		this.socket.on('autocomplete', data => {
         	// get data from server {data:data} or null
         	if(!data) return
-        	var options = JSON.parse(data).data
-        	this.setState({options})
-			
+        	const menu = JSON.parse(data).data
+			console.log(menu)
+        	this.setState({menu})
 		})
     }
+    componentDidMount() {
+        // Set focus on input
+		const items = [
+            {id:"123456", description: "Orange"},
+            {id:"443456", description: "Apple"},
+            {id:"957922", description: "Banana"},
+            {id:"567730", description: "Grapefruit"}
+        ]
+	//	this.setState({menu:items})
+    }
+    request(place){
+        console.log(place)
+    }
+    //Clear all selection
+    clear() {
+        for(var i=1;i<this.refs.menu.children.length; i++)
+            this.refs.menu.children[i].className = 'normal'
+    }
+    mouseOverHandler(event){
+        this.clear()
+        event.target.className = 'selected'
+        this.refs.menu.children[0].value = event.target.innerText
+    }
+    clickHandler(event){
+        this.refs.menu.children[0].value = event.target.innerText
+        this.request(event.target.id)
+        // delete menu
+        this.setState({menu:[]})
+    }
 
-    inputHandler(event) {
-    		
-		// request more
+    //takes keyboard input KeyUp, Down and Enter
+    keyDownHandler(event) {
+        // items array can't be empty
+        const len = this.state.menu.length;
+        if(len < 1) return false
+                
+        switch (event.keyCode) {
+            case 13:
+                console.log('Enter')
+                // check curItem, if == 0
+                 if(this.curItem != 0)  this.request(this.refs.menu.children[this.curItem].id)
+                // if user doesnot care take first element from menu
+                else  this.request(this.refs.menu.children[1].id)
+                this.setState({menu:[]})
+                break
+            case 40: 
+                // Down key restore background color then make darker on item below
+                //clear all
+                this.clear()
+                this.curItem = this.curItem < len ? this.curItem + 1 : 1
+                this.refs.menu.children[this.curItem].className='selected'
+                // change input value
+                this.refs.menu.children[0].value = this.state.menu[this.curItem-1].description
+                break
+            case 38:
+                // Up key is pressed
+                //clear all
+                this.clear()
+                //find next element
+                this.curItem = this.curItem > 1 ?  this.curItem - 1 : len
+                //make darker background
+                this.refs.menu.children[this.curItem].className='selected'
+                // change input value
+                this.refs.menu.children[0].value = this.state.menu[this.curItem-1].description
+                break
+            default:
+        }
+    }
+	inputHandler(event) {
+		//  more
 		this.socket.emit('autocomplete', {data: event.target.value})
-
+	}
+    drawMenu(){
+        if(this.state.menu.length > 0) {
+            return this.state.menu.map(item => {
+                return (
+                    <div key={item.id} id={item.id} 
+                     onClick={this.clickHandler.bind(this)} 
+                     onMouseOver={this.mouseOverHandler.bind(this)}>
+                        {item.description}
+                    </div>
+                )})
+        }
+        return null
     }
-	keyDownHandler(event) {
-		const length = this.state.options.length
-		
-		console.log(React.Children.toArray(this.refs.menu.children))
-		switch(event.keyCode) {
-
-			case  38 : // Up
-				console.log('up')
-				
-				break;
-			case  40 : // Down
-				console.log('down')
-				break;
-			default :
-
-		}
-
-    	if(event.keyCode === 13) {
-    		// in case enter key is pressed send special request to server
-			console.log(this.refs.acdatalist)
-			/*
-				there is 3 options:
-				1. user enter 4 letters then select option then enter
-
-				2. user select option then change it
-
-				3. user enter text despite options 
-
-			*/
-			// 1.
-			
-            this.socket.emit('locate', {data:event.target.value})
-    		// reset input sring
-    		event.target.value=''
-    	}
-	}
-	clickHandler(event) {
-
-        console.log('click')
-        console.log(event.target)
-    }
-	overHandler(event) {
-		//this.currentMenu = event.target.data-idx
-		this.state.options.forEach((item, index) => {
-			if(item.id == event.target.ref) this.currentMenu = index
-		})
-
-	}
-	menu() {
-		return (
-			<div  className="menu" ref="menu">
-				{this.state.options.map( (option, index) => {
-					return <div className="menuitem" key={index}  
-					onMouseOver={this.overHandler.bind(this)} 
-					ref={option.id}>
-								{option.description}
-						</div>
-				})}
-			</div>
-		)
-
-	}
-    render() {
+    render(){
         return (
-        	<div className="autocomplete">
-        		<input className="autocomlete"  type="search" 
-        		onInput={this.inputHandler.bind(this)} onKeyDown={this.keyDownHandler.bind(this)}/>
-				{this.state.options.length ? this.menu() : null }
-        	</div>
+            <div className="menu" ref="menu">
+                <input ref="menuinput"  autoFocus={true}
+					onKeyDown={this.keyDownHandler.bind(this)} 
+					onInput={this.inputHandler.bind(this)}/>
+               {this.drawMenu()}
+            </div>
         )
     }
 }

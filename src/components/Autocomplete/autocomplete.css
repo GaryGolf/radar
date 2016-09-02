@@ -1,29 +1,33 @@
-input {
-	width: 100%;
-}
 
-div.autocomplete {
-	width: 550px;
-	background-color: white;
-}
 .menu {
+    background-color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 90%;
+    width: 640px;
+	box-shadow: 3px 3px 10px #AAAAAA;
+}
+
+.menu input {
 	position: relative;
-	width: 100%;
-	overflow: hidden;
-	font-size: large;
-	white-space: nowrap;
-	border: 1px solid rgb(82,148,226);
-	border-top: none;
-}
-.menuitem {
-
-	font-family: monospace;
-	width: 100%;
-	overflow: hidden;
-	padding: 3px;
-
+	left: 1px;
+	width: 95%;
+	margin: 5px;
+	border: none;
+	color: black;
 }
 
-.menuitem:hover {
-	background-color:silver;
+.menu div {
+    width: calc(100%-3px);
+    padding: 4px;
+	color: #333333;
+	white-space: pre;
+	overflow: hidden;
+}
+
+.selected {
+    background-color: silver;
+}
+
+.normal {
+    background-color: white;
 }
