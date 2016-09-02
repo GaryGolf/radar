@@ -62,15 +62,14 @@
 	
 	var _Autocomplete2 = _interopRequireDefault(_Autocomplete);
 	
+	var _Gmap = __webpack_require__(227);
+	
+	var _Gmap2 = _interopRequireDefault(_Gmap);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	// import Gmap from './components/Gmap'
-	//import Menu from './components/Autocomplete/Menu'
-	
-	
-	//ReactDOM.render(<Gmap/>,document.getElementById('map'))
+	_reactDom2.default.render(_react2.default.createElement(_Gmap2.default, null), document.getElementById('map'));
 	_reactDom2.default.render(_react2.default.createElement(_Autocomplete2.default, null), document.getElementById('root'));
-	//ReactDOM.render(<Menu/>,document.getElementById('menu'))
 
 /***/ },
 /* 1 */
@@ -29214,8 +29213,7 @@
 	                // get data from server {data:data} or null
 	                if (!data) return;
 	                var menu = JSON.parse(data).data;
-	                console.log(menu);
-	                _this2.setState({ menu: menu });
+	                _this2.setState({ menu: menu }); // {menu:[{id: description:},...]}
 	            });
 	        }
 	    }, {
@@ -29229,6 +29227,17 @@
 	        key: 'request',
 	        value: function request(place) {
 	            console.log(place);
+	            /*
+	            	todo
+	            
+	            	1. request place details
+	            	2. get JSON then take lag lat
+	            	3. requset postgres estates nearby lat: lng:
+	            	4. take postgres response then use geocode lat: lng: for mapReq
+	            	5. request Google Map with estate markers
+	            	6. send map to client
+	            
+	            */
 	        }
 	        //Clear all selection
 	
@@ -29266,11 +29275,14 @@
 	
 	            switch (event.keyCode) {
 	                case 13:
-	                    console.log('Enter');
 	                    // check curItem, if == 0
-	                    if (this.curItem != 0) this.request(this.refs.menu.children[this.curItem].id);
-	                    // if user doesnot care take first element from menu
-	                    else this.request(this.refs.menu.children[1].id);
+	                    if (this.curItem != 0) {
+	                        this.request(this.refs.menu.children[this.curItem].id);
+	                    } else {
+	                        // if user doesnot care take first element from menu
+	                        this.refs.menu.children[0].value = this.state.menu[0].description;
+	                        this.request(this.refs.menu.children[1].id);
+	                    }
 	                    this.setState({ menu: [] });
 	                    break;
 	                case 40:
@@ -29374,10 +29386,194 @@
 	
 	
 	// module
-	exports.push([module.id, "\n.menu {\n    background-color: white;\n    font-family: Verdana, Geneva, Tahoma, sans-serif;\n    font-size: 90%;\n    width: 640px;\n\tbox-shadow: 3px 3px 10px #AAAAAA;\n}\n\n.menu input {\n\tposition: relative;\n\tleft: 1px;\n\twidth: 95%;\n\tmargin: 5px;\n\tborder: none;\n\tcolor: black;\n}\n\n.menu div {\n    width: calc(100%-3px);\n    padding: 4px;\n\tcolor: #333333;\n\twhite-space: pre;\n\toverflow: hidden;\n}\n\n.selected {\n    background-color: silver;\n}\n\n.normal {\n    background-color: white;\n}", ""]);
+	exports.push([module.id, "\n.menu {\n    background-color: white;\n    font-family: Verdana, Geneva, Tahoma, sans-serif;\n    font-size: 90%;\n    width: 560px;\n\tbox-shadow: 3px 3px 10px #AAAAAA;\n}\n\n.menu input {\n\tposition: relative;\n\tleft: 1px;\n\twidth: 95%;\n\tmargin: 5px;\n\tborder: none;\n\tcolor: black;\n}\n\n.menu div {\n    width: calc(100%-3px);\n    padding: 4px;\n\tcolor: #333333;\n\twhite-space: pre;\n\toverflow: hidden;\n}\n\n.selected {\n    background-color: silver;\n}\n\n.normal {\n    background-color: white;\n}", ""]);
 	
 	// exports
 
+
+/***/ },
+/* 227 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _socket = __webpack_require__(172);
+	
+	var _socket2 = _interopRequireDefault(_socket);
+	
+	__webpack_require__(228);
+	
+	var _plusOutline = __webpack_require__(230);
+	
+	var _plusOutline2 = _interopRequireDefault(_plusOutline);
+	
+	var _minusOutline = __webpack_require__(231);
+	
+	var _minusOutline2 = _interopRequireDefault(_minusOutline);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Gmap = function (_React$Component) {
+	    _inherits(Gmap, _React$Component);
+	
+	    function Gmap(props) {
+	        _classCallCheck(this, Gmap);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Gmap).call(this, props));
+	
+	        _this.options = {
+	
+	            //  center:     '56.317530,44.000717',  // 'Нижний Новгород'
+	            language: 'ru',
+	            zoom: '12',
+	            scale: '1', // change crop height for scale=2
+	            maptype: 'roadmap', //'roadmap','terrain'  
+	            size: '600x622',
+	            format: 'png',
+	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45'],
+	            markers: ['color:red|label:A|56.317200,44.000600', 'color:red|label:B|56.319220,44.002000', 'color:red|label:C|56.300477,44.019030']
+	        };
+	
+	        _this.socket = _socket2.default.connect('/');
+	        _this.state = { gmap: null };
+	        return _this;
+	    }
+	
+	    _createClass(Gmap, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            var _this2 = this;
+	
+	            this.socket.on('gmap', function (data) {
+	                //data = {gmap:string} componentDidMount
+	                _this2.setState(data);
+	            });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	
+	            this.socket.emit('gmap-request', this.options);
+	        }
+	    }, {
+	        key: 'zoomInHandler',
+	        value: function zoomInHandler(event) {
+	
+	            if (Number(this.options.zoom) < 20) {
+	                this.options.zoom = Number(this.options.zoom) + 1;
+	                this.socket.emit('gmap-request', this.options);
+	            }
+	        }
+	    }, {
+	        key: 'zoomOutHandler',
+	        value: function zoomOutHandler(event) {
+	
+	            if (Number(this.options.zoom) > 10) {
+	                this.options.zoom = Number(this.options.zoom) - 1;
+	                this.socket.emit('gmap-request', this.options);
+	            }
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'gmap' },
+	                _react2.default.createElement(
+	                    'span',
+	                    { className: 'gmap' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'gmap zoom', onClick: this.zoomInHandler.bind(this) },
+	                        _react2.default.createElement('img', { src: _plusOutline2.default })
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'gmap zoom', onClick: this.zoomOutHandler.bind(this) },
+	                        _react2.default.createElement('img', { src: _minusOutline2.default })
+	                    )
+	                ),
+	                this.state.gmap ? _react2.default.createElement(
+	                    'div',
+	                    { className: 'gmap-level-0' },
+	                    _react2.default.createElement('img', { src: this.state.gmap, className: 'gmap' })
+	                ) : null
+	            );
+	        }
+	    }]);
+	
+	    return Gmap;
+	}(_react2.default.Component);
+	
+	exports.default = Gmap;
+
+/***/ },
+/* 228 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(229);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(223)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 229 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(222)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "div.gmap {\n\n\toverflow: hidden;\n}\nspan.gmap {\n\tposition: absolute;\n\n\tbottom: 0px;\n\tright: 0px;\n\tpadding-bottom: 30px;\n\tpadding-right: 35px;\n}\n\n\nspan.gmap:hover .zoom{\n\n\tvisibility: visible;\n}\n.zoom {\n\n\topacity: 0.2;\n\tvisibility: hidden;\n}\n\n.zoom:hover {\n\t\n\topacity: 1;\n\n}", ""]);
+	
+	// exports
+
+
+/***/ },
+/* 230 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "plus-outline.svg";
+
+/***/ },
+/* 231 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "minus-outline.svg";
 
 /***/ }
 /******/ ]);

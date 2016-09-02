@@ -20,19 +20,45 @@ const CTR = config.get('autocomplete.constraints')
 		}
 	]
 	}
+*/
+exports.getLocations = (input, callback) => {
+	var data = null
+	var reqobj = {
+		method: 'GET',
+		uri: 'https://maps.googleapis.com/maps/api/place/autocomplete/json',
+		qs: {
+			location: '56.296504,43.936059',
+			radius: 1000,
+			language: 'ru',
+			key: API_KEY,
+			types: ['route'],
+			input: input
+		},
+		headers: {'User-Agent': 'request'}
+	}
+	request(reqobj ,(error, response, body) => {
+		if (!error && response.statusCode == 200) {
+			var info = JSON.parse(body)
 
-		THEN
-		https://maps.googleapis.com/maps/api/place/details/json?placeid=
-
+			if(info.status === 'OK') {
+			// new array of place descriptions
+				data = info.predictions.map(item => { 
+					return {description: item.description, id: item.place_id }
+				}).filter(obj => CTR.some(place => obj.description.indexOf(place)>0)) 	
+				// filter items remove all outside by autocomplete.constraints 
+				data = JSON.stringify({data})
+			} 
+			console.log('Autocomplete req.status: '+info.status)
+		}
+	callback(error, data)
+	})
+}
+/* get autocomplete details
 		{
 			result: {
-	
 				formatted_address:
 				geometry: {
-					location: {
-						lat:
-						lng:
-					}
+					location: { lat:  lng:  }
 				}
 				id:
 				place_id:
@@ -40,55 +66,18 @@ const CTR = config.get('autocomplete.constraints')
 				types: ["route"]
 			}
 			status: "OK"
-
 		}
 */
-
-
-exports.getLocations = (input, callback) => {
+exports.getDetails = (input, callback) => {
 	var data = null
-
-
-	request({
-			method: 'GET',
-			uri: 'https://maps.googleapis.com/maps/api/place/autocomplete/json',
-			qs: {
-				location: '56.296504,43.936059',
-				radius: 1000,
-				language: 'ru',
-				key: API_KEY,
-				types: ['route'],
-				input: 'Минина'//input
-			},
-			headers: {
-				'User-Agent': 'request'
-			}
-		},(error, response, body) => {
-		if (!error && response.statusCode == 200) {
-		    var info = JSON.parse(body)
-
-		     if(info.status === 'OK') {
-		    	// new array of place descriptions
-		    	data = info.predictions.map(item => { 
-		    		return {description: item.description, id: item.place_id }
-		    	})  
-		    	// filter items remove all outside by autocomplete.constraints
-		    	.filter(obj => CTR.some(place => obj.description.indexOf(place)>0)) 
-		    	data = JSON.stringify({data})
-		    } 
-		   console.log('Autocomplete req.status: '+info.status)
-		  // console.log('Autocomplete obj: '+ data)
-
-		    //check error_code
-		    // if(info.status === 'OK') {
-		    // 	// new array of place descriptions
-		    // 	data = info.predictions.map(item => item.description)  
-		    // 	// filter items remove all outside by autocomplete.constraints
-		    // 	.filter(description => CTR.some(place => description.indexOf(place)>0)) 
-		    // 	data = JSON.stringify({data})
-		    // } 
-
-		}
+	var reqobj = {
+		method: 'GET',
+		uri: 'https://maps.googleapis.com/maps/api/place/details/json',
+		qs: { key: API_KEY, placeid: input },
+		headers: { 'User-Agent': 'request'}
+	}
+	request(reqobj, (error, response, body) => {
+		if(!error && response.statusCode == 200) data = JSON.parse(body)
 		callback(error, data)
 	})
 }

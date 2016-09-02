@@ -16,8 +16,7 @@ export default class Autocomplete extends React.Component {
         	// get data from server {data:data} or null
         	if(!data) return
         	const menu = JSON.parse(data).data
-			console.log(menu)
-        	this.setState({menu})
+        	this.setState({menu})   // {menu:[{id: description:},...]}
 		})
     }
     componentDidMount() {
@@ -32,6 +31,17 @@ export default class Autocomplete extends React.Component {
     }
     request(place){
         console.log(place)
+/*
+	todo
+
+	1. request place details
+	2. get JSON then take lag lat
+	3. requset postgres estates nearby lat: lng:
+	4. take postgres response then use geocode lat: lng: for mapReq
+	5. request Google Map with estate markers
+	6. send map to client
+
+*/
     }
     //Clear all selection
     clear() {
@@ -58,11 +68,14 @@ export default class Autocomplete extends React.Component {
                 
         switch (event.keyCode) {
             case 13:
-                console.log('Enter')
                 // check curItem, if == 0
-                 if(this.curItem != 0)  this.request(this.refs.menu.children[this.curItem].id)
-                // if user doesnot care take first element from menu
-                else  this.request(this.refs.menu.children[1].id)
+                 if(this.curItem != 0) {  
+					 this.request(this.refs.menu.children[this.curItem].id)
+				 } else {
+                	// if user doesnot care take first element from menu
+					this.refs.menu.children[0].value = this.state.menu[0].description
+                	this.request(this.refs.menu.children[1].id)
+				 }
                 this.setState({menu:[]})
                 break
             case 40: 

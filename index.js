@@ -6,6 +6,7 @@ const io = require('socket.io')(server)
 const config = require('config')
 const request = require('request').defaults({ encoding: null })
 const Jimp = require('jimp')
+const Gmap = require('./srv/gmap.js')
 
 var options = config.get('options')
 
@@ -15,10 +16,8 @@ app.use(express.static('public'))
 
 io.on('connection', socket => {
 
-	//getmap(socket)
-
 	socket.on('gmap-request', data => {
-		require('./srv/gmap.js').getMapBase64(data, (error, buffer) => {
+		Gmap.getMapBase64(data, (error, buffer) => {
 			if(!error) socket.emit('gmap', {['gma'+'p']: buffer})
 			else console.error('getMapBase64: '+error)
 		})
@@ -26,7 +25,7 @@ io.on('connection', socket => {
 	
 
 	socket.on('autocomplete', data => {
-		require('./srv/autocomplete').getLocations(data.data, (error, data) => {
+		Gmap.getLocations(data.data, (error, data) => {
 			if(!error) socket.emit('autocomplete',data)
 			else console.log('Error '+error)
 		})
