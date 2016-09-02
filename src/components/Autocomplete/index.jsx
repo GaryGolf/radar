@@ -7,6 +7,7 @@ export default class Autocomplete extends React.Component {
     constructor(props) {
         super(props)
 
+		this.currentMenu = -1
         this.socket = io.connect('/')
         this.state = {options:[]}
 
@@ -29,7 +30,23 @@ export default class Autocomplete extends React.Component {
 		this.socket.emit('autocomplete', {data: event.target.value})
 
     }
-	changeHandler(event) {
+	keyDownHandler(event) {
+		const length = this.state.options.length
+		
+		console.log(React.Children.toArray(this.refs.menu.children))
+		switch(event.keyCode) {
+
+			case  38 : // Up
+				console.log('up')
+				
+				break;
+			case  40 : // Down
+				console.log('down')
+				break;
+			default :
+
+		}
+
     	if(event.keyCode === 13) {
     		// in case enter key is pressed send special request to server
 			console.log(this.refs.acdatalist)
@@ -54,11 +71,22 @@ export default class Autocomplete extends React.Component {
         console.log('click')
         console.log(event.target)
     }
+	overHandler(event) {
+		//this.currentMenu = event.target.data-idx
+		this.state.options.forEach((item, index) => {
+			if(item.id == event.target.ref) this.currentMenu = index
+		})
+
+	}
 	menu() {
 		return (
-			<div  className="autocompletemenu" onMouseOut={ (event)=> {delete event.target} } >
+			<div  className="menu" ref="menu">
 				{this.state.options.map( (option, index) => {
-					return <div className="acmenuitem" key={index}> {option.description}</div>
+					return <div className="menuitem" key={index}  
+					onMouseOver={this.overHandler.bind(this)} 
+					ref={option.id}>
+								{option.description}
+						</div>
 				})}
 			</div>
 		)
@@ -68,8 +96,8 @@ export default class Autocomplete extends React.Component {
         return (
         	<div className="autocomplete">
         		<input className="autocomlete"  type="search" 
-        		onInput={this.inputHandler.bind(this)} onKeyDown={this.changeHandler.bind(this)}/>
-				{this.state.options.length ? this.menu(): null }
+        		onInput={this.inputHandler.bind(this)} onKeyDown={this.keyDownHandler.bind(this)}/>
+				{this.state.options.length ? this.menu() : null }
         	</div>
         )
     }

@@ -58,18 +58,18 @@
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
-	var _Autocomplete = __webpack_require__(219);
+	var _Menu = __webpack_require__(219);
 	
-	var _Autocomplete2 = _interopRequireDefault(_Autocomplete);
-	
-	var _Gmap = __webpack_require__(224);
-	
-	var _Gmap2 = _interopRequireDefault(_Gmap);
+	var _Menu2 = _interopRequireDefault(_Menu);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	//ReactDOM.render(<Gmap/>,document.getElementById('map'))
-	_reactDom2.default.render(_react2.default.createElement(_Autocomplete2.default, null), document.getElementById('root'));
+	// ReactDOM.render(<Autocomplete/>,document.getElementById('root'))
+	_reactDom2.default.render(_react2.default.createElement(_Menu2.default, null), document.getElementById('menu'));
+	
+	//import Autocomplete from './components/Autocomplete'
+	// import Gmap from './components/Gmap'
 
 /***/ },
 /* 1 */
@@ -28854,7 +28854,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -28863,13 +28863,9 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _socket = __webpack_require__(172);
+	var _menu = __webpack_require__(220);
 	
-	var _socket2 = _interopRequireDefault(_socket);
-	
-	var _autocomplete = __webpack_require__(220);
-	
-	var _autocomplete2 = _interopRequireDefault(_autocomplete);
+	var _menu2 = _interopRequireDefault(_menu);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -28879,100 +28875,136 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var Autocomplete = function (_React$Component) {
-	  _inherits(Autocomplete, _React$Component);
+	var Menu = function (_React$Component) {
+	    _inherits(Menu, _React$Component);
 	
-	  function Autocomplete(props) {
-	    _classCallCheck(this, Autocomplete);
+	    function Menu(props) {
+	        _classCallCheck(this, Menu);
 	
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Menu).call(this, props));
 	
-	    _this.socket = _socket2.default.connect('/');
-	    _this.state = { options: [] };
-	
-	    return _this;
-	  }
-	
-	  _createClass(Autocomplete, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      var _this2 = this;
-	
-	      this.socket.on('autocomplete', function (data) {
-	        // get data from server {data:data} or null
-	        if (!data) return;
-	        var options = JSON.parse(data).data;
-	        _this2.setState({ options: options });
-	      });
+	        _this.curItem = 0;
+	        _this.state = { menu: [] };
+	        return _this;
 	    }
-	  }, {
-	    key: 'inputHandler',
-	    value: function inputHandler(event) {
 	
-	      // request more
-	      this.socket.emit('autocomplete', { data: event.target.value });
-	    }
-	  }, {
-	    key: 'changeHandler',
-	    value: function changeHandler(event) {
-	      if (event.keyCode === 13) {
-	        // in case enter key is pressed send special request to server
-	        console.log(this.refs.acdatalist);
-	        /*
-	        	there is 3 options:
-	        	1. user enter 4 letters then select option then enter
-	        		2. user select option then change it
-	        		3. user enter text despite options 
-	        	*/
-	        // 1.
+	    _createClass(Menu, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            var items = [{ id: "123456", description: "Orange" }, { id: "443456", description: "Apple" }, { id: "957922", description: "Banana" }, { id: "567730", description: "Grapefruit" }];
 	
-	        this.socket.emit('locate', { data: event.target.value });
-	        // reset input sring
-	        event.target.value = '';
-	      }
-	    }
-	  }, {
-	    key: 'clickHandler',
-	    value: function clickHandler(event) {
+	            this.setState({ menu: items });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            // Set focus on input
+	        }
+	    }, {
+	        key: 'request',
+	        value: function request(place) {
+	            console.log(place);
+	        }
+	        //Clear all selection
 	
-	      console.log('click');
-	      console.log(event.target);
-	    }
-	  }, {
-	    key: 'menu',
-	    value: function menu() {
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'autocompletemenu', onMouseOut: function onMouseOut(event) {
-	            delete event.target;
-	          } },
-	        this.state.options.map(function (option, index) {
-	          return _react2.default.createElement(
-	            'div',
-	            { className: 'acmenuitem', key: index },
-	            ' ',
-	            option.description
-	          );
-	        })
-	      );
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return _react2.default.createElement(
-	        'div',
-	        { className: 'autocomplete' },
-	        _react2.default.createElement('input', { className: 'autocomlete', type: 'search',
-	          onInput: this.inputHandler.bind(this), onKeyDown: this.changeHandler.bind(this) }),
-	        this.state.options.length ? this.menu() : null
-	      );
-	    }
-	  }]);
+	    }, {
+	        key: 'clear',
+	        value: function clear() {
+	            for (var i = 0; i < this.refs.menu.children.length; i++) {
+	                this.refs.menu.children[i].className = 'normal';
+	            }
+	        }
+	    }, {
+	        key: 'mouseOverHandler',
+	        value: function mouseOverHandler(event) {
+	            this.clear();
+	            event.target.className = 'selected';
+	            this.refs.menu.children[0].value = event.target.innerText;
+	        }
+	    }, {
+	        key: 'clickHandler',
+	        value: function clickHandler(event) {
+	            this.refs.menu.children[0].value = event.target.innerText;
+	            this.request(event.target.id);
+	            // delete menu
+	            this.setState({ menu: [] });
+	        }
 	
-	  return Autocomplete;
+	        //takes keyboard input KeyUp, Down and Enter
+	
+	    }, {
+	        key: 'keyDownHandler',
+	        value: function keyDownHandler(event) {
+	            // items array can't be empty
+	            var len = this.state.menu.length;
+	            if (len < 1) return false;
+	
+	            switch (event.keyCode) {
+	                case 13:
+	                    console.log('Enter');
+	                    // check curItem, if == 0
+	                    if (this.curItem != 0) this.request(this.refs.menu.children[this.curItem].id);
+	                    // if user doesnot care take first element from menu
+	                    else this.request(this.refs.menu.children[1].id);
+	                    this.setState({ menu: [] });
+	                    break;
+	                case 40:
+	                    // Down key restore background color then make darker on item below
+	                    //clear all
+	                    this.clear();
+	                    this.curItem = this.curItem < len ? this.curItem + 1 : 1;
+	                    this.refs.menu.children[this.curItem].className = 'selected';
+	                    // change input value
+	                    this.refs.menu.children[0].value = this.state.menu[this.curItem - 1].description;
+	                    break;
+	                case 38:
+	                    // Up key is pressed
+	                    //clear all
+	                    this.clear();
+	                    //find next element
+	                    this.curItem = this.curItem > 1 ? this.curItem - 1 : len;
+	                    //make darker background
+	                    this.refs.menu.children[this.curItem].className = 'selected';
+	                    // change input value
+	                    this.refs.menu.children[0].value = this.state.menu[this.curItem - 1].description;
+	                    break;
+	                default:
+	            }
+	        }
+	    }, {
+	        key: 'drawMenu',
+	        value: function drawMenu() {
+	            var _this2 = this;
+	
+	            if (this.state.menu.length > 0) {
+	                return this.state.menu.map(function (item) {
+	                    return _react2.default.createElement(
+	                        'div',
+	                        { key: item.id, id: item.id,
+	                            onClick: _this2.clickHandler.bind(_this2),
+	                            onMouseOver: _this2.mouseOverHandler.bind(_this2) },
+	                        item.description
+	                    );
+	                });
+	            }
+	            return null;
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'menu', ref: 'menu' },
+	                _react2.default.createElement('input', { ref: 'menuinput', onKeyDown: this.keyDownHandler.bind(this), autoFocus: true }),
+	                this.drawMenu()
+	            );
+	        }
+	    }]);
+	
+	    return Menu;
 	}(_react2.default.Component);
 	
-	exports.default = Autocomplete;
+	exports.default = Menu;
 
 /***/ },
 /* 220 */
@@ -28990,8 +29022,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css");
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./menu.css", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./menu.css");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -29009,7 +29041,7 @@
 	
 	
 	// module
-	exports.push([module.id, "input {\n\twidth: 100%;\n}\n\ndiv.autocomplete {\n\twidth: 550px;\n\tbackground-color: white;\n}\n.autocompletemenu {\n\tposition: relative;\n\twidth: 100%;\n\toverflow: hidden;\n\tfont-size: large;\n\twhite-space: nowrap;\n\tborder: 1px solid rgb(82,148,226);\n}\n.acmenuitem {\n\n\tfont-family: monospace;\n\twidth: 100%;\n\toverflow: hidden;\n\tpadding: 3px;\n\n}\n\n.acmenuitem:hover {\n\tbackground-color: navy;\n\tcolor: white;\n}", ""]);
+	exports.push([module.id, "\n.menu {\n    background-color: white;\n    font-family: monospace;\n    font-size: large;\n    padding: 3px;\n    width: 440px;\n}\n\n.menu input {\n    width: 100%;\n}\n\n.menu div {\n    width: 100%;\n    padding: 4px;\n}\n\n\n.selected {\n    background-color: silver;\n}\n\n.normal {\n    background-color: white;\n}", ""]);
 	
 	// exports
 
@@ -29321,190 +29353,6 @@
 			URL.revokeObjectURL(oldSrc);
 	}
 
-
-/***/ },
-/* 224 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _socket = __webpack_require__(172);
-	
-	var _socket2 = _interopRequireDefault(_socket);
-	
-	__webpack_require__(225);
-	
-	var _plusOutline = __webpack_require__(227);
-	
-	var _plusOutline2 = _interopRequireDefault(_plusOutline);
-	
-	var _minusOutline = __webpack_require__(228);
-	
-	var _minusOutline2 = _interopRequireDefault(_minusOutline);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Gmap = function (_React$Component) {
-	    _inherits(Gmap, _React$Component);
-	
-	    function Gmap(props) {
-	        _classCallCheck(this, Gmap);
-	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Gmap).call(this, props));
-	
-	        _this.options = {
-	
-	            //  center:     '56.317530,44.000717',  // 'Нижний Новгород'
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1', // change crop height for scale=2
-	            maptype: 'roadmap', //'roadmap','terrain'  
-	            size: '600x622',
-	            format: 'png',
-	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45'],
-	            markers: ['color:red|label:A|56.317200,44.000600', 'color:red|label:B|56.319220,44.002000', 'color:red|label:C|56.300477,44.019030']
-	        };
-	
-	        _this.socket = _socket2.default.connect('/');
-	        _this.state = { gmap: null };
-	        return _this;
-	    }
-	
-	    _createClass(Gmap, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            var _this2 = this;
-	
-	            this.socket.on('gmap', function (data) {
-	                //data = {gmap:string} componentDidMount
-	                _this2.setState(data);
-	            });
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	
-	            this.socket.emit('gmap-request', this.options);
-	        }
-	    }, {
-	        key: 'zoomInHandler',
-	        value: function zoomInHandler(event) {
-	
-	            if (Number(this.options.zoom) < 20) {
-	                this.options.zoom = Number(this.options.zoom) + 1;
-	                this.socket.emit('gmap-request', this.options);
-	            }
-	        }
-	    }, {
-	        key: 'zoomOutHandler',
-	        value: function zoomOutHandler(event) {
-	
-	            if (Number(this.options.zoom) > 10) {
-	                this.options.zoom = Number(this.options.zoom) - 1;
-	                this.socket.emit('gmap-request', this.options);
-	            }
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'gmap' },
-	                _react2.default.createElement(
-	                    'span',
-	                    { className: 'gmap' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'gmap zoom', onClick: this.zoomInHandler.bind(this) },
-	                        _react2.default.createElement('img', { src: _plusOutline2.default })
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'gmap zoom', onClick: this.zoomOutHandler.bind(this) },
-	                        _react2.default.createElement('img', { src: _minusOutline2.default })
-	                    )
-	                ),
-	                this.state.gmap ? _react2.default.createElement(
-	                    'div',
-	                    { className: 'gmap-level-0' },
-	                    _react2.default.createElement('img', { src: this.state.gmap, className: 'gmap' })
-	                ) : null
-	            );
-	        }
-	    }]);
-	
-	    return Gmap;
-	}(_react2.default.Component);
-	
-	exports.default = Gmap;
-
-/***/ },
-/* 225 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(226);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(223)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 226 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(222)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "div.gmap {\n\n\toverflow: hidden;\n}\nspan.gmap {\n\tposition: absolute;\n\n\tbottom: 0px;\n\tright: 0px;\n\tpadding-bottom: 30px;\n\tpadding-right: 35px;\n}\n\n\nspan.gmap:hover .zoom{\n\n\tvisibility: visible;\n}\n.zoom {\n\n\topacity: 0.2;\n\tvisibility: hidden;\n}\n\n.zoom:hover {\n\t\n\topacity: 1;\n\n}", ""]);
-	
-	// exports
-
-
-/***/ },
-/* 227 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "plus-outline.svg";
-
-/***/ },
-/* 228 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "minus-outline.svg";
 
 /***/ }
 /******/ ]);
