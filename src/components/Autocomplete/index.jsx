@@ -7,27 +7,46 @@ export default class Autocomplete extends React.Component {
         super(props)
 
         this.curItem = 0
+		this.reminder = null
 		this.socket = io.connect('/')
         this.state = {menu:[]}
     }
     componentWillMount() {
         
+		// setup data receiver 
 		this.socket.on('autocomplete', data => {
         	// get data from server {data:data} or null
         	if(!data) return
         	const menu = JSON.parse(data).data
         	this.setState({menu})   // {menu:[{id: description:},...]}
+			if(this.reminder) {
+				clearTimeout(this.reminder)
+				this.refs.menu.children[0].placeholder = 'поиск'
+			}
 		})
     }
     componentDidMount() {
-        // Set focus on input
-		const items = [
-            {id:"123456", description: "Orange"},
-            {id:"443456", description: "Apple"},
-            {id:"957922", description: "Banana"},
-            {id:"567730", description: "Grapefruit"}
-        ]
-	//	this.setState({menu:items})
+		const input = this.refs.menu.children[0]
+
+		this.reminder = setTimeout(() => {
+			input.placeholder = 'введите адрес'
+			this.reminder = setTimeout(() => {
+				input.placeholder = 'например, Московский вокзал'
+				this.reminder = setTimeout(() => {
+					let i = 0
+					let str = 'Московский вокзал'
+					const running = () => {
+						if( i >= str.length) {
+							clearInterval(this.reminder)
+							setTimeout(() => {input.placeholder = 'поиск'}, 6000)
+							return str
+						}
+						return str.substr(0,i++)
+					}
+					this.reminder = setInterval(() => { input.placeholder = running(str)},200)
+				},1500)
+			},2000)		
+		}, 4000)
     }
     request(place){
         console.log(place)
@@ -51,7 +70,12 @@ export default class Autocomplete extends React.Component {
     mouseOverHandler(event){
         this.clear()
         event.target.className = 'selected'
-        this.refs.menu.children[0].value = event.target.innerText
+		this.state.menu.forEach((element, idx) => {
+			if(element.id == event.target.id) {
+				this.curItem = idx+1
+				return false
+			}
+		})
     }
     clickHandler(event){
         this.refs.menu.children[0].value = event.target.innerText
@@ -65,6 +89,8 @@ export default class Autocomplete extends React.Component {
         // items array can't be empty
         const len = this.state.menu.length;
         if(len < 1) return false
+
+		const input = this.refs.menu.children[0]
                 
         switch (event.keyCode) {
             case 13:
@@ -73,7 +99,7 @@ export default class Autocomplete extends React.Component {
 					 this.request(this.refs.menu.children[this.curItem].id)
 				 } else {
                 	// if user doesnot care take first element from menu
-					this.refs.menu.children[0].value = this.state.menu[0].description
+					input.value = this.state.menu[0].description
                 	this.request(this.refs.menu.children[1].id)
 				 }
                 this.setState({menu:[]})
@@ -85,7 +111,7 @@ export default class Autocomplete extends React.Component {
                 this.curItem = this.curItem < len ? this.curItem + 1 : 1
                 this.refs.menu.children[this.curItem].className='selected'
                 // change input value
-                this.refs.menu.children[0].value = this.state.menu[this.curItem-1].description
+                input.value = this.state.menu[this.curItem-1].description
                 break
             case 38:
                 // Up key is pressed
@@ -96,7 +122,7 @@ export default class Autocomplete extends React.Component {
                 //make darker background
                 this.refs.menu.children[this.curItem].className='selected'
                 // change input value
-                this.refs.menu.children[0].value = this.state.menu[this.curItem-1].description
+                input.value = this.state.menu[this.curItem-1].description
                 break
             default:
         }
@@ -121,7 +147,7 @@ export default class Autocomplete extends React.Component {
     render(){
         return (
             <div className="menu" ref="menu">
-                <input ref="menuinput"  autoFocus={true}
+                <input ref="menuinput"  autoFocus={true} placeholder="поиск"
 					onKeyDown={this.keyDownHandler.bind(this)} 
 					onInput={this.inputHandler.bind(this)}/>
                {this.drawMenu()}

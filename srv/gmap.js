@@ -34,10 +34,26 @@ var url = uri +'?'+ qs.stringify(options)
 	    callback(error, null)
 	})
 }
+/*
+	todo
 
-exports.getMapDetais = (options, callback) => {
+	1. request place details
+	2. get JSON then take lag lat
+	3. requset postgres estates nearby lat: lng:
+	4. take postgres response then use geocode lat: lng: for mapReq
+	5. request Google Map with estate markers
+	6. send map to client
 
-
+*/
+exports.getMapDetais = (place, callback) => {
+	getDetails(place,(error,data) => {
+		if(!error && data.status == 'OK') {
+			const lat = data.result.geometry.location.lat
+			const lng = data.resutl.geometry.location.lng
+			console.log('lat:'+lat+' lng:'+lng)
+		} 
+	})
+	callback(null,null)
 }
 /*
 	https://maps.googleapis.com/maps/api/place/autocomplete/json
@@ -100,7 +116,7 @@ exports.getLocations = (input, callback) => {
 			status: "OK"
 		}
 */
-exports.getDetails = (input, callback) => {
+const getDetails = (input, callback) => {
 	var data = null
 	var reqobj = {
 		method: 'GET',

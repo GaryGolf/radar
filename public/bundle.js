@@ -29199,6 +29199,7 @@
 	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
 	
 	        _this.curItem = 0;
+	        _this.reminder = null;
 	        _this.socket = _socket2.default.connect('/');
 	        _this.state = { menu: [] };
 	        return _this;
@@ -29209,19 +29210,48 @@
 	        value: function componentWillMount() {
 	            var _this2 = this;
 	
+	            // setup data receiver 
 	            this.socket.on('autocomplete', function (data) {
 	                // get data from server {data:data} or null
 	                if (!data) return;
 	                var menu = JSON.parse(data).data;
 	                _this2.setState({ menu: menu }); // {menu:[{id: description:},...]}
+	                if (_this2.reminder) {
+	                    clearTimeout(_this2.reminder);
+	                    _this2.refs.menu.children[0].placeholder = 'поиск';
+	                }
 	            });
 	        }
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            // Set focus on input
-	            var items = [{ id: "123456", description: "Orange" }, { id: "443456", description: "Apple" }, { id: "957922", description: "Banana" }, { id: "567730", description: "Grapefruit" }];
-	            //	this.setState({menu:items})
+	            var _this3 = this;
+	
+	            var input = this.refs.menu.children[0];
+	
+	            this.reminder = setTimeout(function () {
+	                input.placeholder = 'введите адрес';
+	                _this3.reminder = setTimeout(function () {
+	                    input.placeholder = 'например, Московский вокзал';
+	                    _this3.reminder = setTimeout(function () {
+	                        var i = 0;
+	                        var str = 'Московский вокзал';
+	                        var running = function running() {
+	                            if (i >= str.length) {
+	                                clearInterval(_this3.reminder);
+	                                setTimeout(function () {
+	                                    input.placeholder = 'поиск';
+	                                }, 6000);
+	                                return str;
+	                            }
+	                            return str.substr(0, i++);
+	                        };
+	                        _this3.reminder = setInterval(function () {
+	                            input.placeholder = running(str);
+	                        }, 200);
+	                    }, 1500);
+	                }, 2000);
+	            }, 4000);
 	        }
 	    }, {
 	        key: 'request',
@@ -29251,9 +29281,16 @@
 	    }, {
 	        key: 'mouseOverHandler',
 	        value: function mouseOverHandler(event) {
+	            var _this4 = this;
+	
 	            this.clear();
 	            event.target.className = 'selected';
-	            this.refs.menu.children[0].value = event.target.innerText;
+	            this.state.menu.forEach(function (element, idx) {
+	                if (element.id == event.target.id) {
+	                    _this4.curItem = idx + 1;
+	                    return false;
+	                }
+	            });
 	        }
 	    }, {
 	        key: 'clickHandler',
@@ -29273,6 +29310,8 @@
 	            var len = this.state.menu.length;
 	            if (len < 1) return false;
 	
+	            var input = this.refs.menu.children[0];
+	
 	            switch (event.keyCode) {
 	                case 13:
 	                    // check curItem, if == 0
@@ -29280,7 +29319,7 @@
 	                        this.request(this.refs.menu.children[this.curItem].id);
 	                    } else {
 	                        // if user doesnot care take first element from menu
-	                        this.refs.menu.children[0].value = this.state.menu[0].description;
+	                        input.value = this.state.menu[0].description;
 	                        this.request(this.refs.menu.children[1].id);
 	                    }
 	                    this.setState({ menu: [] });
@@ -29292,7 +29331,7 @@
 	                    this.curItem = this.curItem < len ? this.curItem + 1 : 1;
 	                    this.refs.menu.children[this.curItem].className = 'selected';
 	                    // change input value
-	                    this.refs.menu.children[0].value = this.state.menu[this.curItem - 1].description;
+	                    input.value = this.state.menu[this.curItem - 1].description;
 	                    break;
 	                case 38:
 	                    // Up key is pressed
@@ -29303,7 +29342,7 @@
 	                    //make darker background
 	                    this.refs.menu.children[this.curItem].className = 'selected';
 	                    // change input value
-	                    this.refs.menu.children[0].value = this.state.menu[this.curItem - 1].description;
+	                    input.value = this.state.menu[this.curItem - 1].description;
 	                    break;
 	                default:
 	            }
@@ -29317,15 +29356,15 @@
 	    }, {
 	        key: 'drawMenu',
 	        value: function drawMenu() {
-	            var _this3 = this;
+	            var _this5 = this;
 	
 	            if (this.state.menu.length > 0) {
 	                return this.state.menu.map(function (item) {
 	                    return _react2.default.createElement(
 	                        'div',
 	                        { key: item.id, id: item.id,
-	                            onClick: _this3.clickHandler.bind(_this3),
-	                            onMouseOver: _this3.mouseOverHandler.bind(_this3) },
+	                            onClick: _this5.clickHandler.bind(_this5),
+	                            onMouseOver: _this5.mouseOverHandler.bind(_this5) },
 	                        item.description
 	                    );
 	                });
@@ -29338,7 +29377,7 @@
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'menu', ref: 'menu' },
-	                _react2.default.createElement('input', { ref: 'menuinput', autoFocus: true,
+	                _react2.default.createElement('input', { ref: 'menuinput', autoFocus: true, placeholder: 'поиск',
 	                    onKeyDown: this.keyDownHandler.bind(this),
 	                    onInput: this.inputHandler.bind(this) }),
 	                this.drawMenu()
