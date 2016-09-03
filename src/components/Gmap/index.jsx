@@ -1,5 +1,4 @@
 import React from 'react'
-import io from 'socket.io-client'
 
 import './gmap.css'
 import PlusIcon from './plus-outline.svg'
@@ -12,7 +11,7 @@ export default class Gmap extends React.Component {
       
         this.options = {
 
-          //  center:     '56.317530,44.000717',  // 'Нижний Новгород'
+            center:     '56.317530,44.000717',  // 'Нижний Новгород'
             language:   'ru',
             zoom:       '12',
             scale:      '1',        // change crop height for scale=2
@@ -24,21 +23,22 @@ export default class Gmap extends React.Component {
                 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
                 'feature:poi.business|element:labels|visibility:off',
                 'feature:poi|element:geometry|lightness:45'
-            ],
-            markers: [
-                'color:red|label:A|56.317200,44.000600',
-                'color:red|label:B|56.319220,44.002000',
-                'color:red|label:C|56.300477,44.019030'
             ]
+            // ,
+            // markers: [
+            //     'color:red|label:A|56.317200,44.000600',
+            //     'color:red|label:B|56.319220,44.002000',
+            //     'color:red|label:C|56.300477,44.019030'
+            // ]
         }
 
-        this.socket = io.connect('/')
+        this.socket = window.socket //io.connect('/')
         this.state = {gmap: null}
     }
 
     componentWillMount() {
 
-        this.socket.on('gmap', data =>{
+        this.socket.on('gmap', data => {
             //data = {gmap:string} componentDidMount
             this.setState(data)
         })
@@ -46,8 +46,8 @@ export default class Gmap extends React.Component {
     }
 
     componentDidMount() {
-       
-        this.socket.emit('gmap-request', this.options)
+    //    this.socket.emit('autocomplete-details', {data:'ChIJ_UP0CYrVUUEROMe8bOtZeFg'})
+       this.socket.emit('gmap-request', this.options)
           
     }
 

@@ -29174,10 +29174,6 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _socket = __webpack_require__(172);
-	
-	var _socket2 = _interopRequireDefault(_socket);
-	
 	var _autocomplete = __webpack_require__(225);
 	
 	var _autocomplete2 = _interopRequireDefault(_autocomplete);
@@ -29189,6 +29185,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	//import io from 'socket.io-client'
+	
 	
 	var Autocomplete = function (_React$Component) {
 	    _inherits(Autocomplete, _React$Component);
@@ -29200,7 +29198,7 @@
 	
 	        _this.curItem = 0;
 	        _this.reminder = null;
-	        _this.socket = _socket2.default.connect('/');
+	        _this.socket = window.socket; // io.connect('/')
 	        _this.state = { menu: [] };
 	        return _this;
 	    }
@@ -29252,22 +29250,6 @@
 	                    }, 1500);
 	                }, 2000);
 	            }, 4000);
-	        }
-	    }, {
-	        key: 'request',
-	        value: function request(place) {
-	            console.log(place);
-	            /*
-	            	todo
-	            
-	            	1. request place details
-	            	2. get JSON then take lag lat
-	            	3. requset postgres estates nearby lat: lng:
-	            	4. take postgres response then use geocode lat: lng: for mapReq
-	            	5. request Google Map with estate markers
-	            	6. send map to client
-	            
-	            */
 	        }
 	        //Clear all selection
 	
@@ -29346,6 +29328,23 @@
 	                    break;
 	                default:
 	            }
+	        }
+	    }, {
+	        key: 'request',
+	        value: function request(place) {
+	            console.log(place);
+	            this.socket.emit('autocomplete-details', { data: place });
+	            /*
+	            	todo
+	            
+	            	1. request place details
+	            	2. get JSON then take lag lat
+	            	3. requset postgres estates nearby lat: lng:
+	            	4. take postgres response then use geocode lat: lng: for mapReq
+	            	5. request Google Map with estate markers
+	            	6. send map to client
+	            
+	            */
 	        }
 	    }, {
 	        key: 'inputHandler',
@@ -29446,10 +29445,6 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _socket = __webpack_require__(172);
-	
-	var _socket2 = _interopRequireDefault(_socket);
-	
 	__webpack_require__(228);
 	
 	var _plusOutline = __webpack_require__(230);
@@ -29478,18 +29473,23 @@
 	
 	        _this.options = {
 	
-	            //  center:     '56.317530,44.000717',  // 'Нижний Новгород'
+	            center: '56.317530,44.000717', // 'Нижний Новгород'
 	            language: 'ru',
 	            zoom: '12',
 	            scale: '1', // change crop height for scale=2
 	            maptype: 'roadmap', //'roadmap','terrain'  
 	            size: '600x622',
 	            format: 'png',
-	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45'],
-	            markers: ['color:red|label:A|56.317200,44.000600', 'color:red|label:B|56.319220,44.002000', 'color:red|label:C|56.300477,44.019030']
+	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45']
+	            // ,
+	            // markers: [
+	            //     'color:red|label:A|56.317200,44.000600',
+	            //     'color:red|label:B|56.319220,44.002000',
+	            //     'color:red|label:C|56.300477,44.019030'
+	            // ]
 	        };
 	
-	        _this.socket = _socket2.default.connect('/');
+	        _this.socket = window.socket; //io.connect('/')
 	        _this.state = { gmap: null };
 	        return _this;
 	    }
@@ -29507,7 +29507,7 @@
 	    }, {
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	
+	            //    this.socket.emit('autocomplete-details', {data:'ChIJ_UP0CYrVUUEROMe8bOtZeFg'})
 	            this.socket.emit('gmap-request', this.options);
 	        }
 	    }, {

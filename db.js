@@ -22,12 +22,12 @@ var query = client.query('SELECT name, location FROM estate WHERE (location <-> 
  //fired after last row is emitted
 
 query.on('row', function(row) {
-    console.log(row);
+
+    console.log(row.name+'  {'+row.location.x+','+row.location.y+'}');
 })
 
-query.on('end', function() {
+query.on('end', function(result) {
 
-	console.log(Number('A'))
     client.end()
 })
 /*

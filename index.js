@@ -18,7 +18,7 @@ io.on('connection', socket => {
 
 	socket.on('gmap-request', data => {
 		Gmap.getMapBase64(data, (error, buffer) => {
-			if(!error) socket.emit('gmap', {['gma'+'p']: buffer})
+			if(!error) socket.emit('gmap', {gmap: buffer})
 			else console.error('getMapBase64: '+error)
 		})
 	})
@@ -29,6 +29,26 @@ io.on('connection', socket => {
 			if(!error) socket.emit('autocomplete',data)
 			else console.log('Error '+error)
 		})
+	})
+	socket.on('autocomplete-details',data =>  {	// data= {data: 'place_id' }
+		Gmap.getMapDetais(data.data,(error, markers) => {
+			if(error) {
+				console.log(error) 
+				return 
+			} 
+			options.markers = markers.map( item => {
+				return 'color:red|label:'+item.label+'|'+item.lat+','+item.lng
+			})
+			console.log(options)
+			Gmap.getMapBase64(options, (error, buffer) => {
+				if(error) {
+					console.log(error)
+					return
+				}
+				socket.emit('gmap', {['gmap']: buffer})
+			})
+		})
+
 	})
 	// new google map request
 	socket.on('locate', data => {		// data = {data : 'магазин запчастей, улица Судорожского, Нижний Новгород, Россия'}

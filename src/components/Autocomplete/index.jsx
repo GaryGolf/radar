@@ -1,5 +1,5 @@
 import React from 'react'
-import io from 'socket.io-client'
+//import io from 'socket.io-client'
 import css from './autocomplete.css'
 
 export default class Autocomplete extends React.Component {
@@ -8,7 +8,7 @@ export default class Autocomplete extends React.Component {
 
         this.curItem = 0
 		this.reminder = null
-		this.socket = io.connect('/')
+		this.socket = window.socket // io.connect('/')
         this.state = {menu:[]}
     }
     componentWillMount() {
@@ -47,20 +47,6 @@ export default class Autocomplete extends React.Component {
 				},1500)
 			},2000)		
 		}, 4000)
-    }
-    request(place){
-        console.log(place)
-/*
-	todo
-
-	1. request place details
-	2. get JSON then take lag lat
-	3. requset postgres estates nearby lat: lng:
-	4. take postgres response then use geocode lat: lng: for mapReq
-	5. request Google Map with estate markers
-	6. send map to client
-
-*/
     }
     //Clear all selection
     clear() {
@@ -126,6 +112,21 @@ export default class Autocomplete extends React.Component {
                 break
             default:
         }
+    }
+	request(place){
+        console.log(place)
+		this.socket.emit('autocomplete-details',{data: place})
+/*
+	todo
+
+	1. request place details
+	2. get JSON then take lag lat
+	3. requset postgres estates nearby lat: lng:
+	4. take postgres response then use geocode lat: lng: for mapReq
+	5. request Google Map with estate markers
+	6. send map to client
+
+*/
     }
 	inputHandler(event) {
 		//  more

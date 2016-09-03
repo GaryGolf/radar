@@ -2,9 +2,11 @@ const Jimp = require('jimp')
 const qs = require('querystring')
 const request = require('request')
 const config = require('config')
+const db = require('./estate.js')
 
 const API_KEY = config.get('API_KEY')
 const CTR = config.get('autocomplete.constraints')
+const OPTIONS = config.get('options')
 
 
 /*
@@ -44,16 +46,32 @@ var url = uri +'?'+ qs.stringify(options)
 	5. request Google Map with estate markers
 	6. send map to client
 
+		options.markers = [
+			'color:red|label:A|56.317200,44.000600',
+            'color:red|label:B|56.319220,44.002000',
+            'color:red|label:C|56.300477,44.019030'
+		]
+
 */
 exports.getMapDetais = (place, callback) => {
+	//request place details
 	getDetails(place,(error,data) => {
 		if(!error && data.status == 'OK') {
+			// get lat: lng:
 			const lat = data.result.geometry.location.lat
-			const lng = data.resutl.geometry.location.lng
-			console.log('lat:'+lat+' lng:'+lng)
+			const lng = data.result.geometry.location.lng
+			// console.log('lat:'+lat+' lng:'+lng)
+			db.nearEstates(lat,lng, (error, rows) => {  //data = [{ name:  location: {x:, y:}},..]
+				var markers = new Array()
+				//console.log(rows)
+				if(!error) 	
+					for(var i=0, c=65; i < rows.length;i++,c++) 
+						markers.push({label:String.fromCharCode(c), lat:+rows[i].location.x,lng:rows[i].location.y})
+					
+				callback(error, markers)
+			})
 		} 
 	})
-	callback(null,null)
 }
 /*
 	https://maps.googleapis.com/maps/api/place/autocomplete/json
