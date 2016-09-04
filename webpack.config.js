@@ -5,22 +5,28 @@ module.exports = {
 	context: path.resolve(__dirname,'src'),
 	entry: './index',
 	output: {
-		filename: './public/bundle.js'
+		path: path.resolve(__dirname,'public'),
+		filename: 'bundle.js'
 	},
 	devtool:  debug ? 'source-map' : null ,
 	resolve: {
-	        extensions: ['','.js','.jsx']
+	        extensions: ['','.js','.jsx','.ts','.tsx']
 	},
 	module: {
 		loaders: [
 			{
 				test: /\.jsx?$/,
-				include: [ path.resolve(__dirname, "src") ],
+				include: [ path.resolve(__dirname, 'src') ],
 				loader: 'babel',
 				query: {
 					presets: ['es2015','react','stage-0'],
-					plugins: ['transform-class-properties']	
+					plugins: ['transform-class-properties']
 				}
+			},
+			{
+				test: /\.tsx?$/,
+				include: [path.resolve(__dirname,'src')],
+				loader: 'ts'
 			},
 			{
 				test: /\.css$/,

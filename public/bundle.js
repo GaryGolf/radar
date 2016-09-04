@@ -58,11 +58,11 @@
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
-	var _Autocomplete = __webpack_require__(224);
+	var _Autocomplete = __webpack_require__(219);
 	
 	var _Autocomplete2 = _interopRequireDefault(_Autocomplete);
 	
-	var _Gmap = __webpack_require__(227);
+	var _Gmap = __webpack_require__(224);
 	
 	var _Gmap2 = _interopRequireDefault(_Gmap);
 	
@@ -28848,9 +28848,277 @@
 
 
 /***/ },
-/* 219 */,
-/* 220 */,
-/* 221 */,
+/* 219 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _autocomplete = __webpack_require__(220);
+	
+	var _autocomplete2 = _interopRequireDefault(_autocomplete);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	//import io from 'socket.io-client'
+	
+	
+	var Autocomplete = function (_React$Component) {
+	    _inherits(Autocomplete, _React$Component);
+	
+	    function Autocomplete(props) {
+	        _classCallCheck(this, Autocomplete);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
+	
+	        _this.curItem = 0;
+	        _this.reminder = null;
+	        _this.socket = window.socket; // io.connect('/')
+	        _this.state = { menu: [] };
+	        return _this;
+	    }
+	
+	    _createClass(Autocomplete, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	            var _this2 = this;
+	
+	            // setup data receiver 
+	            this.socket.on('autocomplete', function (data) {
+	                // get data from server {data:data} or null
+	                if (!data) return;
+	                var menu = JSON.parse(data).data;
+	                _this2.setState({ menu: menu }); // {menu:[{id: description:},...]}
+	                if (_this2.reminder) {
+	                    clearTimeout(_this2.reminder);
+	                    _this2.refs.menu.children[0].placeholder = 'поиск';
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var _this3 = this;
+	
+	            var input = this.refs.menu.children[0];
+	
+	            this.reminder = setTimeout(function () {
+	                input.placeholder = 'введите адрес';
+	                _this3.reminder = setTimeout(function () {
+	                    input.placeholder = 'например, Московский вокзал';
+	                    _this3.reminder = setTimeout(function () {
+	                        var i = 0;
+	                        var str = 'Московский вокзал';
+	                        var running = function running() {
+	                            if (i >= str.length) {
+	                                clearInterval(_this3.reminder);
+	                                setTimeout(function () {
+	                                    input.placeholder = 'поиск';
+	                                }, 6000);
+	                                return str;
+	                            }
+	                            return str.substr(0, i++);
+	                        };
+	                        _this3.reminder = setInterval(function () {
+	                            input.placeholder = running(str);
+	                        }, 200);
+	                    }, 1500);
+	                }, 2000);
+	            }, 4000);
+	        }
+	        //Clear all selection
+	
+	    }, {
+	        key: 'clear',
+	        value: function clear() {
+	            for (var i = 1; i < this.refs.menu.children.length; i++) {
+	                this.refs.menu.children[i].className = 'normal';
+	            }
+	        }
+	    }, {
+	        key: 'mouseOverHandler',
+	        value: function mouseOverHandler(event) {
+	            var _this4 = this;
+	
+	            this.clear();
+	            event.target.className = 'selected';
+	            this.state.menu.forEach(function (element, idx) {
+	                if (element.id == event.target.id) {
+	                    _this4.curItem = idx + 1;
+	                    return false;
+	                }
+	            });
+	        }
+	    }, {
+	        key: 'clickHandler',
+	        value: function clickHandler(event) {
+	            this.refs.menu.children[0].value = event.target.innerText;
+	            this.request(event.target.id);
+	            // delete menu
+	            this.setState({ menu: [] });
+	        }
+	
+	        //takes keyboard input KeyUp, Down and Enter
+	
+	    }, {
+	        key: 'keyDownHandler',
+	        value: function keyDownHandler(event) {
+	            // items array can't be empty
+	            var len = this.state.menu.length;
+	            if (len < 1) return false;
+	
+	            var input = this.refs.menu.children[0];
+	
+	            switch (event.keyCode) {
+	                case 13:
+	                    // check curItem, if == 0
+	                    if (this.curItem != 0) {
+	                        this.request(this.refs.menu.children[this.curItem].id);
+	                    } else {
+	                        // if user doesnot care take first element from menu
+	                        input.value = this.state.menu[0].description;
+	                        this.request(this.refs.menu.children[1].id);
+	                    }
+	                    this.setState({ menu: [] });
+	                    break;
+	                case 40:
+	                    // Down key restore background color then make darker on item below
+	                    //clear all
+	                    this.clear();
+	                    this.curItem = this.curItem < len ? this.curItem + 1 : 1;
+	                    this.refs.menu.children[this.curItem].className = 'selected';
+	                    // change input value
+	                    input.value = this.state.menu[this.curItem - 1].description;
+	                    break;
+	                case 38:
+	                    // Up key is pressed
+	                    //clear all
+	                    this.clear();
+	                    //find next element
+	                    this.curItem = this.curItem > 1 ? this.curItem - 1 : len;
+	                    //make darker background
+	                    this.refs.menu.children[this.curItem].className = 'selected';
+	                    // change input value
+	                    input.value = this.state.menu[this.curItem - 1].description;
+	                    break;
+	                default:
+	            }
+	        }
+	    }, {
+	        key: 'request',
+	        value: function request(place) {
+	            console.log(place);
+	            this.socket.emit('autocomplete-details', { data: place });
+	            /*
+	            	todo
+	            
+	            	1. request place details
+	            	2. get JSON then take lag lat
+	            	3. requset postgres estates nearby lat: lng:
+	            	4. take postgres response then use geocode lat: lng: for mapReq
+	            	5. request Google Map with estate markers
+	            	6. send map to client
+	            
+	            */
+	        }
+	    }, {
+	        key: 'inputHandler',
+	        value: function inputHandler(event) {
+	            //  more
+	            this.socket.emit('autocomplete', { data: event.target.value });
+	        }
+	    }, {
+	        key: 'drawMenu',
+	        value: function drawMenu() {
+	            var _this5 = this;
+	
+	            if (this.state.menu.length > 0) {
+	                return this.state.menu.map(function (item) {
+	                    return _react2.default.createElement(
+	                        'div',
+	                        { key: item.id, id: item.id,
+	                            onClick: _this5.clickHandler.bind(_this5),
+	                            onMouseOver: _this5.mouseOverHandler.bind(_this5) },
+	                        item.description
+	                    );
+	                });
+	            }
+	            return null;
+	        }
+	    }, {
+	        key: 'render',
+	        value: function render() {
+	            return _react2.default.createElement(
+	                'div',
+	                { className: 'menu', ref: 'menu' },
+	                _react2.default.createElement('input', { ref: 'menuinput', autoFocus: true, placeholder: 'поиск',
+	                    onKeyDown: this.keyDownHandler.bind(this),
+	                    onInput: this.inputHandler.bind(this) }),
+	                this.drawMenu()
+	            );
+	        }
+	    }]);
+	
+	    return Autocomplete;
+	}(_react2.default.Component);
+	
+	exports.default = Autocomplete;
+
+/***/ },
+/* 220 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// style-loader: Adds some css to the DOM by adding a <style> tag
+	
+	// load the styles
+	var content = __webpack_require__(221);
+	if(typeof content === 'string') content = [[module.id, content, '']];
+	// add the styles to the DOM
+	var update = __webpack_require__(223)(content, {});
+	if(content.locals) module.exports = content.locals;
+	// Hot Module Replacement
+	if(false) {
+		// When the styles change, update the <style> tags
+		if(!content.locals) {
+			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css", function() {
+				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css");
+				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+				update(newContent);
+			});
+		}
+		// When the module is disposed, remove the <style> tags
+		module.hot.dispose(function() { update(); });
+	}
+
+/***/ },
+/* 221 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports = module.exports = __webpack_require__(222)();
+	// imports
+	
+	
+	// module
+	exports.push([module.id, "\n.menu {\n    background-color: white;\n    font-family: Verdana, Geneva, Tahoma, sans-serif;\n    font-size: 90%;\n    width: 560px;\n\tbox-shadow: 3px 3px 10px #AAAAAA;\n}\n\n.menu input {\n\tposition: relative;\n\tleft: 1px;\n\twidth: 95%;\n\tmargin: 5px;\n\tborder: none;\n\tcolor: black;\n}\n\n.menu div {\n    width: calc(100%-3px);\n    padding: 4px;\n\tcolor: #333333;\n\twhite-space: pre;\n\toverflow: hidden;\n}\n\n.selected {\n    background-color: silver;\n}\n\n.normal {\n    background-color: white;\n}", ""]);
+	
+	// exports
+
+
+/***/ },
 /* 222 */
 /***/ function(module, exports) {
 
@@ -29174,284 +29442,13 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _autocomplete = __webpack_require__(225);
+	__webpack_require__(225);
 	
-	var _autocomplete2 = _interopRequireDefault(_autocomplete);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	//import io from 'socket.io-client'
-	
-	
-	var Autocomplete = function (_React$Component) {
-	    _inherits(Autocomplete, _React$Component);
-	
-	    function Autocomplete(props) {
-	        _classCallCheck(this, Autocomplete);
-	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
-	
-	        _this.curItem = 0;
-	        _this.reminder = null;
-	        _this.socket = window.socket; // io.connect('/')
-	        _this.state = { menu: [] };
-	        return _this;
-	    }
-	
-	    _createClass(Autocomplete, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            var _this2 = this;
-	
-	            // setup data receiver 
-	            this.socket.on('autocomplete', function (data) {
-	                // get data from server {data:data} or null
-	                if (!data) return;
-	                var menu = JSON.parse(data).data;
-	                _this2.setState({ menu: menu }); // {menu:[{id: description:},...]}
-	                if (_this2.reminder) {
-	                    clearTimeout(_this2.reminder);
-	                    _this2.refs.menu.children[0].placeholder = 'поиск';
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var _this3 = this;
-	
-	            var input = this.refs.menu.children[0];
-	
-	            this.reminder = setTimeout(function () {
-	                input.placeholder = 'введите адрес';
-	                _this3.reminder = setTimeout(function () {
-	                    input.placeholder = 'например, Московский вокзал';
-	                    _this3.reminder = setTimeout(function () {
-	                        var i = 0;
-	                        var str = 'Московский вокзал';
-	                        var running = function running() {
-	                            if (i >= str.length) {
-	                                clearInterval(_this3.reminder);
-	                                setTimeout(function () {
-	                                    input.placeholder = 'поиск';
-	                                }, 6000);
-	                                return str;
-	                            }
-	                            return str.substr(0, i++);
-	                        };
-	                        _this3.reminder = setInterval(function () {
-	                            input.placeholder = running(str);
-	                        }, 200);
-	                    }, 1500);
-	                }, 2000);
-	            }, 4000);
-	        }
-	        //Clear all selection
-	
-	    }, {
-	        key: 'clear',
-	        value: function clear() {
-	            for (var i = 1; i < this.refs.menu.children.length; i++) {
-	                this.refs.menu.children[i].className = 'normal';
-	            }
-	        }
-	    }, {
-	        key: 'mouseOverHandler',
-	        value: function mouseOverHandler(event) {
-	            var _this4 = this;
-	
-	            this.clear();
-	            event.target.className = 'selected';
-	            this.state.menu.forEach(function (element, idx) {
-	                if (element.id == event.target.id) {
-	                    _this4.curItem = idx + 1;
-	                    return false;
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'clickHandler',
-	        value: function clickHandler(event) {
-	            this.refs.menu.children[0].value = event.target.innerText;
-	            this.request(event.target.id);
-	            // delete menu
-	            this.setState({ menu: [] });
-	        }
-	
-	        //takes keyboard input KeyUp, Down and Enter
-	
-	    }, {
-	        key: 'keyDownHandler',
-	        value: function keyDownHandler(event) {
-	            // items array can't be empty
-	            var len = this.state.menu.length;
-	            if (len < 1) return false;
-	
-	            var input = this.refs.menu.children[0];
-	
-	            switch (event.keyCode) {
-	                case 13:
-	                    // check curItem, if == 0
-	                    if (this.curItem != 0) {
-	                        this.request(this.refs.menu.children[this.curItem].id);
-	                    } else {
-	                        // if user doesnot care take first element from menu
-	                        input.value = this.state.menu[0].description;
-	                        this.request(this.refs.menu.children[1].id);
-	                    }
-	                    this.setState({ menu: [] });
-	                    break;
-	                case 40:
-	                    // Down key restore background color then make darker on item below
-	                    //clear all
-	                    this.clear();
-	                    this.curItem = this.curItem < len ? this.curItem + 1 : 1;
-	                    this.refs.menu.children[this.curItem].className = 'selected';
-	                    // change input value
-	                    input.value = this.state.menu[this.curItem - 1].description;
-	                    break;
-	                case 38:
-	                    // Up key is pressed
-	                    //clear all
-	                    this.clear();
-	                    //find next element
-	                    this.curItem = this.curItem > 1 ? this.curItem - 1 : len;
-	                    //make darker background
-	                    this.refs.menu.children[this.curItem].className = 'selected';
-	                    // change input value
-	                    input.value = this.state.menu[this.curItem - 1].description;
-	                    break;
-	                default:
-	            }
-	        }
-	    }, {
-	        key: 'request',
-	        value: function request(place) {
-	            console.log(place);
-	            this.socket.emit('autocomplete-details', { data: place });
-	            /*
-	            	todo
-	            
-	            	1. request place details
-	            	2. get JSON then take lag lat
-	            	3. requset postgres estates nearby lat: lng:
-	            	4. take postgres response then use geocode lat: lng: for mapReq
-	            	5. request Google Map with estate markers
-	            	6. send map to client
-	            
-	            */
-	        }
-	    }, {
-	        key: 'inputHandler',
-	        value: function inputHandler(event) {
-	            //  more
-	            this.socket.emit('autocomplete', { data: event.target.value });
-	        }
-	    }, {
-	        key: 'drawMenu',
-	        value: function drawMenu() {
-	            var _this5 = this;
-	
-	            if (this.state.menu.length > 0) {
-	                return this.state.menu.map(function (item) {
-	                    return _react2.default.createElement(
-	                        'div',
-	                        { key: item.id, id: item.id,
-	                            onClick: _this5.clickHandler.bind(_this5),
-	                            onMouseOver: _this5.mouseOverHandler.bind(_this5) },
-	                        item.description
-	                    );
-	                });
-	            }
-	            return null;
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'menu', ref: 'menu' },
-	                _react2.default.createElement('input', { ref: 'menuinput', autoFocus: true, placeholder: 'поиск',
-	                    onKeyDown: this.keyDownHandler.bind(this),
-	                    onInput: this.inputHandler.bind(this) }),
-	                this.drawMenu()
-	            );
-	        }
-	    }]);
-	
-	    return Autocomplete;
-	}(_react2.default.Component);
-	
-	exports.default = Autocomplete;
-
-/***/ },
-/* 225 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(226);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(223)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
-/* 226 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(222)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n.menu {\n    background-color: white;\n    font-family: Verdana, Geneva, Tahoma, sans-serif;\n    font-size: 90%;\n    width: 560px;\n\tbox-shadow: 3px 3px 10px #AAAAAA;\n}\n\n.menu input {\n\tposition: relative;\n\tleft: 1px;\n\twidth: 95%;\n\tmargin: 5px;\n\tborder: none;\n\tcolor: black;\n}\n\n.menu div {\n    width: calc(100%-3px);\n    padding: 4px;\n\tcolor: #333333;\n\twhite-space: pre;\n\toverflow: hidden;\n}\n\n.selected {\n    background-color: silver;\n}\n\n.normal {\n    background-color: white;\n}", ""]);
-	
-	// exports
-
-
-/***/ },
-/* 227 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	__webpack_require__(228);
-	
-	var _plusOutline = __webpack_require__(230);
+	var _plusOutline = __webpack_require__(227);
 	
 	var _plusOutline2 = _interopRequireDefault(_plusOutline);
 	
-	var _minusOutline = __webpack_require__(231);
+	var _minusOutline = __webpack_require__(228);
 	
 	var _minusOutline2 = _interopRequireDefault(_minusOutline);
 	
@@ -29563,13 +29560,13 @@
 	exports.default = Gmap;
 
 /***/ },
-/* 228 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(229);
+	var content = __webpack_require__(226);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(223)(content, {});
@@ -29589,7 +29586,7 @@
 	}
 
 /***/ },
-/* 229 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(222)();
@@ -29603,13 +29600,13 @@
 
 
 /***/ },
-/* 230 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "plus-outline.svg";
 
 /***/ },
-/* 231 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "minus-outline.svg";
