@@ -2,11 +2,13 @@ import * as http from 'http'
 import * as config from 'config'
 import * as express from 'express'
 import * as socketio from 'socket.io'
+import * as Jimp from 'jimp'
 
 const app = express()
 const server = http.createServer(app)
 const options = config.get('options')
 const io = socketio(server)
+
 
 app.use(express.static('public'))
 
