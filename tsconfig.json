@@ -7,8 +7,12 @@
         "target": "es6",
         "jsx": "react"
     },
+    "exclude": [
+        "node_modules"
+    ],
     "files": [
-       // "./typings/index.d.ts",
+        "jimp.d.ts",
+        //"./typings/index.d.ts",
         "app.ts"
     ]
 }
