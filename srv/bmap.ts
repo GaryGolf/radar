@@ -19,7 +19,7 @@ export default class Bmap {
     }
 
     async getResponse() {
-       const i:number = await this.getNearEstates()
+       const i: pg.QueryResult = await this.getNearEstates()
        console.log('waited for  ' + i +'  sry.')
     }
 
@@ -31,10 +31,25 @@ export default class Bmap {
      //   this.client.connect()
        // const query = this.client.query('SELECT name, location FROM estate WHERE (location <-> point('+lat+','+lng+')) < 0.1')
 
-        return new Promise<number>(resolve => {
-            setTimeout(() => { resolve(5) }, 1000)
-        })
+        return new Promise<pg.QueryResult>((resolve, reject) => {
+           
 
+            try{
+
+                this.client.connect()
+                this.client.query('SELECT name, location FROM estate WHERE (location <-> point('+lat+','+lng+')) < 0.1', ( error, result) => {
+                  
+                    if(error) reject( error )
+                  
+                    resolve( result )
+                    this.client.end()
+                })
+            } catch (error) {
+
+                console.log( error )
+                reject(error)
+            }
+        })
     }
 }
 

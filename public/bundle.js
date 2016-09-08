@@ -58,18 +58,18 @@
 	
 	var _socket2 = _interopRequireDefault(_socket);
 	
-	var _Autocomplete = __webpack_require__(219);
+	var _Search = __webpack_require__(221);
 	
-	var _Autocomplete2 = _interopRequireDefault(_Autocomplete);
-	
-	var _Gmap = __webpack_require__(224);
-	
-	var _Gmap2 = _interopRequireDefault(_Gmap);
+	var _Search2 = _interopRequireDefault(_Search);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	_reactDom2.default.render(_react2.default.createElement(_Gmap2.default, null), document.getElementById('map'));
-	_reactDom2.default.render(_react2.default.createElement(_Autocomplete2.default, null), document.getElementById('root'));
+	//ReactDOM.render(<Gmap/>,document.getElementById('map'))
+	//ReactDOM.render(<Autocomplete/>,document.getElementById('root'))
+	_reactDom2.default.render(_react2.default.createElement(_Search2.default, null), document.querySelector('#root'));
+	
+	//import Autocomplete from './components/Autocomplete'
+	//import Gmap from './components/Gmap'
 
 /***/ },
 /* 1 */
@@ -190,25 +190,40 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 	
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
-	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
 	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
-	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
 	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -229,6 +244,11 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
@@ -21517,7 +21537,7 @@
 	 */
 	
 	exports.Manager = __webpack_require__(186);
-	exports.Socket = __webpack_require__(212);
+	exports.Socket = __webpack_require__(213);
 
 
 /***/ },
@@ -23852,14 +23872,14 @@
 	 */
 	
 	var eio = __webpack_require__(187);
-	var Socket = __webpack_require__(212);
-	var Emitter = __webpack_require__(213);
+	var Socket = __webpack_require__(213);
+	var Emitter = __webpack_require__(214);
 	var parser = __webpack_require__(178);
-	var on = __webpack_require__(215);
-	var bind = __webpack_require__(216);
+	var on = __webpack_require__(216);
+	var bind = __webpack_require__(217);
 	var debug = __webpack_require__(175)('socket.io-client:manager');
-	var indexOf = __webpack_require__(210);
-	var Backoff = __webpack_require__(218);
+	var indexOf = __webpack_require__(211);
+	var Backoff = __webpack_require__(220);
 	
 	/**
 	 * IE6+ hasOwnProperty
@@ -24440,11 +24460,11 @@
 	var transports = __webpack_require__(190);
 	var Emitter = __webpack_require__(183);
 	var debug = __webpack_require__(175)('engine.io-client:socket');
-	var index = __webpack_require__(210);
+	var index = __webpack_require__(211);
 	var parser = __webpack_require__(196);
 	var parseuri = __webpack_require__(174);
-	var parsejson = __webpack_require__(211);
-	var parseqs = __webpack_require__(204);
+	var parsejson = __webpack_require__(212);
+	var parseqs = __webpack_require__(205);
 	
 	/**
 	 * Module exports.
@@ -25174,8 +25194,8 @@
 	
 	var XMLHttpRequest = __webpack_require__(191);
 	var XHR = __webpack_require__(193);
-	var JSONP = __webpack_require__(207);
-	var websocket = __webpack_require__(208);
+	var JSONP = __webpack_require__(208);
+	var websocket = __webpack_require__(209);
 	
 	/**
 	 * Export transports.
@@ -25300,7 +25320,7 @@
 	var XMLHttpRequest = __webpack_require__(191);
 	var Polling = __webpack_require__(194);
 	var Emitter = __webpack_require__(183);
-	var inherit = __webpack_require__(205);
+	var inherit = __webpack_require__(206);
 	var debug = __webpack_require__(175)('engine.io-client:polling-xhr');
 	
 	/**
@@ -25717,10 +25737,10 @@
 	 */
 	
 	var Transport = __webpack_require__(195);
-	var parseqs = __webpack_require__(204);
+	var parseqs = __webpack_require__(205);
 	var parser = __webpack_require__(196);
-	var inherit = __webpack_require__(205);
-	var yeast = __webpack_require__(206);
+	var inherit = __webpack_require__(206);
+	var yeast = __webpack_require__(207);
 	var debug = __webpack_require__(175)('engine.io-client:polling');
 	
 	/**
@@ -26132,10 +26152,10 @@
 	
 	var keys = __webpack_require__(197);
 	var hasBinary = __webpack_require__(198);
-	var sliceBuffer = __webpack_require__(199);
-	var base64encoder = __webpack_require__(200);
-	var after = __webpack_require__(201);
-	var utf8 = __webpack_require__(202);
+	var sliceBuffer = __webpack_require__(200);
+	var base64encoder = __webpack_require__(201);
+	var after = __webpack_require__(202);
+	var utf8 = __webpack_require__(203);
 	
 	/**
 	 * Check if we are running an android browser. That requires us to use
@@ -26192,7 +26212,7 @@
 	 * Create a blob api even for blob builder when vendor prefixes exist
 	 */
 	
-	var Blob = __webpack_require__(203);
+	var Blob = __webpack_require__(204);
 	
 	/**
 	 * Encodes a packet.
@@ -26757,7 +26777,7 @@
 	 * Module requirements.
 	 */
 	
-	var isArray = __webpack_require__(182);
+	var isArray = __webpack_require__(199);
 	
 	/**
 	 * Module exports.
@@ -26817,6 +26837,15 @@
 /* 199 */
 /***/ function(module, exports) {
 
+	module.exports = Array.isArray || function (arr) {
+	  return Object.prototype.toString.call(arr) == '[object Array]';
+	};
+
+
+/***/ },
+/* 200 */
+/***/ function(module, exports) {
+
 	/**
 	 * An abstraction for slicing an arraybuffer even when
 	 * ArrayBuffer.prototype.slice is not supported
@@ -26849,7 +26878,7 @@
 
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports) {
 
 	/*
@@ -26914,7 +26943,7 @@
 
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports) {
 
 	module.exports = after
@@ -26948,7 +26977,7 @@
 
 
 /***/ },
-/* 202 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/*! https://mths.be/utf8js v2.0.0 by @mathias */
@@ -27197,7 +27226,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(180)(module), (function() { return this; }())))
 
 /***/ },
-/* 203 */
+/* 204 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -27300,7 +27329,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 204 */
+/* 205 */
 /***/ function(module, exports) {
 
 	/**
@@ -27343,7 +27372,7 @@
 
 
 /***/ },
-/* 205 */
+/* 206 */
 /***/ function(module, exports) {
 
 	
@@ -27355,7 +27384,7 @@
 	};
 
 /***/ },
-/* 206 */
+/* 207 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -27429,7 +27458,7 @@
 
 
 /***/ },
-/* 207 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {
@@ -27438,7 +27467,7 @@
 	 */
 	
 	var Polling = __webpack_require__(194);
-	var inherit = __webpack_require__(205);
+	var inherit = __webpack_require__(206);
 	
 	/**
 	 * Module exports.
@@ -27674,7 +27703,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 208 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -27683,9 +27712,9 @@
 	
 	var Transport = __webpack_require__(195);
 	var parser = __webpack_require__(196);
-	var parseqs = __webpack_require__(204);
-	var inherit = __webpack_require__(205);
-	var yeast = __webpack_require__(206);
+	var parseqs = __webpack_require__(205);
+	var inherit = __webpack_require__(206);
+	var yeast = __webpack_require__(207);
 	var debug = __webpack_require__(175)('engine.io-client:websocket');
 	var BrowserWebSocket = global.WebSocket || global.MozWebSocket;
 	
@@ -27698,7 +27727,7 @@
 	var WebSocket = BrowserWebSocket;
 	if (!WebSocket && typeof window === 'undefined') {
 	  try {
-	    WebSocket = __webpack_require__(209);
+	    WebSocket = __webpack_require__(210);
 	  } catch (e) { }
 	}
 	
@@ -27969,13 +27998,13 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 209 */
+/* 210 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 210 */
+/* 211 */
 /***/ function(module, exports) {
 
 	
@@ -27990,7 +28019,7 @@
 	};
 
 /***/ },
-/* 211 */
+/* 212 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {/**
@@ -28028,7 +28057,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 212 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -28037,12 +28066,12 @@
 	 */
 	
 	var parser = __webpack_require__(178);
-	var Emitter = __webpack_require__(213);
-	var toArray = __webpack_require__(214);
-	var on = __webpack_require__(215);
-	var bind = __webpack_require__(216);
+	var Emitter = __webpack_require__(214);
+	var toArray = __webpack_require__(215);
+	var on = __webpack_require__(216);
+	var bind = __webpack_require__(217);
 	var debug = __webpack_require__(175)('socket.io-client:socket');
-	var hasBin = __webpack_require__(217);
+	var hasBin = __webpack_require__(218);
 	
 	/**
 	 * Module exports.
@@ -28446,7 +28475,7 @@
 
 
 /***/ },
-/* 213 */
+/* 214 */
 /***/ function(module, exports) {
 
 	
@@ -28613,7 +28642,7 @@
 
 
 /***/ },
-/* 214 */
+/* 215 */
 /***/ function(module, exports) {
 
 	module.exports = toArray
@@ -28632,7 +28661,7 @@
 
 
 /***/ },
-/* 215 */
+/* 216 */
 /***/ function(module, exports) {
 
 	
@@ -28662,7 +28691,7 @@
 
 
 /***/ },
-/* 216 */
+/* 217 */
 /***/ function(module, exports) {
 
 	/**
@@ -28691,7 +28720,7 @@
 
 
 /***/ },
-/* 217 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {
@@ -28699,7 +28728,7 @@
 	 * Module requirements.
 	 */
 	
-	var isArray = __webpack_require__(182);
+	var isArray = __webpack_require__(219);
 	
 	/**
 	 * Module exports.
@@ -28757,7 +28786,16 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 218 */
+/* 219 */
+/***/ function(module, exports) {
+
+	module.exports = Array.isArray || function (arr) {
+	  return Object.prototype.toString.call(arr) == '[object Array]';
+	};
+
+
+/***/ },
+/* 220 */
 /***/ function(module, exports) {
 
 	
@@ -28848,768 +28886,37 @@
 
 
 /***/ },
-/* 219 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _autocomplete = __webpack_require__(220);
-	
-	var _autocomplete2 = _interopRequireDefault(_autocomplete);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	//import io from 'socket.io-client'
-	
-	
-	var Autocomplete = function (_React$Component) {
-	    _inherits(Autocomplete, _React$Component);
-	
-	    function Autocomplete(props) {
-	        _classCallCheck(this, Autocomplete);
-	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Autocomplete).call(this, props));
-	
-	        _this.curItem = 0;
-	        _this.reminder = null;
-	        _this.socket = window.socket; // io.connect('/')
-	        _this.state = { menu: [] };
-	        return _this;
-	    }
-	
-	    _createClass(Autocomplete, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            var _this2 = this;
-	
-	            // setup data receiver 
-	            this.socket.on('autocomplete', function (data) {
-	                // get data from server {data:data} or null
-	                if (!data) return;
-	                var menu = JSON.parse(data).data;
-	                _this2.setState({ menu: menu }); // {menu:[{id: description:},...]}
-	                if (_this2.reminder) {
-	                    clearTimeout(_this2.reminder);
-	                    _this2.refs.menu.children[0].placeholder = 'поиск';
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var _this3 = this;
-	
-	            var input = this.refs.menu.children[0];
-	
-	            this.reminder = setTimeout(function () {
-	                input.placeholder = 'введите адрес';
-	                _this3.reminder = setTimeout(function () {
-	                    input.placeholder = 'например, Московский вокзал';
-	                    _this3.reminder = setTimeout(function () {
-	                        var i = 0;
-	                        var str = 'Московский вокзал';
-	                        var running = function running() {
-	                            if (i >= str.length) {
-	                                clearInterval(_this3.reminder);
-	                                setTimeout(function () {
-	                                    input.placeholder = 'поиск';
-	                                }, 6000);
-	                                return str;
-	                            }
-	                            return str.substr(0, i++);
-	                        };
-	                        _this3.reminder = setInterval(function () {
-	                            input.placeholder = running(str);
-	                        }, 200);
-	                    }, 1500);
-	                }, 2000);
-	            }, 4000);
-	        }
-	        //Clear all selection
-	
-	    }, {
-	        key: 'clear',
-	        value: function clear() {
-	            for (var i = 1; i < this.refs.menu.children.length; i++) {
-	                this.refs.menu.children[i].className = 'normal';
-	            }
-	        }
-	    }, {
-	        key: 'mouseOverHandler',
-	        value: function mouseOverHandler(event) {
-	            var _this4 = this;
-	
-	            this.clear();
-	            event.target.className = 'selected';
-	            this.state.menu.forEach(function (element, idx) {
-	                if (element.id == event.target.id) {
-	                    _this4.curItem = idx + 1;
-	                    return false;
-	                }
-	            });
-	        }
-	    }, {
-	        key: 'clickHandler',
-	        value: function clickHandler(event) {
-	            this.refs.menu.children[0].value = event.target.innerText;
-	            this.request(event.target.id);
-	            // delete menu
-	            this.setState({ menu: [] });
-	        }
-	
-	        //takes keyboard input KeyUp, Down and Enter
-	
-	    }, {
-	        key: 'keyDownHandler',
-	        value: function keyDownHandler(event) {
-	            // items array can't be empty
-	            var len = this.state.menu.length;
-	            if (len < 1) return false;
-	
-	            var input = this.refs.menu.children[0];
-	
-	            switch (event.keyCode) {
-	                case 13:
-	                    // check curItem, if == 0
-	                    if (this.curItem != 0) {
-	                        this.request(this.refs.menu.children[this.curItem].id);
-	                    } else {
-	                        // if user doesnot care take first element from menu
-	                        input.value = this.state.menu[0].description;
-	                        this.request(this.refs.menu.children[1].id);
-	                    }
-	                    this.setState({ menu: [] });
-	                    break;
-	                case 40:
-	                    // Down key restore background color then make darker on item below
-	                    //clear all
-	                    this.clear();
-	                    this.curItem = this.curItem < len ? this.curItem + 1 : 1;
-	                    this.refs.menu.children[this.curItem].className = 'selected';
-	                    // change input value
-	                    input.value = this.state.menu[this.curItem - 1].description;
-	                    break;
-	                case 38:
-	                    // Up key is pressed
-	                    //clear all
-	                    this.clear();
-	                    //find next element
-	                    this.curItem = this.curItem > 1 ? this.curItem - 1 : len;
-	                    //make darker background
-	                    this.refs.menu.children[this.curItem].className = 'selected';
-	                    // change input value
-	                    input.value = this.state.menu[this.curItem - 1].description;
-	                    break;
-	                default:
-	            }
-	        }
-	    }, {
-	        key: 'request',
-	        value: function request(place) {
-	            console.log(place);
-	            this.socket.emit('autocomplete-details', { data: place });
-	            /*
-	            	todo
-	            
-	            	1. request place details
-	            	2. get JSON then take lag lat
-	            	3. requset postgres estates nearby lat: lng:
-	            	4. take postgres response then use geocode lat: lng: for mapReq
-	            	5. request Google Map with estate markers
-	            	6. send map to client
-	            
-	            */
-	        }
-	    }, {
-	        key: 'inputHandler',
-	        value: function inputHandler(event) {
-	            //  more
-	            this.socket.emit('autocomplete', { data: event.target.value });
-	        }
-	    }, {
-	        key: 'drawMenu',
-	        value: function drawMenu() {
-	            var _this5 = this;
-	
-	            if (this.state.menu.length > 0) {
-	                return this.state.menu.map(function (item) {
-	                    return _react2.default.createElement(
-	                        'div',
-	                        { key: item.id, id: item.id,
-	                            onClick: _this5.clickHandler.bind(_this5),
-	                            onMouseOver: _this5.mouseOverHandler.bind(_this5) },
-	                        item.description
-	                    );
-	                });
-	            }
-	            return null;
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'menu', ref: 'menu' },
-	                _react2.default.createElement('input', { ref: 'menuinput', autoFocus: true, placeholder: 'поиск',
-	                    onKeyDown: this.keyDownHandler.bind(this),
-	                    onInput: this.inputHandler.bind(this) }),
-	                this.drawMenu()
-	            );
-	        }
-	    }]);
-	
-	    return Autocomplete;
-	}(_react2.default.Component);
-	
-	exports.default = Autocomplete;
-
-/***/ },
-/* 220 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(221);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(223)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./autocomplete.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
-	}
-
-/***/ },
 /* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(222)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "\n.menu {\n    background-color: white;\n    font-family: Verdana, Geneva, Tahoma, sans-serif;\n    font-size: 90%;\n    width: 560px;\n\tbox-shadow: 3px 3px 10px #AAAAAA;\n}\n\n.menu input {\n\tposition: relative;\n\tleft: 1px;\n\twidth: 95%;\n\tmargin: 5px;\n\tborder: none;\n\tcolor: black;\n}\n\n.menu div {\n    width: calc(100%-3px);\n    padding: 4px;\n\tcolor: #333333;\n\twhite-space: pre;\n\toverflow: hidden;\n}\n\n.selected {\n    background-color: silver;\n}\n\n.normal {\n    background-color: white;\n}", ""]);
-	
-	// exports
-
-
-/***/ },
-/* 222 */
-/***/ function(module, exports) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	// css base code, injected by the css-loader
-	module.exports = function() {
-		var list = [];
-	
-		// return the list of modules as css string
-		list.toString = function toString() {
-			var result = [];
-			for(var i = 0; i < this.length; i++) {
-				var item = this[i];
-				if(item[2]) {
-					result.push("@media " + item[2] + "{" + item[1] + "}");
-				} else {
-					result.push(item[1]);
-				}
-			}
-			return result.join("");
-		};
-	
-		// import a list of modules into the list
-		list.i = function(modules, mediaQuery) {
-			if(typeof modules === "string")
-				modules = [[null, modules, ""]];
-			var alreadyImportedModules = {};
-			for(var i = 0; i < this.length; i++) {
-				var id = this[i][0];
-				if(typeof id === "number")
-					alreadyImportedModules[id] = true;
-			}
-			for(i = 0; i < modules.length; i++) {
-				var item = modules[i];
-				// skip already imported module
-				// this implementation is not 100% perfect for weird media query combinations
-				//  when a module is imported multiple times with different media queries.
-				//  I hope this will never occur (Hey this way we have smaller bundles)
-				if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-					if(mediaQuery && !item[2]) {
-						item[2] = mediaQuery;
-					} else if(mediaQuery) {
-						item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-					}
-					list.push(item);
-				}
-			}
-		};
-		return list;
-	};
-
-
-/***/ },
-/* 223 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/*
-		MIT License http://www.opensource.org/licenses/mit-license.php
-		Author Tobias Koppers @sokra
-	*/
-	var stylesInDom = {},
-		memoize = function(fn) {
-			var memo;
-			return function () {
-				if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-				return memo;
-			};
-		},
-		isOldIE = memoize(function() {
-			return /msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase());
-		}),
-		getHeadElement = memoize(function () {
-			return document.head || document.getElementsByTagName("head")[0];
-		}),
-		singletonElement = null,
-		singletonCounter = 0,
-		styleElementsInsertedAtTop = [];
-	
-	module.exports = function(list, options) {
-		if(false) {
-			if(typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-		}
-	
-		options = options || {};
-		// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-		// tags it will allow on a page
-		if (typeof options.singleton === "undefined") options.singleton = isOldIE();
-	
-		// By default, add <style> tags to the bottom of <head>.
-		if (typeof options.insertAt === "undefined") options.insertAt = "bottom";
-	
-		var styles = listToStyles(list);
-		addStylesToDom(styles, options);
-	
-		return function update(newList) {
-			var mayRemove = [];
-			for(var i = 0; i < styles.length; i++) {
-				var item = styles[i];
-				var domStyle = stylesInDom[item.id];
-				domStyle.refs--;
-				mayRemove.push(domStyle);
-			}
-			if(newList) {
-				var newStyles = listToStyles(newList);
-				addStylesToDom(newStyles, options);
-			}
-			for(var i = 0; i < mayRemove.length; i++) {
-				var domStyle = mayRemove[i];
-				if(domStyle.refs === 0) {
-					for(var j = 0; j < domStyle.parts.length; j++)
-						domStyle.parts[j]();
-					delete stylesInDom[domStyle.id];
-				}
-			}
-		};
-	}
-	
-	function addStylesToDom(styles, options) {
-		for(var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-			if(domStyle) {
-				domStyle.refs++;
-				for(var j = 0; j < domStyle.parts.length; j++) {
-					domStyle.parts[j](item.parts[j]);
-				}
-				for(; j < item.parts.length; j++) {
-					domStyle.parts.push(addStyle(item.parts[j], options));
-				}
-			} else {
-				var parts = [];
-				for(var j = 0; j < item.parts.length; j++) {
-					parts.push(addStyle(item.parts[j], options));
-				}
-				stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-			}
-		}
-	}
-	
-	function listToStyles(list) {
-		var styles = [];
-		var newStyles = {};
-		for(var i = 0; i < list.length; i++) {
-			var item = list[i];
-			var id = item[0];
-			var css = item[1];
-			var media = item[2];
-			var sourceMap = item[3];
-			var part = {css: css, media: media, sourceMap: sourceMap};
-			if(!newStyles[id])
-				styles.push(newStyles[id] = {id: id, parts: [part]});
-			else
-				newStyles[id].parts.push(part);
-		}
-		return styles;
-	}
-	
-	function insertStyleElement(options, styleElement) {
-		var head = getHeadElement();
-		var lastStyleElementInsertedAtTop = styleElementsInsertedAtTop[styleElementsInsertedAtTop.length - 1];
-		if (options.insertAt === "top") {
-			if(!lastStyleElementInsertedAtTop) {
-				head.insertBefore(styleElement, head.firstChild);
-			} else if(lastStyleElementInsertedAtTop.nextSibling) {
-				head.insertBefore(styleElement, lastStyleElementInsertedAtTop.nextSibling);
-			} else {
-				head.appendChild(styleElement);
-			}
-			styleElementsInsertedAtTop.push(styleElement);
-		} else if (options.insertAt === "bottom") {
-			head.appendChild(styleElement);
-		} else {
-			throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");
-		}
-	}
-	
-	function removeStyleElement(styleElement) {
-		styleElement.parentNode.removeChild(styleElement);
-		var idx = styleElementsInsertedAtTop.indexOf(styleElement);
-		if(idx >= 0) {
-			styleElementsInsertedAtTop.splice(idx, 1);
-		}
-	}
-	
-	function createStyleElement(options) {
-		var styleElement = document.createElement("style");
-		styleElement.type = "text/css";
-		insertStyleElement(options, styleElement);
-		return styleElement;
-	}
-	
-	function createLinkElement(options) {
-		var linkElement = document.createElement("link");
-		linkElement.rel = "stylesheet";
-		insertStyleElement(options, linkElement);
-		return linkElement;
-	}
-	
-	function addStyle(obj, options) {
-		var styleElement, update, remove;
-	
-		if (options.singleton) {
-			var styleIndex = singletonCounter++;
-			styleElement = singletonElement || (singletonElement = createStyleElement(options));
-			update = applyToSingletonTag.bind(null, styleElement, styleIndex, false);
-			remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true);
-		} else if(obj.sourceMap &&
-			typeof URL === "function" &&
-			typeof URL.createObjectURL === "function" &&
-			typeof URL.revokeObjectURL === "function" &&
-			typeof Blob === "function" &&
-			typeof btoa === "function") {
-			styleElement = createLinkElement(options);
-			update = updateLink.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-				if(styleElement.href)
-					URL.revokeObjectURL(styleElement.href);
-			};
-		} else {
-			styleElement = createStyleElement(options);
-			update = applyToTag.bind(null, styleElement);
-			remove = function() {
-				removeStyleElement(styleElement);
-			};
-		}
-	
-		update(obj);
-	
-		return function updateStyle(newObj) {
-			if(newObj) {
-				if(newObj.css === obj.css && newObj.media === obj.media && newObj.sourceMap === obj.sourceMap)
-					return;
-				update(obj = newObj);
-			} else {
-				remove();
-			}
-		};
-	}
-	
-	var replaceText = (function () {
-		var textStore = [];
-	
-		return function (index, replacement) {
-			textStore[index] = replacement;
-			return textStore.filter(Boolean).join('\n');
-		};
-	})();
-	
-	function applyToSingletonTag(styleElement, index, remove, obj) {
-		var css = remove ? "" : obj.css;
-	
-		if (styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = replaceText(index, css);
-		} else {
-			var cssNode = document.createTextNode(css);
-			var childNodes = styleElement.childNodes;
-			if (childNodes[index]) styleElement.removeChild(childNodes[index]);
-			if (childNodes.length) {
-				styleElement.insertBefore(cssNode, childNodes[index]);
-			} else {
-				styleElement.appendChild(cssNode);
-			}
-		}
-	}
-	
-	function applyToTag(styleElement, obj) {
-		var css = obj.css;
-		var media = obj.media;
-	
-		if(media) {
-			styleElement.setAttribute("media", media)
-		}
-	
-		if(styleElement.styleSheet) {
-			styleElement.styleSheet.cssText = css;
-		} else {
-			while(styleElement.firstChild) {
-				styleElement.removeChild(styleElement.firstChild);
-			}
-			styleElement.appendChild(document.createTextNode(css));
-		}
-	}
-	
-	function updateLink(linkElement, obj) {
-		var css = obj.css;
-		var sourceMap = obj.sourceMap;
-	
-		if(sourceMap) {
-			// http://stackoverflow.com/a/26603875
-			css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-		}
-	
-		var blob = new Blob([css], { type: "text/css" });
-	
-		var oldSrc = linkElement.href;
-	
-		linkElement.href = URL.createObjectURL(blob);
-	
-		if(oldSrc)
-			URL.revokeObjectURL(oldSrc);
-	}
-
-
-/***/ },
-/* 224 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	__webpack_require__(225);
-	
-	var _plusOutline = __webpack_require__(227);
-	
-	var _plusOutline2 = _interopRequireDefault(_plusOutline);
-	
-	var _minusOutline = __webpack_require__(228);
-	
-	var _minusOutline2 = _interopRequireDefault(_minusOutline);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Gmap = function (_React$Component) {
-	    _inherits(Gmap, _React$Component);
-	
-	    function Gmap(props) {
-	        _classCallCheck(this, Gmap);
-	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Gmap).call(this, props));
-	
-	        _this.options = {
-	
-	            center: '56.317530,44.000717', // 'Нижний Новгород'
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1', // change crop height for scale=2
-	            maptype: 'roadmap', //'roadmap','terrain'  
-	            size: '600x622',
-	            format: 'png',
-	            style: ['feature:all|saturation:-80', 'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50', 'feature:poi.business|element:labels|visibility:off', 'feature:poi|element:geometry|lightness:45']
-	            // ,
-	            // markers: [
-	            //     'color:red|label:A|56.317200,44.000600',
-	            //     'color:red|label:B|56.319220,44.002000',
-	            //     'color:red|label:C|56.300477,44.019030'
-	            // ]
-	        };
-	
-	        _this.socket = window.socket; //io.connect('/')
-	        _this.state = { gmap: null };
-	        return _this;
+	"use strict";
+	const React = __webpack_require__(1);
+	class Search extends React.Component {
+	    constructor(props) {
+	        super(props);
+	        this.state = { menu: [] };
 	    }
-	
-	    _createClass(Gmap, [{
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {
-	            var _this2 = this;
-	
-	            this.socket.on('gmap', function (data) {
-	                //data = {gmap:string} componentDidMount
-	                _this2.setState(data);
-	            });
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            //    this.socket.emit('autocomplete-details', {data:'ChIJ_UP0CYrVUUEROMe8bOtZeFg'})
-	            this.socket.emit('gmap-request', this.options);
-	        }
-	    }, {
-	        key: 'zoomInHandler',
-	        value: function zoomInHandler(event) {
-	
-	            if (Number(this.options.zoom) < 20) {
-	                this.options.zoom = Number(this.options.zoom) + 1;
-	                this.socket.emit('gmap-request', this.options);
-	            }
-	        }
-	    }, {
-	        key: 'zoomOutHandler',
-	        value: function zoomOutHandler(event) {
-	
-	            if (Number(this.options.zoom) > 10) {
-	                this.options.zoom = Number(this.options.zoom) - 1;
-	                this.socket.emit('gmap-request', this.options);
-	            }
-	        }
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'gmap' },
-	                _react2.default.createElement(
-	                    'span',
-	                    { className: 'gmap' },
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'gmap zoom', onClick: this.zoomInHandler.bind(this) },
-	                        _react2.default.createElement('img', { src: _plusOutline2.default })
-	                    ),
-	                    _react2.default.createElement(
-	                        'div',
-	                        { className: 'gmap zoom', onClick: this.zoomOutHandler.bind(this) },
-	                        _react2.default.createElement('img', { src: _minusOutline2.default })
-	                    )
-	                ),
-	                this.state.gmap ? _react2.default.createElement(
-	                    'div',
-	                    { className: 'gmap-level-0' },
-	                    _react2.default.createElement('img', { src: this.state.gmap, className: 'gmap' })
-	                ) : null
-	            );
-	        }
-	    }]);
-	
-	    return Gmap;
-	}(_react2.default.Component);
-	
-	exports.default = Gmap;
-
-/***/ },
-/* 225 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// style-loader: Adds some css to the DOM by adding a <style> tag
-	
-	// load the styles
-	var content = __webpack_require__(226);
-	if(typeof content === 'string') content = [[module.id, content, '']];
-	// add the styles to the DOM
-	var update = __webpack_require__(223)(content, {});
-	if(content.locals) module.exports = content.locals;
-	// Hot Module Replacement
-	if(false) {
-		// When the styles change, update the <style> tags
-		if(!content.locals) {
-			module.hot.accept("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css", function() {
-				var newContent = require("!!./../../../node_modules/css-loader/index.js!./../../../node_modules/postcss-loader/index.js?browsers=last 2 versions!./gmap.css");
-				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-				update(newContent);
-			});
-		}
-		// When the module is disposed, remove the <style> tags
-		module.hot.dispose(function() { update(); });
+	    componentDidMount() {
+	        const items = [
+	            { id: '21', description: "New York City" },
+	            { id: '33', description: "New Jersey" },
+	            { id: '24', description: "New Orlean" },
+	            { id: '34', description: "New Hampshire" }
+	        ];
+	        setTimeout(() => {
+	            this.setState({ menu: items });
+	            this.input.focus();
+	        }, 2000);
+	    }
+	    render() {
+	        return (React.createElement("div", {className: "search", ref: div => this.menu = div}, 
+	            React.createElement("input", {type: "search", placeholder: "введите адрес", ref: input => this.input = input}), 
+	            (this.state.menu.length > 0) ? (this.state.menu.map(item => (React.createElement("div", {id: item.id, key: item.id}, item.description)))) : null));
+	    }
 	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Search;
 
-/***/ },
-/* 226 */
-/***/ function(module, exports, __webpack_require__) {
-
-	exports = module.exports = __webpack_require__(222)();
-	// imports
-	
-	
-	// module
-	exports.push([module.id, "div.gmap {\n\n\toverflow: hidden;\n}\nspan.gmap {\n\tposition: absolute;\n\n\tbottom: 0px;\n\tright: 0px;\n\tpadding-bottom: 30px;\n\tpadding-right: 35px;\n}\n\n\nspan.gmap:hover .zoom{\n\n\tvisibility: visible;\n}\n.zoom {\n\n\topacity: 0.2;\n\tvisibility: hidden;\n}\n\n.zoom:hover {\n\t\n\topacity: 1;\n\n}", ""]);
-	
-	// exports
-
-
-/***/ },
-/* 227 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "plus-outline.svg";
-
-/***/ },
-/* 228 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__.p + "minus-outline.svg";
 
 /***/ }
 /******/ ]);

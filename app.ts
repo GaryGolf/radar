@@ -2,21 +2,33 @@ import * as http from 'http'
 import * as config from 'config'
 import * as express from 'express'
 import * as socketio from 'socket.io'
+import * as pg from 'pg'
 //import * as Jimp from 'jimp'
 
-import Bmap from  './srv/bmap'
+
+import Estate from  './src/server/estate'
 
 const app = express()
 const server = http.createServer(app)
 const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
-const bmap: Bmap = new Bmap()
+const est = new Estate()
 
 //bmap.getResponse()
-bmap.getNearEstates().then(val => {
-	console.log(val)
-})
+// bmap.getNearEstates().then(val => {
+// 	const rows: Object[] = val.rows
+// 	console.log(rows[0])
+// })
+
+ 
+	est.getNear()
+	.then(result => {
+		console.log(JSON.stringify(result))
+	})
+	.catch(error => {
+		console.log( error )
+	})
 
 // app.use(express.static('public'))
 
