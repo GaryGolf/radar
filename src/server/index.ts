@@ -14,10 +14,9 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import Search from './search'
+import {getPlace} from './search'
 
-const s = new Search()
-s.printTitle()
+    getPlace('sdk').then()
 
 // app.use(express.static('public'))
 
