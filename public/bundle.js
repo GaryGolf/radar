@@ -21520,7 +21520,6 @@
 	        });
 	    }
 	    inputHandler(event) {
-	        console.log('change');
 	        this.socket.emit('autocomplete', this.input.value);
 	    }
 	    request(id) { console.log(id); }

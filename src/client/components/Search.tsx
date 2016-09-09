@@ -121,7 +121,6 @@ export default class Search extends React.Component<Props,State>{
 
     inputHandler(event: KeyboardEvent) {
 
-        console.log('change')
         this.socket.emit('autocomplete', this.input.value)
     }
 

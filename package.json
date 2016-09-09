@@ -28,6 +28,7 @@
     "@types/pg": "0.0.31",
     "@types/react": "^0.14.33",
     "@types/react-dom": "^0.14.15",
+    "@types/request": "0.0.30",
     "@types/socket.io": "^1.4.26",
     "@types/socket.io-client": "^1.4.26",
     "config": "^1.21.0",

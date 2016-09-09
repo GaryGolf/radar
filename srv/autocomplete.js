@@ -40,6 +40,8 @@ exports.getLocations = (input, callback) => {
 		if (!error && response.statusCode == 200) {
 			var info = JSON.parse(body)
 
+			console.log(body)
+
 			if(info.status === 'OK') {
 			// new array of place descriptions
 				data = info.predictions.map(item => { 

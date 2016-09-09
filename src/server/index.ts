@@ -6,29 +6,18 @@ import * as pg from 'pg'
 //import * as Jimp from 'jimp'
 
 
-import Estate from  './src/server/estate'
+//import Estate from  './estate'
 
 const app = express()
 const server = http.createServer(app)
 const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
-const est = new Estate()
 
-//bmap.getResponse()
-// bmap.getNearEstates().then(val => {
-// 	const rows: Object[] = val.rows
-// 	console.log(rows[0])
-// })
+import Search from './search'
 
- 
-	est.getNear()
-	.then(result => {
-		console.log(JSON.stringify(result))
-	})
-	.catch(error => {
-		console.log( error )
-	})
+const s = new Search()
+s.printTitle()
 
 // app.use(express.static('public'))
 

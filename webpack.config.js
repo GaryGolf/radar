@@ -2,11 +2,13 @@ const path = require('path')
 const debug = process.env.NODE_ENV !== 'production'
 
 module.exports = {
-	context: path.resolve(__dirname,'src/client'),
-	entry: './index',
+	context: path.resolve(__dirname,'src'),
+	entry: {
+		bundle: './client/index'
+	},
 	output: {
 		path: path.resolve(__dirname,'public'),
-		filename: 'bundle.js'
+		filename: '[name].js'
 	},
 	devtool:  debug ? 'source-map' : null ,
 	resolve: {
