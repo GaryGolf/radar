@@ -87,6 +87,7 @@ export function getLocation(input) {
             const lng = data.result.geometry.location.lng
            
             resolve({lat,lng})
+            console.log('status: ' + data.status ) 
 
         })
 	})

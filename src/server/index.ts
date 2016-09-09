@@ -16,20 +16,21 @@ const io: SocketIO.Server = socketio(server)
 
 import { getPlace, getLocation } from './search'
 
+
     getPlace('Звез')
     .then(data => {
         const item = data[0]
         
         console.log('addr: ' + item.description)
 
-        getLocation(item.id)
+        getLocation('w434534345')//item.id)
             .then(location => {
                
                 console.log(location)
             })
             .catch(err => {
                 console.log(err)
-                console.log('--------------------')
+                console.log('--++++------------------')
             })
     })
     .catch(error => {
