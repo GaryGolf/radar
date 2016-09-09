@@ -2,7 +2,7 @@ const path = require('path')
 const debug = process.env.NODE_ENV !== 'production'
 
 module.exports = {
-	context: path.resolve(__dirname,'src'),
+	context: path.resolve(__dirname,'src/client'),
 	entry: './index',
 	output: {
 		path: path.resolve(__dirname,'public'),

@@ -11,7 +11,7 @@
         "node_modules"
     ],
     "files": [
-        "jimp.d.ts",
+       // "jimp.d.ts",
         //"./typings/index.d.ts",
         "app.ts"
     ]

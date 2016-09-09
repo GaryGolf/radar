@@ -1,78 +1,44 @@
 import * as React from 'react'
-import * as FreeStyle from 'react-free-style'
+//import * as io from 'socket.io-client'
+import { Style, menuStyle, inputStyle, menuItemStyle, selectedStyle } from './Search.css'
+import IO from './socket'
 
 
 interface Menu { id: string; description: string }
 interface Props {}
 interface State { menu: Menu [] }
+interface MouseEvent extends Event { target: HTMLElement }
 
-export let Style = FreeStyle.create()
-
-
-const menuStyle = Style.registerStyle({
-    backgroundColor: 'white',
-    fontFamily: 'Verdana, Geneva, Tahoma, sans-serif',
-    fontSize: '90%',
-    width: '560px',
-	boxShadow: '3px 3px 10px #AAAAAA',
-    padding: '6px'
-})
-
-const inputStyle = Style.registerStyle({
-	position: 'relative',
-	left: '1px',
-	width: '95%',
-	margin: '5px',
-	border: 'none',
-	color: 'black'
-})
-
-const menuItemStyle = Style.registerStyle({
-	width: 'calc(100%-3px)',
-    padding: '4px',
-	color: '#333333',
-	whiteSpace: 'pre',
-	overflow: 'hidden',
-    // "&:hover": {
-    //     backgroundColor: 'silver'
-    // }
-})
-
-const selectedStyle = Style.registerStyle({
-    backgroundColor: 'silver',
-    width: 'calc(100%-3px)',
-    padding: '4px',
-	color: '#333333',
-	whiteSpace: 'pre',
-	overflow: 'hidden'
-})
-
-const normalStyle = Style.registerStyle({
-    backgroundColor: 'white'
-})
+interface So extends Window { socket: SocketIOClient.Socket }
 
 
-
-export class Search extends React.Component<Props,State>{
+export default class Search extends React.Component<Props,State>{
 
     private input: HTMLInputElement
     private menu: HTMLDivElement
     private menuItems: HTMLDivElement[]
+    private socket: SocketIOClient.Socket
     private current: number
 
     constructor(props: Props) {
 
         super(props)
+        this.socket = IO.socket
         this.current = -1
         this.menuItems = new Array()
         this.state =  { menu: [] } 
-
     }
 
-    componentWillMount() {
+    componenWillMount() {
 
-    
-
+        // setup data receiver 
+		this.socket.on('autocomplete',( data: any ) => {
+        	// get data from server {data:data} or null
+            console.log(data)
+        	if(!data) return
+        	const menu = JSON.parse(data).data
+        	this.setState({menu})   // {menu:[{id: description:},...]}
+		})
     }
 
     componentDidMount() {
@@ -129,7 +95,7 @@ export class Search extends React.Component<Props,State>{
         }
     }
 
-    mouseClickHandler(event :any) {
+    mouseClickHandler(event: MouseEvent) {
 
         this.menuItems.forEach((element, idx) => {
             if(element.id == event.target.id) {
@@ -141,7 +107,7 @@ export class Search extends React.Component<Props,State>{
         })
     }
 
-    mouseOverHandler(event: any) {
+    mouseOverHandler(event: MouseEvent) {
 
         this.menuItems.forEach((element, idx) => {
             if(element.id == event.target.id) {
@@ -153,6 +119,12 @@ export class Search extends React.Component<Props,State>{
         })
     }
 
+    inputHandler(event: KeyboardEvent) {
+
+        console.log('change')
+        this.socket.emit('autocomplete', this.input.value)
+    }
+
     request(id: string) {  console.log(id) }
 
 
@@ -161,6 +133,7 @@ export class Search extends React.Component<Props,State>{
             <div className={menuStyle} ref={div => this.menu = div}>
                 <input className={inputStyle} type="search" placeholder="введите адрес."
                     ref={input => this.input = input}
+                    onInput={this.inputHandler.bind(this)} 
                     onKeyDown={this.keyDownHandler.bind(this)}/>
                 {(this.state.menu.length > 0) ? (this.state.menu.map((item,idx) => (
                         <div className={menuItemStyle} id={item.id} key={idx}

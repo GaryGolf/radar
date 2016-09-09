@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 
 //import Autocomplete from './components/Autocomplete'
 //import Gmap from './components/Gmap'
-import {Search, Style} from './client/components/Search'
+import Search from './client/components/Search'
 
 // Style.inject()
 //let Autocomplete = Style.component(Search)
