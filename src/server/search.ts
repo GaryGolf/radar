@@ -34,7 +34,7 @@ export function getPlace(input: string) {
 
     let data: Place[] = []
     
-    return new Promise<any>(( resolve, reject ) => {
+    return new Promise<Place[]>(( resolve, reject ) => {
 
         opts1.qs.input = input
 
@@ -63,16 +63,17 @@ export function getPlace(input: string) {
     })
 }   
 
+interface Location { lat: string, lng: string}
 
-export function getDetails(input) {
+export function getLocation(input) {
 	//var data: any = null
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<Location>((resolve, reject) => {
 
         opts2.qs.placeid = input
         request(opts2, (error, response, body) => {
              
              let data: any
-
+             
 		    if(error) { reject(error); return }
             
             if(response.statusCode != 200) { reject('status: ' + response.statusCode ); return }
@@ -81,9 +82,11 @@ export function getDetails(input) {
             catch(e) { reject(e); return }
 
 			if(data.status != 'OK') { reject('status: '+ data.status); return }
-            //if(!error && response.statusCode == 200) data = JSON.parse(body)
-
-            resolve(data)
+            
+            const lat = data.result.geometry.location.lat
+            const lng = data.result.geometry.location.lng
+           
+            resolve({lat,lng})
 
         })
 	})

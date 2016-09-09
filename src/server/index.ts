@@ -14,19 +14,18 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import { getPlace, getDetails } from './search'
+import { getPlace, getLocation } from './search'
 
     getPlace('Звез')
     .then(data => {
-        console.log(data)
-        const id = data[0].id
-        console.log('id: ' + id)
+        const item = data[0]
+        
+        console.log('addr: ' + item.description)
 
-        getDetails(id)
-            .then(chunk => {
-                const lat: string = chunk.result.geometry.location.lat
-                const lng: string = chunk.result.geometry.location.lng
-                console.log('lat: '+lat+' lng: '+lng)
+        getLocation(item.id)
+            .then(location => {
+               
+                console.log(location)
             })
             .catch(err => {
                 console.log(err)
