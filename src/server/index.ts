@@ -16,7 +16,16 @@ const io: SocketIO.Server = socketio(server)
 
 import {getPlace} from './search'
 
-    getPlace('sdk').then()
+    getPlace('Звез')
+    .then(data => {
+
+        console.log(data)
+    })
+    .catch(error => {
+        console.log(error)
+
+        console.log('--------------------')
+    })
 
 // app.use(express.static('public'))
 
