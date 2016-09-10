@@ -1,4 +1,4 @@
-/// <reference path="./Search.d.ts" />
+/// <reference path="./Socket.d.ts" />
 
 import * as React from 'react'
 import * as IO from 'socket.io-client'

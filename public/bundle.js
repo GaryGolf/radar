@@ -48,9 +48,9 @@
 	const React = __webpack_require__(1);
 	const ReactDOM = __webpack_require__(34);
 	// import io from 'socket.io-client'
-	//import Gmap from './components/Gmap'
-	const Search_1 = __webpack_require__(172);
-	//ReactDOM.render(<Gmap/>,document.getElementById('map'))
+	const StaticMap_1 = __webpack_require__(172);
+	const Search_1 = __webpack_require__(173);
+	ReactDOM.render(React.createElement(StaticMap_1.default, null), document.getElementById('map'));
 	ReactDOM.render(React.createElement(Search_1.default, null), document.getElementById('root'));
 
 
@@ -21429,10 +21429,40 @@
 /* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/// <reference path="./Search.d.ts" />
+	"use strict";
+	/// <reference path="Socket.d.ts" />
+	const React = __webpack_require__(1);
+	class StaticMap extends React.Component {
+	    constructor(props) {
+	        super(props);
+	        this.socket = window.socket;
+	        this.state = { image: { src: null } };
+	    }
+	    componentDidMount() {
+	        this.socket.on('staticmap', (buffer) => {
+	            const bytes = new Uint8Array(buffer);
+	            const blob = new Blob([bytes.buffer], { type: 'image/png' });
+	            const src = URL.createObjectURL(blob);
+	            this.setState({ image: { src } });
+	        });
+	        this.socket.emit('staticmap', null);
+	    }
+	    render() {
+	        return (React.createElement("div", null, this.state.image.src ? React.createElement("img", {src: this.state.image.src}) : null));
+	    }
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = StaticMap;
+
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/// <reference path="./Socket.d.ts" />
 	"use strict";
 	const React = __webpack_require__(1);
-	const Search_css_1 = __webpack_require__(173);
+	const Search_css_1 = __webpack_require__(174);
 	class Search extends React.Component {
 	    constructor(props) {
 	        super(props);
@@ -21517,11 +21547,11 @@
 
 
 /***/ },
-/* 173 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	const FreeStyle = __webpack_require__(174);
+	const FreeStyle = __webpack_require__(175);
 	exports.Style = FreeStyle.create();
 	exports.menuStyle = exports.Style.registerStyle({
 	    backgroundColor: 'white',
@@ -21560,7 +21590,7 @@
 
 
 /***/ },
-/* 174 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -21571,7 +21601,7 @@
 	};
 	var React = __webpack_require__(1);
 	var ReactCurrentOwner = __webpack_require__(10);
-	exports.FreeStyle = __webpack_require__(175);
+	exports.FreeStyle = __webpack_require__(176);
 	/**
 	 * Create a specialized free style instance.
 	 */
@@ -21680,7 +21710,7 @@
 
 
 /***/ },
-/* 175 */
+/* 176 */
 /***/ function(module, exports) {
 
 	"use strict";

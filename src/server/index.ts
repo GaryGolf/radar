@@ -19,7 +19,6 @@ import { getPlace, getLocation, getMapImage } from './geoservice'
 
 io.on('connection', socket => {
 
-    console.log('socket connection')
     
     socket.on('autocomplete', input => {
         getPlace(input).then(places => {
@@ -27,6 +26,13 @@ io.on('connection', socket => {
         }).catch(error => { console.log(error) })
     })
 
+    socket.on('staticmap', input => {
+        getMapImage({}).then(buffer => {
+            socket.emit('staticmap', buffer)
+        }).catch(error => {
+            console.error(error)
+        })
+    })
 
 })
 
