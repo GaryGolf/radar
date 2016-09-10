@@ -1,15 +1,14 @@
+/// <reference path="./Search.d.ts" />
+
 import * as React from 'react'
-//import * as io from 'socket.io-client'
+import * as IO from 'socket.io-client'
 import { Style, menuStyle, inputStyle, menuItemStyle, selectedStyle } from './Search.css'
-import IO from './socket'
 
 
 interface Menu { id: string; description: string }
 interface Props {}
 interface State { menu: Menu [] }
 interface MouseEvent extends Event { target: HTMLElement }
-
-interface So extends Window { socket: SocketIOClient.Socket }
 
 
 export default class Search extends React.Component<Props,State>{
@@ -23,39 +22,23 @@ export default class Search extends React.Component<Props,State>{
     constructor(props: Props) {
 
         super(props)
-        this.socket = IO.socket
+
+        this.socket = window.socket
         this.current = -1
         this.menuItems = new Array()
         this.state =  { menu: [] } 
     }
 
-    componenWillMount() {
+    componentWillMount() {
 
         // setup data receiver 
-		this.socket.on('autocomplete',( data: any ) => {
-        	// get data from server {data:data} or null
-            console.log(data)
-        	if(!data) return
-        	const menu = JSON.parse(data).data
-        	this.setState({menu})   // {menu:[{id: description:},...]}
-		})
+		this.socket.on('autocomplete', (menu: Menu[]) => {  this.setState({menu})  })
     }
 
     componentDidMount() {
-
-        const items:Menu[] = [
-            {id: '21', description: "New York City"},
-            {id: '33', description: "New Jersey"},
-            {id: '24', description: "New Orlean"},
-            {id: '34', description: "New Hampshire"}
-        ]
-
-        setTimeout(() => {
-            this.setState({menu: items})
-            this.input.focus()
-        }, 2000)
-
+        
         Style.inject(this.menu)
+        this.input.focus()
     }
 
     keyDownHandler(event:KeyboardEvent) {

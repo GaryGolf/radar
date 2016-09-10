@@ -14,40 +14,37 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import { getPlace, getLocation } from './search'
+import { getPlace, getLocation, getMapImage } from './geoservice'
 
 
-    getPlace('Звез')
-    .then(data => {
-        const item = data[0]
-        
-        console.log('addr: ' + item.description)
+io.on('connection', socket => {
 
-        getLocation('w434534345')//item.id)
-            .then(location => {
-               
-                console.log(location)
-            })
-            .catch(err => {
-                console.log(err)
-                console.log('--++++------------------')
-            })
-    })
-    .catch(error => {
-        console.log(error)
-
-        console.log('--------------------')
+    console.log('socket connection')
+    
+    socket.on('autocomplete', input => {
+        getPlace(input).then(places => {
+            socket.emit('autocomplete', places )
+        }).catch(error => { console.log(error) })
     })
 
-// app.use(express.static('public'))
 
-// io.on('connection', socket => {
-// 	console.log('websocket connection established')
-// })
+})
+
+app.get('/over', (req, res) => {
+
+    getMapImage({}).then( buffer => {
+        console.log('over')
+        res.type('image/png')
+         res.send(buffer)
+    })
+   
+})
+
+app.use(express.static('public'))
 
 
 
-// server.listen(3000, () => {
-// 	console.log('http.server started at port 3000;')
-// })
+server.listen(3000, () => {
+	console.log('http.server started at port 3000;')
+})
 

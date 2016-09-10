@@ -4,7 +4,8 @@
   "description": "maps radar react socket.io",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc --target es2015 --outdir bin --module commonjs ./src/server/index.ts && node ./bin", 
+    "test": "tsc --target es2015 --outdir test --module commonjs ./src/server/test.ts && node ./test/test"
   },
   "repository": {
     "type": "git",

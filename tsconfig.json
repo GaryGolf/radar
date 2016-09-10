@@ -13,6 +13,6 @@
     "files": [
        // "jimp.d.ts",
         //"./typings/index.d.ts",
-        "app.ts"
+        "./src/client/index.tsx"
     ]
 }
