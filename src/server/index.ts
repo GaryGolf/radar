@@ -14,7 +14,7 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import { getPlace, getLocation, getMapImage } from './geoservice'
+import { getPlace, getLocation, getMapImage, getTestImage } from './geoservice'
 
 
 io.on('connection', socket => {
@@ -27,7 +27,7 @@ io.on('connection', socket => {
     })
 
     socket.on('staticmap', input => {
-        getMapImage({}).then(buffer => {
+        getTestImage({}).then(buffer => {
             socket.emit('staticmap', buffer)
         }).catch(error => {
             console.error(error)

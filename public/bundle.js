@@ -21438,13 +21438,15 @@
 	        this.socket = window.socket;
 	        this.state = { image: { src: null } };
 	    }
-	    componentDidMount() {
+	    componentWillMount() {
 	        this.socket.on('staticmap', (buffer) => {
 	            const bytes = new Uint8Array(buffer);
 	            const blob = new Blob([bytes.buffer], { type: 'image/png' });
 	            const src = URL.createObjectURL(blob);
 	            this.setState({ image: { src } });
 	        });
+	    }
+	    componentDidMount() {
 	        this.socket.emit('staticmap', null);
 	    }
 	    render() {

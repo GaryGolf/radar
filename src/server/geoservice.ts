@@ -142,8 +142,41 @@ export function getMapImage(options) {
         
            // image.crop(0,0,width,height)
             image.getBuffer(Jimp.MIME_PNG,(error, buffer) => {
+                
+                if(!error) {
+                    resolve(buffer)
+                } else {
+                    reject(error)
+                }
 
-                resolve(buffer)
+            })
+        }).catch(error => {
+            console.error(error)
+            reject(error)
+        })
+    })
+}
+
+export function getTestImage(options) {
+
+    return new Promise<any>((resolve, reject) => {
+       
+        const url = './test/staticmap.png'
+
+        Jimp.read(url).then(image => {
+            
+            const height = image.bitmap.height-22
+            const width = image.bitmap.width
+        
+           // image.crop(0,0,width,height)
+            image.crop(0,0,width,height)
+            .getBuffer(Jimp.MIME_PNG,(error, buffer) => {
+                
+                if(!error) {
+                    resolve(buffer)
+                } else {
+                    reject(error)
+                }
 
             })
         }).catch(error => {
