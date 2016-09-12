@@ -45,11 +45,11 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	const React = __webpack_require__(1);
-	const ReactDOM = __webpack_require__(34);
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(34);
 	// import io from 'socket.io-client'
-	const StaticMap_1 = __webpack_require__(172);
-	const Search_1 = __webpack_require__(173);
+	var StaticMap_1 = __webpack_require__(172);
+	var Search_1 = __webpack_require__(173);
 	ReactDOM.render(React.createElement(StaticMap_1.default, null), document.getElementById('map'));
 	ReactDOM.render(React.createElement(Search_1.default, null), document.getElementById('root'));
 
@@ -21430,29 +21430,52 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
 	/// <reference path="Socket.d.ts" />
-	const React = __webpack_require__(1);
-	class StaticMap extends React.Component {
-	    constructor(props) {
-	        super(props);
+	var React = __webpack_require__(1);
+	var StaticMap = (function (_super) {
+	    __extends(StaticMap, _super);
+	    function StaticMap(props) {
+	        _super.call(this, props);
 	        this.socket = window.socket;
 	        this.state = { image: { src: null } };
+	        this.options = {
+	            center: '56.317530,44.000717',
+	            language: 'ru',
+	            zoom: '12',
+	            scale: '1',
+	            maptype: 'roadmap',
+	            size: '600x622',
+	            format: 'png',
+	            style: [
+	                'feature:all|saturation:-80',
+	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+	                'feature:poi.business|element:labels|visibility:off',
+	                'feature:poi|element:geometry|lightness:45'
+	            ]
+	        };
 	    }
-	    componentWillMount() {
-	        this.socket.on('staticmap', (buffer) => {
-	            const bytes = new Uint8Array(buffer);
-	            const blob = new Blob([bytes.buffer], { type: 'image/png' });
-	            const src = URL.createObjectURL(blob);
-	            this.setState({ image: { src } });
+	    StaticMap.prototype.componentWillMount = function () {
+	        var _this = this;
+	        this.socket.on('staticmap', function (buffer) {
+	            var bytes = new Uint8Array(buffer);
+	            var blob = new Blob([bytes.buffer], { type: 'image/png' });
+	            var src = URL.createObjectURL(blob);
+	            _this.setState({ image: { src: src } });
 	        });
-	    }
-	    componentDidMount() {
-	        this.socket.emit('staticmap', null);
-	    }
-	    render() {
+	    };
+	    StaticMap.prototype.componentDidMount = function () {
+	        this.socket.emit('staticmap', this.options);
+	    };
+	    StaticMap.prototype.render = function () {
 	        return (React.createElement("div", null, this.state.image.src ? React.createElement("img", {src: this.state.image.src}) : null));
-	    }
-	}
+	    };
+	    return StaticMap;
+	}(React.Component));
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = StaticMap;
 
@@ -21463,30 +21486,38 @@
 
 	/// <reference path="./Socket.d.ts" />
 	"use strict";
-	const React = __webpack_require__(1);
-	const Search_css_1 = __webpack_require__(174);
-	class Search extends React.Component {
-	    constructor(props) {
-	        super(props);
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var React = __webpack_require__(1);
+	var Search_css_1 = __webpack_require__(174);
+	var Search = (function (_super) {
+	    __extends(Search, _super);
+	    function Search(props) {
+	        _super.call(this, props);
 	        this.socket = window.socket;
 	        this.current = -1;
 	        this.menuItems = new Array();
 	        this.state = { menu: [] };
 	    }
-	    componentWillMount() {
+	    Search.prototype.componentWillMount = function () {
+	        var _this = this;
 	        // setup data receiver 
-	        this.socket.on('autocomplete', (menu) => { this.setState({ menu }); });
-	    }
-	    componentDidMount() {
+	        this.socket.on('search-places', function (menu) { _this.setState({ menu: menu }); });
+	    };
+	    Search.prototype.componentDidMount = function () {
 	        Search_css_1.Style.inject(this.menu);
 	        this.input.focus();
-	    }
-	    keyDownHandler(event) {
-	        const len = this.state.menu.length;
+	    };
+	    Search.prototype.keyDownHandler = function (event) {
+	        var _this = this;
+	        var len = this.state.menu.length;
 	        if (len < 1)
 	            return;
-	        let clear = () => {
-	            this.menuItems.forEach(element => {
+	        var clear = function () {
+	            _this.menuItems.forEach(function (element) {
 	                element.className = Search_css_1.menuItemStyle;
 	            });
 	        };
@@ -21513,37 +21544,44 @@
 	            default:
 	                return;
 	        }
-	    }
-	    mouseClickHandler(event) {
-	        this.menuItems.forEach((element, idx) => {
+	    };
+	    Search.prototype.mouseClickHandler = function (event) {
+	        var _this = this;
+	        this.menuItems.forEach(function (element, idx) {
 	            if (element.id == event.target.id) {
-	                this.current = idx;
-	                this.request(this.state.menu[this.current].id);
-	                this.input.value = this.state.menu[this.current].description;
-	                this.setState({ menu: [] });
+	                _this.current = idx;
+	                _this.request(_this.state.menu[_this.current].id);
+	                _this.input.value = _this.state.menu[_this.current].description;
+	                _this.setState({ menu: [] });
 	            }
 	        });
-	    }
-	    mouseOverHandler(event) {
-	        this.menuItems.forEach((element, idx) => {
+	    };
+	    Search.prototype.mouseOverHandler = function (event) {
+	        var _this = this;
+	        this.menuItems.forEach(function (element, idx) {
 	            if (element.id == event.target.id) {
-	                this.current = idx;
+	                _this.current = idx;
 	                element.className = Search_css_1.selectedStyle;
 	                return;
 	            }
 	            element.className = Search_css_1.menuItemStyle;
 	        });
-	    }
-	    inputHandler(event) {
-	        this.socket.emit('autocomplete', this.input.value);
-	    }
-	    request(id) { console.log(id); }
-	    render() {
-	        return (React.createElement("div", {className: Search_css_1.menuStyle, ref: div => this.menu = div}, 
-	            React.createElement("input", {className: Search_css_1.inputStyle, type: "search", placeholder: "введите адрес.", ref: input => this.input = input, onInput: this.inputHandler.bind(this), onKeyDown: this.keyDownHandler.bind(this)}), 
-	            (this.state.menu.length > 0) ? (this.state.menu.map((item, idx) => (React.createElement("div", {className: Search_css_1.menuItemStyle, id: item.id, key: idx, ref: element => this.menuItems[idx] = element, onClick: this.mouseClickHandler.bind(this), onMouseOver: this.mouseOverHandler.bind(this)}, item.description)))) : null));
-	    }
-	}
+	    };
+	    Search.prototype.inputHandler = function (event) {
+	        this.socket.emit('search-places', this.input.value);
+	    };
+	    Search.prototype.request = function (id) {
+	        this.socket.emit('search-map', id);
+	        console.log(id);
+	    };
+	    Search.prototype.render = function () {
+	        var _this = this;
+	        return (React.createElement("div", {className: Search_css_1.menuStyle, ref: function (div) { return _this.menu = div; }}, 
+	            React.createElement("input", {className: Search_css_1.inputStyle, type: "search", placeholder: "введите адрес.", ref: function (input) { return _this.input = input; }, onInput: this.inputHandler.bind(this), onKeyDown: this.keyDownHandler.bind(this)}), 
+	            (this.state.menu.length > 0) ? (this.state.menu.map(function (item, idx) { return (React.createElement("div", {className: Search_css_1.menuItemStyle, id: item.id, key: idx, ref: function (element) { return _this.menuItems[idx] = element; }, onClick: _this.mouseClickHandler.bind(_this), onMouseOver: _this.mouseOverHandler.bind(_this)}, item.description)); })) : null));
+	    };
+	    return Search;
+	}(React.Component));
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Search;
 
@@ -21553,7 +21591,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	const FreeStyle = __webpack_require__(175);
+	var FreeStyle = __webpack_require__(175);
 	exports.Style = FreeStyle.create();
 	exports.menuStyle = exports.Style.registerStyle({
 	    backgroundColor: 'white',
@@ -21709,7 +21747,7 @@
 	    return new ReactFreeStyle();
 	}
 	exports.create = create;
-
+	//# sourceMappingURL=react-free-style.js.map
 
 /***/ },
 /* 176 */
@@ -22224,7 +22262,7 @@
 	    return new FreeStyle(hash);
 	}
 	exports.create = create;
-
+	//# sourceMappingURL=free-style.js.map
 
 /***/ }
 /******/ ]);

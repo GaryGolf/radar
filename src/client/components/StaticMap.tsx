@@ -8,12 +8,35 @@ interface State { image: {src: any} }
 export default class StaticMap extends React.Component< Props, State > {
 
     private socket: SocketIOClient.Socket
+    private options: Object
     constructor(props: Props) {
 
         super(props)
 
         this.socket = window.socket
         this.state = {image: {src: null} }
+        this.options = {
+
+            center:     '56.317530,44.000717',  // 'Нижний Новгород'
+            language:   'ru',
+            zoom:       '12',
+            scale:      '1',        // change crop height for scale=2
+            maptype:    'roadmap',          //'roadmap','terrain'  
+            size:       '600x622',
+            format:     'png',
+            style:      [
+                'feature:all|saturation:-80',
+                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+                'feature:poi.business|element:labels|visibility:off',
+                'feature:poi|element:geometry|lightness:45'
+            ]
+            // ,
+            // markers: [
+            //     'color:red|label:A|56.317200,44.000600',
+            //     'color:red|label:B|56.319220,44.002000',
+            //     'color:red|label:C|56.300477,44.019030'
+            // ]
+        }
     }
 
     componentWillMount() {
@@ -27,7 +50,7 @@ export default class StaticMap extends React.Component< Props, State > {
     } 
     
     componentDidMount() {
-        this.socket.emit('staticmap', null)
+        this.socket.emit('staticmap', this.options)
     }
 
     render() {

@@ -63,13 +63,13 @@ export function getPlace(input: string) {
     })
 }   
 
-interface Location { lat: string, lng: string}
+export interface Location { lat: string, lng: string}
 
-export function getLocation(input) {
+export function getLocation(placeid: string) { 
 	
     return new Promise<Location>((resolve, reject) => {
 
-        opts2.qs.placeid = input
+        opts2.qs.placeid = placeid
         request(opts2, (error, response, body) => {
              
             let data: any
@@ -129,46 +129,33 @@ import * as Jimp from 'jimp'
 
 export function getMapImage(options) {
 
+    options = options ? options : {
+            center:     '56.317530,44.000717',  // 'Нижний Новгород'
+            language:   'ru',
+            zoom:       '12',
+            scale:      '1',        // change crop height for scale=2
+            maptype:    'roadmap',          //'roadmap','terrain'  
+            size:       '600x622',
+            format:     'png',
+            style:      [
+                'feature:all|saturation:-80',
+                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+                'feature:poi.business|element:labels|visibility:off',
+                'feature:poi|element:geometry|lightness:45'
+            ]
+            // markers: ['color:red|label:A|56.317200,44.000600',    
+        }
+
     return new Promise<any>((resolve, reject) => {
        
         const uri = 'http://maps.googleapis.com/maps/api/staticmap'
-        // const url = uri +'?'+ qs.stringify(options)
-        const url = './test/staticmap.png'
+        const url = uri +'?'+ qs.stringify(options)
 
         Jimp.read(url).then(image => {
             
             const height = image.bitmap.height-Number(options.scale)*22
             const width = image.bitmap.width
         
-           // image.crop(0,0,width,height)
-            image.getBuffer(Jimp.MIME_PNG,(error, buffer) => {
-                
-                if(!error) {
-                    resolve(buffer)
-                } else {
-                    reject(error)
-                }
-
-            })
-        }).catch(error => {
-            console.error(error)
-            reject(error)
-        })
-    })
-}
-
-export function getTestImage(options) {
-
-    return new Promise<any>((resolve, reject) => {
-       
-        const url = './test/staticmap.png'
-
-        Jimp.read(url).then(image => {
-            
-            const height = image.bitmap.height-22
-            const width = image.bitmap.width
-        
-           // image.crop(0,0,width,height)
             image.crop(0,0,width,height)
             .getBuffer(Jimp.MIME_PNG,(error, buffer) => {
                 
@@ -180,7 +167,6 @@ export function getTestImage(options) {
 
             })
         }).catch(error => {
-            console.error(error)
             reject(error)
         })
     })

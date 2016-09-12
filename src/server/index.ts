@@ -14,36 +14,55 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import { getPlace, getLocation, getMapImage, getTestImage } from './geoservice'
+import {Location, getPlace, getLocation, getMapImage } from './geoservice'
+import { getNear } from './estate'
+
 
 
 io.on('connection', socket => {
 
-    
-    socket.on('autocomplete', input => {
+    // get array of addresses looks like input 
+    socket.on('search-places', input => {  
         getPlace(input).then(places => {
-            socket.emit('autocomplete', places )
-        }).catch(error => { console.log(error) })
+            socket.emit('search-places', places )
+        }).catch(error => { console.error(error) })
+    })
+
+    // get map image with markers nearby place with input.id
+    socket.on('search-map', input => {
+        // get location point
+        getLocation(input).then((location: Location) => {
+            // find estates nearby location
+            getNear(Number(location.lat), Number(location.lng)).then(rows => {
+                // prepare markers 
+                let options =<any>config.get('options')
+                const markers: string[] = new Array()
+                for(var i = 0, char = 65; i< rows.length; i++, char++){
+                 //   markers.push('color:red|label:'+String.fromCharCode(char)+'|'+rows[i].location.x+','+rows[i].location.y)
+                     markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
+                }
+                options.markers = markers
+                //  map image request
+                getMapImage(options).then(buffer => {
+                     socket.emit('staticmap', buffer)
+                }).catch(error => { console.error(error) })
+            }).catch(error => { console.error(error) })
+        }).catch(error => { console.error(error) })
+
+        /*
+            get array of estates from db near location
+        */
+        
     })
 
     socket.on('staticmap', input => {
-        getTestImage({}).then(buffer => {
+        getMapImage(input).then(buffer => {
             socket.emit('staticmap', buffer)
         }).catch(error => {
             console.error(error)
         })
     })
 
-})
-
-app.get('/over', (req, res) => {
-
-    getMapImage({}).then( buffer => {
-        console.log('over')
-        res.type('image/png')
-         res.send(buffer)
-    })
-   
 })
 
 app.use(express.static('public'))

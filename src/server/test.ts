@@ -1,6 +1,7 @@
 
 import { getPlace, getLocation, getMap, getMapImage } from './geoservice'
 
+import { getNear } from './estate'
 
 console.log('test')
 
@@ -14,8 +15,8 @@ console.log('test')
 
 // })
 
-getMapImage({}).then(buffer => {
 
-    console.log(buffer)
-
+getNear(56.3162757,43.9973229).then(result => {
+    const rows = result.rows
+    console.log(rows)
 }).catch(error => { console.error(error) })

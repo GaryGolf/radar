@@ -3,48 +3,34 @@ import * as qs from 'querystring'
 import * as pg from 'pg'
 
 
+const conString = config.get('PG_CON_STRING').toString()
 
-export default class Estate {
+interface Estate {name: string, location: {x: string, y: string}}
 
-    private client: pg.Client
-    
-    constructor() {
+export function getNear(lat:number = 56.317530, lng: number = 44.000717, radius: number = .01 ) {
 
-        const conString = config.get('PG_CON_STRING').toString()
-        try {
-            this.client = new pg.Client(conString)
-            console.log('db.client connected')
-        } catch(error) {
-            console.log('DB connection error: ' + error)
-        }
-    }
+    return new Promise<Estate[]>((resolve, reject) => {
 
-    async getNear(lat:number = 56.317530, lng: number = 44.000717, radius: number = .01 ) {
-
-
-        return new Promise<pg.QueryResult>((resolve, reject) => {
-
-            try{
-                console.log('trying to connect');
-                
-                this.client.connect()
-                this.client.query('SELECT name, location FROM estate WHERE (location <-> point(' + lat + ',' + lng + ')) < ' + radius, ( error, result) => {
-         
-                    console.log('got results')
-                    if(error) reject( error )
-                    else resolve( result )
-                    this.client.end()
-                })
-
-            } catch (error) {
-
-                reject(error)
-            }
-
-           
-        })
-    }
+        try{
+            console.log('trying to connect');
+            const client = new pg.Client(conString)            
+            client.connect()
+            client.query('SELECT name, location FROM estate WHERE (location <-> point(' + 
+                lat + ',' + lng + ')) < ' + radius, ( error, result) => {
+        
+                console.log('got results')
+                if(error) {
+                    reject(error)
+                } else { 
+                    const rows: Estate[] = result.rows
+                    resolve(rows)
+                }
+                client.end()
+            })
+        } catch(error) { reject(error) }
+    })
 }
+
 
 
 /* result

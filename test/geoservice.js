@@ -1,5 +1,6 @@
 "use strict";
 const request = require('request');
+const qs = require('querystring');
 const config = require('config');
 const API_KEY = config.get('API_KEY');
 const CTR = config.get('autocomplete.constraints');
@@ -58,9 +59,9 @@ function getPlace(input) {
     });
 }
 exports.getPlace = getPlace;
-function getLocation(input) {
+function getLocation(placeid) {
     return new Promise((resolve, reject) => {
-        opts2.qs.placeid = input;
+        opts2.qs.placeid = placeid;
         request(opts2, (error, response, body) => {
             let data;
             if (!error && response.statusCode == 200) {
@@ -111,18 +112,37 @@ exports.getMap = getMap;
 */
 const Jimp = require('jimp');
 function getMapImage(options) {
+    options = options ? options : {
+        center: '56.317530,44.000717',
+        language: 'ru',
+        zoom: '12',
+        scale: '1',
+        maptype: 'roadmap',
+        size: '600x622',
+        format: 'png',
+        style: [
+            'feature:all|saturation:-80',
+            'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+            'feature:poi.business|element:labels|visibility:off',
+            'feature:poi|element:geometry|lightness:45'
+        ]
+    };
     return new Promise((resolve, reject) => {
         const uri = 'http://maps.googleapis.com/maps/api/staticmap';
-        // const url = uri +'?'+ qs.stringify(options)
-        const url = './test/staticmap.png';
+        const url = uri + '?' + qs.stringify(options);
         Jimp.read(url).then(image => {
             const height = image.bitmap.height - Number(options.scale) * 22;
             const width = image.bitmap.width;
-            image.crop(0, 0, width, height).getBuffer(Jimp.MIME_PNG, (error, buffer) => {
-                resolve(buffer);
+            image.crop(0, 0, width, height)
+                .getBuffer(Jimp.MIME_PNG, (error, buffer) => {
+                if (!error) {
+                    resolve(buffer);
+                }
+                else {
+                    reject(error);
+                }
             });
         }).catch(error => {
-            console.error(error);
             reject(error);
         });
     });

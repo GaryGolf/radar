@@ -32,7 +32,7 @@ export default class Search extends React.Component<Props,State>{
     componentWillMount() {
 
         // setup data receiver 
-		this.socket.on('autocomplete', (menu: Menu[]) => {  this.setState({menu})  })
+		this.socket.on('search-places', (menu: Menu[]) => {  this.setState({menu})  })
     }
 
     componentDidMount() {
@@ -103,12 +103,13 @@ export default class Search extends React.Component<Props,State>{
     }
 
     inputHandler(event: KeyboardEvent) {
-
-        this.socket.emit('autocomplete', this.input.value)
+        this.socket.emit('search-places', this.input.value)
     }
 
-    request(id: string) {  console.log(id) }
-
+    request(id: string) { 
+        this.socket.emit('search-map', id) 
+        console.log(id) 
+    }
 
     render() {
         return (
