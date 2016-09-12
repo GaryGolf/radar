@@ -38,7 +38,6 @@ io.on('connection', socket => {
                 let options =<any>config.get('options')
                 const markers: string[] = new Array()
                 for(var i = 0, char = 65; i< rows.length; i++, char++){
-                 //   markers.push('color:red|label:'+String.fromCharCode(char)+'|'+rows[i].location.x+','+rows[i].location.y)
                      markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
                 }
                 options.markers = markers
@@ -48,11 +47,6 @@ io.on('connection', socket => {
                 }).catch(error => { console.error(error) })
             }).catch(error => { console.error(error) })
         }).catch(error => { console.error(error) })
-
-        /*
-            get array of estates from db near location
-        */
-        
     })
 
     socket.on('staticmap', input => {

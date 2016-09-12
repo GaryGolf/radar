@@ -7,7 +7,7 @@ const conString = config.get('PG_CON_STRING').toString()
 
 interface Estate {name: string, location: {x: string, y: string}}
 
-export function getNear(lat:number = 56.317530, lng: number = 44.000717, radius: number = .01 ) {
+export function getNear(lat:number = 56.317530, lng: number = 44.000717, radius: number = .1 ) {
 
     return new Promise<Estate[]>((resolve, reject) => {
 
