@@ -32,7 +32,14 @@ export default class Search extends React.Component<Props,State>{
     componentWillMount() {
 
         // setup data receiver 
-		this.socket.on('search-places', (menu: Menu[]) => {  this.setState({menu})  })
+		this.socket.on('search-places', (menu: Menu[]) => { 
+            //  this.menuItems = new Array()
+             this.setState({menu}) 
+        })
+    }
+    componentDidUpdate() {
+
+     //   console.log(this.menuItems)
     }
 
     componentDidMount() {
@@ -108,10 +115,10 @@ export default class Search extends React.Component<Props,State>{
 
     request(id: string) { 
         this.socket.emit('search-map', id) 
-        console.log(id) 
     }
 
     render() {
+        this.menuItems  = new Array(this.state.menu.length)
         return (
             <div className={menuStyle} ref={div => this.menu = div}>
                 <input className={inputStyle} type="search" placeholder="введите адрес."

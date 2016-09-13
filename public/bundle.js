@@ -48,9 +48,9 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(34);
 	// import io from 'socket.io-client'
-	var StaticMap_1 = __webpack_require__(172);
+	//import StaticMap from './components/StaticMap'
 	var Search_1 = __webpack_require__(173);
-	ReactDOM.render(React.createElement(StaticMap_1.default, null), document.getElementById('map'));
+	// ReactDOM.render(<StaticMap/>,document.getElementById('map'))
 	ReactDOM.render(React.createElement(Search_1.default, null), document.getElementById('root'));
 
 
@@ -21426,61 +21426,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 172 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	/// <reference path="Socket.d.ts" />
-	var React = __webpack_require__(1);
-	var StaticMap = (function (_super) {
-	    __extends(StaticMap, _super);
-	    function StaticMap(props) {
-	        _super.call(this, props);
-	        this.socket = window.socket;
-	        this.state = { image: { src: null } };
-	        this.options = {
-	            center: '56.317530,44.000717',
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1',
-	            maptype: 'roadmap',
-	            size: '600x622',
-	            format: 'png',
-	            style: [
-	                'feature:all|saturation:-80',
-	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
-	                'feature:poi.business|element:labels|visibility:off',
-	                'feature:poi|element:geometry|lightness:45'
-	            ]
-	        };
-	    }
-	    StaticMap.prototype.componentWillMount = function () {
-	        var _this = this;
-	        this.socket.on('staticmap', function (buffer) {
-	            var bytes = new Uint8Array(buffer);
-	            var blob = new Blob([bytes.buffer], { type: 'image/png' });
-	            var src = URL.createObjectURL(blob);
-	            _this.setState({ image: { src: src } });
-	        });
-	    };
-	    StaticMap.prototype.componentDidMount = function () {
-	        this.socket.emit('staticmap', this.options);
-	    };
-	    StaticMap.prototype.render = function () {
-	        return (React.createElement("div", null, this.state.image.src ? React.createElement("img", {src: this.state.image.src}) : null));
-	    };
-	    return StaticMap;
-	}(React.Component));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = StaticMap;
-
-
-/***/ },
+/* 172 */,
 /* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -21505,7 +21451,13 @@
 	    Search.prototype.componentWillMount = function () {
 	        var _this = this;
 	        // setup data receiver 
-	        this.socket.on('search-places', function (menu) { _this.setState({ menu: menu }); });
+	        this.socket.on('search-places', function (menu) {
+	            //  this.menuItems = new Array()
+	            _this.setState({ menu: menu });
+	        });
+	    };
+	    Search.prototype.componentDidUpdate = function () {
+	        //   console.log(this.menuItems)
 	    };
 	    Search.prototype.componentDidMount = function () {
 	        Search_css_1.Style.inject(this.menu);
@@ -21572,10 +21524,11 @@
 	    };
 	    Search.prototype.request = function (id) {
 	        this.socket.emit('search-map', id);
-	        console.log(id);
 	    };
 	    Search.prototype.render = function () {
 	        var _this = this;
+	        this.menuItems = new Array(this.state.menu.length);
+	        console.log(this.menuItems);
 	        return (React.createElement("div", {className: Search_css_1.menuStyle, ref: function (div) { return _this.menu = div; }}, 
 	            React.createElement("input", {className: Search_css_1.inputStyle, type: "search", placeholder: "введите адрес.", ref: function (input) { return _this.input = input; }, onInput: this.inputHandler.bind(this), onKeyDown: this.keyDownHandler.bind(this)}), 
 	            (this.state.menu.length > 0) ? (this.state.menu.map(function (item, idx) { return (React.createElement("div", {className: Search_css_1.menuItemStyle, id: item.id, key: idx, ref: function (element) { return _this.menuItems[idx] = element; }, onClick: _this.mouseClickHandler.bind(_this), onMouseOver: _this.mouseOverHandler.bind(_this)}, item.description)); })) : null));

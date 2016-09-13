@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "echo test",
     "server": "tsc --target es2015 --outdir bin --module commonjs ./src/server/index.ts && nodemon ./bin",
-    "test": "tsc --target es2015 --outdir test --module commonjs ./src/server/test.ts && node ./test/test"
+    "test": "tsc --project src/tests && jest"
   },
   "repository": {
     "type": "git",
@@ -44,6 +44,10 @@
     "socket.io": "^1.4.8"
   },
   "devDependencies": {
+    "@types/jest": "^0.9.31",
+    "@types/react-addons-test-utils": "^0.14.14",
+    "jest": "^15.1.1",
+    "react-addons-test-utils": "^15.3.1",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",
     "typescript": "^2.0.0",
