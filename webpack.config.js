@@ -11,28 +11,24 @@ module.exports = {
 		path: path.resolve(__dirname,'public'),
 		filename: 'bundle.js'
 	},
-	//devtool:  debug ? 'source-map' : null ,
+	devtool:  debug ? 'source-map' : null ,
 	resolve: {
 			extensions: ['','.js','.jsx','.ts','.tsx']
 	},
 	module: {
 		loaders: [
-			{
-				test: /\.tsx?$/,
-				include: [path.resolve(__dirname,'src/client')],
-				loader: 'ts',
-			}
+			{ test: /\.tsx?$/, include: [path.resolve(__dirname,'src/client')], loader: 'ts', }
 		],
 		preLoaders: [
 			// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-			{ test: /\.js$/, loader: "source-map-loader" }
+			{ test: /\.tsx?$/, loader: "source-map-loader" }
 		]
 	},
 	plugins: [
   	],
 	externals: {
-			//  'react': 'React',
-			//  'react-dom': 'ReactDOM',
+			'react': 'React',
+			'react-dom': 'ReactDOM',
 			'socket.io-client': 'io'
 	}
 }
