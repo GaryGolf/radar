@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-interface Props {}
+interface Props {title: string}
 interface State {}
 export class HelloWorld extends React.Component <Props, State>{
 
@@ -10,6 +10,6 @@ export class HelloWorld extends React.Component <Props, State>{
     }
 
     render() {
-        return <div>Hello World</div>
+        return <div>{this.props.title}</div>
     }
 }

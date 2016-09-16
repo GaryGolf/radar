@@ -32,7 +32,8 @@ export default class Search extends React.Component<Props,State>{
 
         // setup data receiver 
 		this.socket.on('search-places', (menu: Menu[]) => { 
-             this.setState({menu}) 
+             this.setState({menu})
+             this.current = -1 
         })
     }
 
@@ -59,9 +60,10 @@ export default class Search extends React.Component<Props,State>{
 
             case 13:    //Enter
                 if(this.current ==-1) this.current = 0
-                
-                this.request(this.state.menu[this.current].id)
-                this.input.value = this.state.menu[this.current].description
+                const id = this.state.menu[this.current].id
+                const description = this.state.menu[this.current].description 
+                this.request({ id, description})
+                this.input.value = description
                 this.setState({menu: []})
                 break
             case 40:    //Down
@@ -86,8 +88,9 @@ export default class Search extends React.Component<Props,State>{
 
     mouseClickHandler(event: MouseEvent) {
 
-        console.log(event.target.id)
-        this.request(event.target.id)
+        const id = event.target.id
+        const description = event.target.textContent
+        this.request({id, description})
         this.input.value = event.target.textContent
         this.setState({menu: []})
     }
@@ -107,8 +110,8 @@ export default class Search extends React.Component<Props,State>{
         this.socket.emit('search-places', this.input.value)
     }
 
-    request(id: string) { 
-        this.socket.emit('search-map', id) 
+    request(data: Object) { 
+        this.socket.emit('search-map', data) 
     }
 
     render() {

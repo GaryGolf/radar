@@ -2,6 +2,8 @@ import * as request from 'request'
 import * as qs from 'querystring'
 import * as config from 'config'
 
+import { getNear, savePlace } from './estate'
+
 
 
 const API_KEY = config.get('API_KEY')
@@ -38,6 +40,9 @@ export function getPlace(input: string) {
 
         opts1.qs.input = input
 
+        // Reject error if input is too short
+        if(input.length < 5) reject(new Error('input string is too short'))
+
         request( opts1, (error, response, body) => {
 
             let info: any
@@ -53,7 +58,13 @@ export function getPlace(input: string) {
 
 			// new array of place descriptions
             data = info.predictions.map(item => { 
-                return {description: item.description, id: item.place_id }
+                // remove Россия
+                let addr = item.description
+                let idx = addr.indexOf(', Нижегородская обл')
+                if(idx != -1) addr = addr.substr(0, idx)
+                idx = addr.indexOf(', Россия')
+                if(idx != -1) addr = addr.substr(0, idx)
+                return {description: addr, id: item.place_id }
             }).filter(obj => CTR.some(place => obj.description.indexOf(place)>0)) 	
             // filter items remove all outside by autocomplete.constraints 
             
@@ -81,10 +92,11 @@ export function getLocation(placeid: string) {
                     if(data.status == 'OK') { 
                         
                         const lat = data.result.geometry.location.lat
-                        const lng = data.result.geometry.location.lng             
-                        
+                        const lng = data.result.geometry.location.lng      
+
                         resolve({lat, lng})  
                         console.log('status: ' + data.status )
+                        throw new Error('Zhooopaa synthetic error')
                     } else {
                         reject('status: ' + data.status )
                     }
@@ -145,6 +157,8 @@ export function getMapImage(options) {
             ]
             // markers: ['color:red|label:A|56.317200,44.000600',    
         }
+    console.log('markers '+ options.markers)
+    console.log('center ' + options.center)
 
     return new Promise<any>((resolve, reject) => {
        
@@ -170,4 +184,31 @@ export function getMapImage(options) {
             reject(error)
         })
     })
+}
+interface Place { id: string, description: string, location?: Location }
+
+export async function searchMap(place: Place): Promise<any> {
+
+    let location: Location // = {lat: '56.317530', lng: '44.000717'}
+    let rows: any
+    try {
+
+        location = await getLocation(place.id)
+        rows = await getNear(Number(location.lat), Number(location.lng))
+        savePlace(place.description,location.lat, location.lng, place.id)
+
+     } catch(error) { throw error}
+    const options =<any>config.get('options')
+    options.center = location.lat+','+location.lng
+    const markers: string[] = new Array()
+    for(var i = 0, char = 65; i< rows.length; i++, char++){
+            markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
+    }
+    if(markers.length > 0) {
+        options.markers = markers
+    } else {
+        options.center = location.lat+','+location.lng
+    }
+    //  map image request
+    return await getMapImage(options)
 }

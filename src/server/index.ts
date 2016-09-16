@@ -14,7 +14,7 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import {Location, getPlace, getLocation, getMapImage } from './geoservice'
+import {Location, getPlace, getLocation, getMapImage, searchMap } from './geoservice'
 import { getNear } from './estate'
 
 
@@ -29,24 +29,31 @@ io.on('connection', socket => {
     })
 
     // get map image with markers nearby place with input.id
-    socket.on('search-map', input => {
-        // get location point
-        getLocation(input).then((location: Location) => {
-            // find estates nearby location
-            getNear(Number(location.lat), Number(location.lng)).then(rows => {
-                // prepare markers 
-                let options =<any>config.get('options')
-                const markers: string[] = new Array()
-                for(var i = 0, char = 65; i< rows.length; i++, char++){
-                     markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
-                }
-                options.markers = markers
-                //  map image request
-                getMapImage(options).then(buffer => {
-                     socket.emit('staticmap', buffer)
-                }).catch(error => { console.error(error) })
-            }).catch(error => { console.error(error) })
-        }).catch(error => { console.error(error) })
+    // socket.on('search-map', input => {
+    //     // get location point
+    //     getLocation(input).then((location: Location) => {
+    //         // find estates nearby location
+    //         getNear(Number(location.lat), Number(location.lng)).then(rows => {
+    //             // prepare markers 
+    //             let options =<any>config.get('options')
+    //             const markers: string[] = new Array()
+    //             for(var i = 0, char = 65; i< rows.length; i++, char++){
+    //                  markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
+    //             }
+    //             options.markers = markers
+    //             //  map image request
+    //             getMapImage(options).then(buffer => {
+    //                  socket.emit('staticmap', buffer)
+    //             }).catch(error => { console.error(error) })
+    //         }).catch(error => { console.error(error) })
+    //     }).catch(error => { console.error(error) })
+    // })
+
+    socket.on('search-map', async (input) => {
+
+        const buffer = await searchMap(input)
+            .catch(error => { console.error(error) })
+        socket.emit('staticmap', buffer)
     })
 
     socket.on('staticmap', input => {

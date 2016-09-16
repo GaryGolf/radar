@@ -147,6 +147,7 @@
 	        // setup data receiver 
 	        this.socket.on('search-places', function (menu) {
 	            _this.setState({ menu: menu });
+	            _this.current = -1;
 	        });
 	    };
 	    Search.prototype.componentDidMount = function () {
@@ -168,8 +169,10 @@
 	            case 13:
 	                if (this.current == -1)
 	                    this.current = 0;
-	                this.request(this.state.menu[this.current].id);
-	                this.input.value = this.state.menu[this.current].description;
+	                var id = this.state.menu[this.current].id;
+	                var description = this.state.menu[this.current].description;
+	                this.request({ id: id, description: description });
+	                this.input.value = description;
 	                this.setState({ menu: [] });
 	                break;
 	            case 40:
@@ -189,8 +192,9 @@
 	        }
 	    };
 	    Search.prototype.mouseClickHandler = function (event) {
-	        console.log(event.target.id);
-	        this.request(event.target.id);
+	        var id = event.target.id;
+	        var description = event.target.textContent;
+	        this.request({ id: id, description: description });
 	        this.input.value = event.target.textContent;
 	        this.setState({ menu: [] });
 	    };
@@ -208,8 +212,8 @@
 	    Search.prototype.inputHandler = function (event) {
 	        this.socket.emit('search-places', this.input.value);
 	    };
-	    Search.prototype.request = function (id) {
-	        this.socket.emit('search-map', id);
+	    Search.prototype.request = function (data) {
+	        this.socket.emit('search-map', data);
 	    };
 	    Search.prototype.render = function () {
 	        var _this = this;
@@ -244,7 +248,10 @@
 	    width: '95%',
 	    margin: '5px',
 	    border: 'none',
-	    color: 'black'
+	    color: 'black',
+	    '&:focus': {
+	        outline: 'none'
+	    }
 	});
 	exports.menuItemStyle = exports.Style.registerStyle({
 	    width: 'calc(100%-3px)',

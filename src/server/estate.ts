@@ -41,3 +41,16 @@ export function getNear(lat:number = 56.317530, lng: number = 44.000717, radius:
 "_parsers":[null,null],"rowAsArray":false}
 }
 */         
+
+export function savePlace(description: string, lat: string, lng: string, place_id: string): void {
+
+    try{
+        const client = new pg.Client(conString)            
+        client.connect()
+        client.query('INSERT INTO places (description, location, place_id) VALUES ($1, $2, $3)',[description, '('+lat+','+lng+')', place_id], ( error, result) => {
+            if(error) throw error
+            client.end()
+        })
+        } catch(error) { console.error(error) }
+
+}

@@ -18,7 +18,10 @@ export const inputStyle = Style.registerStyle({
     width: '95%',
     margin: '5px',
     border: 'none',
-    color: 'black'
+    color: 'black',
+    '&:focus': {
+        outline: 'none'
+    } 
 })
 
 export const menuItemStyle = Style.registerStyle({

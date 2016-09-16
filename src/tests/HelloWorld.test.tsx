@@ -1,7 +1,7 @@
 /// <reference path="../../node_modules/@types/jest/index.d.ts" />
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import * as TestUtils from 'react-addons-test-utils'
+import * as ReactTestUtils from 'react-addons-test-utils'
 
 import { HelloWorld } from '../client/components/HelloWorld'
 
@@ -11,11 +11,17 @@ import { HelloWorld } from '../client/components/HelloWorld'
 
 describe('hello world test', () => {
 
-//  const mockHandler = jest.genMockFromModule('../client/components/HelloWorld')
-  it('title', () =>{
-    const d =  TestUtils.renderIntoDocument(<HelloWorld/>)
- //   const div = TestUtils.findRenderedDOMComponentWithTag(d,'div')
-    expect(new Object()).toEqual({})
+  it('title', () => {
+
+    //var mockHandler = jest.genMockFromModule('../client/components/HelloWorld')
+
+    var div: any =  ReactTestUtils.renderIntoDocument(<HelloWorld title="Hello World"/>)
+
+     var h1 = ReactTestUtils.findRenderedDOMComponentWithTag(div, 'div');
+
+    expect(h1.textContent).toEqual('Hello World');
+
+    expect(div.props.title).toBe('Hello World')
   })
 })
   

@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "echo test",
-    "server": "tsc --target es2015 --outdir bin --module commonjs ./src/server/index.ts && nodemon ./bin",
-    "test": "tsc --project src/tests && jest"
+    "start": "notify-send \"node\" \"HTTPserver started port 3000\" -i gtk-info && nodemon ./bin",
+    "server": "notify-send \"node\" \"HTTPserver started port 3000\" -i gtk-info && tsc --target es2015 --outdir bin --module commonjs ./src/server/index.ts && nodemon ./bin",
+    "test": "tsc --project src/tests && jest",
+    "psql": "sudo -u postgres psql -d test"
   },
   "repository": {
     "type": "git",
