@@ -63,8 +63,7 @@ function testSave(street: string): void {
             location = data
             
             // save places to db
-            console.log(id)
-            console.log(description+'    '+location)
+            console.log(description+'    :'+id)
             try{ 
                 savePlace( description, location.lat, location.lng, id)
                // savePlace( street+', Нижний Новгород', location.lat, location.lng, id)
