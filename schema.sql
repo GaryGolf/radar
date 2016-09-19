@@ -16,7 +16,7 @@ DROP TABLE places;
 CREATE TABLE places (
 	description		varchar(80) PRIMARY KEY,
 	location 		point NOT NULL,
-	place_id		varchar(80) NOT NULL,
+	place_id		varchar(180) NOT NULL,
 	modified		timestamp DEFAULT LOCALTIMESTAMP
 );
 

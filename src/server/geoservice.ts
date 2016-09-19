@@ -57,7 +57,7 @@ export function getPlace(input: string) {
 			if(info.status != 'OK') { reject('status: '+ info.status); return }
 
 			// new array of place descriptions
-            data = info.predictions.map(item => { 
+            data = info.predictions.map((item: any) => { 
                 // remove Россия
                 let addr = item.description
                 let idx = addr.indexOf(', Нижегородская обл')
@@ -65,7 +65,7 @@ export function getPlace(input: string) {
                 idx = addr.indexOf(', Россия')
                 if(idx != -1) addr = addr.substr(0, idx)
                 return {description: addr, id: item.place_id }
-            }).filter(obj => CTR.some(place => obj.description.indexOf(place)>0)) 	
+            }).filter((obj: any) => CTR.some(place => obj.description.indexOf(place)>0)) 	
             // filter items remove all outside by autocomplete.constraints 
             
             resolve(data)
@@ -96,7 +96,6 @@ export function getLocation(placeid: string) {
 
                         resolve({lat, lng})  
                         console.log('status: ' + data.status )
-                        throw new Error('Zhooopaa synthetic error')
                     } else {
                         reject('status: ' + data.status )
                     }
@@ -139,7 +138,7 @@ export function getMap(input: string) {
 */
 import * as Jimp from 'jimp'
 
-export function getMapImage(options) {
+export function getMapImage(options: any) {
 
     options = options ? options : {
             center:     '56.317530,44.000717',  // 'Нижний Новгород'

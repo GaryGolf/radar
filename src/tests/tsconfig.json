@@ -11,8 +11,8 @@
         "node_modules"
     ],
     "files": [
-        
-        "./HelloWorld.test.tsx",
-        "./Search.test.tsx"
+        "./streets.test.ts"
+        // "./HelloWorld.test.tsx"
+        // "./Search.test.tsx"
     ]
 }
