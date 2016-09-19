@@ -1,7 +1,7 @@
 
 import { Location, getPlace, getLocation, getMap, getMapImage } from './geoservice'
 
-import { getNear, savePlace } from './estate'
+import { getNear, savePlace, getPlacesFromDB } from './estate'
 
 console.log('test')
 
@@ -23,6 +23,8 @@ console.log('test')
 
 // read file streets txt
 
+
+/*
 import * as fs from 'fs'
 
 let list: string[]
@@ -76,4 +78,8 @@ function testSave(street: string): void {
     }).catch( error => { console.error(error) })
 }
 
-// console.log()
+*/
+
+getPlacesFromDB('ак').then( data => {
+    console.log(data)
+}).catch(error => { console.error(error)})

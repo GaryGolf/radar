@@ -49,8 +49,29 @@ export function savePlace(description: string, lat: string, lng: string, place_i
         client.connect()
         client.query('INSERT INTO places (description, location, place_id) VALUES ($1, $2, $3)',[description, '('+lat+','+lng+')', place_id], ( error, result) => {
             if(error) throw error
+            client.on('error', error => { console.error(error) })
             client.end()
         })
         } catch(error) { console.error(error) }
 
+}
+import { Location } from './geoservice'
+
+interface Places {description: string, location: Location, id: string}
+
+export function getPlacesFromDB(input: string) {
+
+    // prepare first letter
+    input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase()
+
+    return new Promise<Places[]>((resolve, reject) => {
+
+        const client = new pg.Client(conString)            
+        client.connect()
+        client.query('SELECT description, location, place_id FROM places WHERE description LIKE \'%'+input+'%\' ORDER BY modified DESC LIMIT 5', ( error, result) => {
+            if(error) reject(error)
+                resolve(result.rows)
+            client.end()
+        })
+    })
 }
