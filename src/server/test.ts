@@ -1,7 +1,7 @@
 
 import { Location, getPlace, getLocation, getMap, getMapImage } from './geoservice'
 
-import { getNear, savePlace, getPlacesFromDB } from './estate'
+import { getNear, savePlace, getPlacesFromDB, isAddressExist, popPlace } from './estate'
 
 console.log('test')
 
@@ -40,15 +40,16 @@ fs.readFile('./config/streets.txt', 'utf8', (error, data) =>{
     list = data.split('\n')
 
     
-    setInterval(() => {
-        if(i> 1334) {
+    setInterval(async () => {
+        if(i > list.length) {
             console.log('Thats all, perss Ctrl C') 
             return
         }
-        testSave(list[i++])
+        await testSave(list[i++])
     },1000)
     
 })
+
 
 function testSave(street: string): void {
     // looking for place_id from google service
@@ -78,8 +79,48 @@ function testSave(street: string): void {
     }).catch( error => { console.error(error) })
 }
 
-*/
 
-getPlacesFromDB('ак').then( data => {
-    console.log(data)
-}).catch(error => { console.error(error)})
+
+async function testSave (street: string) {
+
+    let id: string
+    let description: string
+    let location: Location
+
+    try {
+        
+        const places = await getPlace(street)
+
+        // if(!places || places.length == 0 ) return
+
+        id = places[0].id
+        description = places[0].description
+        console.log(description)
+
+        location = await getLocation(id)
+        // if(!location) return
+        console.log(JSON.stringify(location))
+
+        var status = await savePlace({id, description, location})
+        console.log(status)
+
+     } catch(error) {
+         console.error(error)
+     }
+}
+
+*/
+async function test() {
+
+    const street = 'Минеральная улица, Нижний Новгород'
+    try {
+       var boo =  await isAddressExist(street)
+       console.log('exist '+ boo)
+       var foo = await popPlace(street)
+       console.log('update status:'+ foo)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+test()

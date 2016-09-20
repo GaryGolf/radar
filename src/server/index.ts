@@ -14,7 +14,7 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import {Location, getPlace, getLocation, getMapImage, searchMap } from './geoservice'
+import {Location,Place, getPlace, getLocation, getMapImage, searchMap } from './geoservice'
 import { getNear } from './estate'
 
 

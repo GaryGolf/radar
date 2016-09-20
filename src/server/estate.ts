@@ -42,36 +42,72 @@ export function getNear(lat:number = 56.317530, lng: number = 44.000717, radius:
 }
 */         
 
-export function savePlace(description: string, lat: string, lng: string, place_id: string): void {
+export function savePlace(place: Place) {
 
-    try{
+    return new Promise<string>((resolve, reject) => {
         const client = new pg.Client(conString)            
         client.connect()
-        client.query('INSERT INTO places (description, location, place_id) VALUES ($1, $2, $3)',[description, '('+lat+','+lng+')', place_id], ( error, result) => {
-            if(error) throw error
-            client.on('error', error => { console.error(error) })
+        client.query('INSERT INTO places (description, location, place_id) VALUES ($1, $2, $3)',
+            [place.description, '('+place.location.lat+','+place.location.lng+')', place.id], ( error, result) => {
+            if(error) reject(error)
+            if(result) resolve('OK')
             client.end()
         })
-        } catch(error) { console.error(error) }
-
+    })
 }
-import { Location } from './geoservice'
 
-interface Places {description: string, location: Location, id: string}
+import { Location, Place } from './geoservice'
 
 export function getPlacesFromDB(input: string) {
 
     // prepare first letter
     input = input.charAt(0).toUpperCase() + input.slice(1).toLowerCase()
 
-    return new Promise<Places[]>((resolve, reject) => {
+    return new Promise<Place[]>((resolve, reject) => {
 
         const client = new pg.Client(conString)            
         client.connect()
         client.query('SELECT description, location, place_id FROM places WHERE description LIKE \'%'+input+'%\' ORDER BY modified DESC LIMIT 5', ( error, result) => {
-            if(error) reject(error)
-                resolve(result.rows)
+            if(error)   reject(error)
+            if(result)  {
+                resolve(result.rows.map(place => {
+                    const location: Location = {lat: place.location.x, lng: place.location.y}
+                    const description: string = place.description
+                    const id: string = place.place_id
+                    return { id, description, location }
+                }))
+            }
             client.end()
+        })
+    })
+}
+
+export function isAddressExist(input: string) {
+
+    return new Promise<boolean>((resolve, reject) => {
+        
+        const client = new pg.Client(conString)            
+        client.connect()
+        client.query('SELECT place_id FROM places WHERE description = \'' + input + '\' LIMIT 5', ( error, result) => {
+            if(error)   reject(error)
+            if(result) resolve(true)
+            client.end()
+        })
+    })
+}
+
+export function popPlace(input: string) {
+
+    return new Promise<string>((resolve, reject) => {
+
+        const client = new pg.Client(conString)
+        client.connect()
+        client.query('UPDATE places SET modified = LOCALTIMESTAMP WHERE description = \'' + input + '\'', (error, result) => {
+            if(error) reject(error)
+            if(result) { 
+                resolve('OK')
+            }
+            client.end() 
         })
     })
 }

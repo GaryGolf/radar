@@ -30,7 +30,7 @@ const opts2 = {
 
 
 
-interface Place { id: string, description: string }
+export interface Place { id: string, description: string, location?: Location }
 
 export function getPlace(input: string) {
 
@@ -184,7 +184,6 @@ export function getMapImage(options: any) {
         })
     })
 }
-interface Place { id: string, description: string, location?: Location }
 
 export async function searchMap(place: Place): Promise<any> {
 
@@ -194,7 +193,7 @@ export async function searchMap(place: Place): Promise<any> {
 
         location = await getLocation(place.id)
         rows = await getNear(Number(location.lat), Number(location.lng))
-        savePlace(place.description,location.lat, location.lng, place.id)
+  //      savePlace(place.description,location.lat, location.lng, place.id)
 
      } catch(error) { throw error}
     const options =<any>config.get('options')
