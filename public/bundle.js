@@ -169,10 +169,8 @@
 	            case 13:
 	                if (this.current == -1)
 	                    this.current = 0;
-	                var id = this.state.menu[this.current].id;
-	                var description = this.state.menu[this.current].description;
-	                this.request({ id: id, description: description });
-	                this.input.value = description;
+	                this.request(this.state.menu[this.current]);
+	                this.input.value = this.state.menu[this.current].description;
 	                this.setState({ menu: [] });
 	                break;
 	            case 40:
@@ -192,11 +190,14 @@
 	        }
 	    };
 	    Search.prototype.mouseClickHandler = function (event) {
-	        var id = event.target.id;
-	        var description = event.target.textContent;
-	        this.request({ id: id, description: description });
-	        this.input.value = event.target.textContent;
-	        this.setState({ menu: [] });
+	        var _this = this;
+	        this.state.menu.forEach(function (item) {
+	            if (item.id === event.target.id) {
+	                _this.request(item);
+	                _this.input.value = item.description;
+	                _this.setState({ menu: [] });
+	            }
+	        });
 	    };
 	    Search.prototype.mouseOverHandler = function (event) {
 	        var divs = this.menu.getElementsByTagName('div');

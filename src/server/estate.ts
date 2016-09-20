@@ -105,7 +105,8 @@ export function popPlace(input: string) {
         client.query('UPDATE places SET modified = LOCALTIMESTAMP WHERE description = \'' + input + '\'', (error, result) => {
             if(error) reject(error)
             if(result) { 
-                resolve('OK')
+                resolve(JSON.stringify(result))
+                // resolve('OK')
             }
             client.end() 
         })

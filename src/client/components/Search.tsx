@@ -5,7 +5,8 @@ import * as IO from 'socket.io-client'
 import { Style, menuStyle, inputStyle, menuItemStyle, selectedStyle } from './Search.css'
 
 
-interface Menu { id: string; description: string }
+interface Location { lat: string, lng: string }
+interface Menu { id: string; description: string, location?: Location }
 interface Props {}
 interface State { menu: Menu [] }
 interface MouseEvent extends Event { target: HTMLElement }
@@ -60,10 +61,8 @@ export default class Search extends React.Component<Props,State>{
 
             case 13:    //Enter
                 if(this.current ==-1) this.current = 0
-                const id = this.state.menu[this.current].id
-                const description = this.state.menu[this.current].description 
-                this.request({ id, description})
-                this.input.value = description
+                this.request(this.state.menu[this.current])
+                this.input.value = this.state.menu[this.current].description
                 this.setState({menu: []})
                 break
             case 40:    //Down
@@ -88,11 +87,16 @@ export default class Search extends React.Component<Props,State>{
 
     mouseClickHandler(event: MouseEvent) {
 
-        const id = event.target.id
-        const description = event.target.textContent
-        this.request({id, description})
-        this.input.value = event.target.textContent
-        this.setState({menu: []})
+        this.state.menu.forEach(item => {
+
+            if(item.id === event.target.id) {
+                this.request(item)
+                this.input.value = item.description
+                this.setState({menu: []})
+            }
+        })
+       
+        
     }
 
     mouseOverHandler(event: MouseEvent) {

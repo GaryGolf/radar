@@ -14,18 +14,25 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import {Location,Place, getPlace, getLocation, getMapImage, searchMap } from './geoservice'
-import { getNear } from './estate'
+import {Location, Place, getPlace, getLocation, getMapImage, searchMap } from './geoservice'
+import { getNear, getPlacesFromDB } from './estate'
 
 
 
 io.on('connection', socket => {
 
     // get array of addresses looks like input 
-    socket.on('search-places', input => {  
-        getPlace(input).then(places => {
+    socket.on('search-places', async (input: string) => {  
+        
+        try {
+
+            let places: Place[] 
+           
+            if (input.length < 5 ) places = await getPlacesFromDB(input)
+            if (!places || input.length > 4) places = await getPlace(input)
             socket.emit('search-places', places )
-        }).catch(error => { console.error(error) })
+
+        } catch (error)  { console.error(error) }
     })
 
     // get map image with markers nearby place with input.id
@@ -49,11 +56,13 @@ io.on('connection', socket => {
     //     }).catch(error => { console.error(error) })
     // })
 
-    socket.on('search-map', async (input) => {
+    socket.on('search-map', async (place: Place) => {
 
-        const buffer = await searchMap(input)
-            .catch(error => { console.error(error) })
-        socket.emit('staticmap', buffer)
+        try {
+            const buffer = await searchMap(place)
+            socket.emit('staticmap', buffer)
+        } catch (error) { console.error(error) }
+        
     })
 
     socket.on('staticmap', input => {

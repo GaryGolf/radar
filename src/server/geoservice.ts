@@ -2,7 +2,7 @@ import * as request from 'request'
 import * as qs from 'querystring'
 import * as config from 'config'
 
-import { getNear, savePlace } from './estate'
+import { getNear, savePlace, getPlacesFromDB, isAddressExist, popPlace } from './estate'
 
 
 
@@ -58,13 +58,12 @@ export function getPlace(input: string) {
 
 			// new array of place descriptions
             data = info.predictions.map((item: any) => { 
-                // remove Россия
-                let addr = item.description
-                let idx = addr.indexOf(', Нижегородская обл')
-                if(idx != -1) addr = addr.substr(0, idx)
-                idx = addr.indexOf(', Россия')
-                if(idx != -1) addr = addr.substr(0, idx)
-                return {description: addr, id: item.place_id }
+                // remove Нижегородская обл, Россия
+                
+                const description = cut(item.description)
+                const id = item.place_id
+
+                return {description, id}
             }).filter((obj: any) => CTR.some(place => obj.description.indexOf(place)>0)) 	
             // filter items remove all outside by autocomplete.constraints 
             
@@ -72,6 +71,16 @@ export function getPlace(input: string) {
             console.log('status: ' + info.status ) 
         })
     })
+
+    function cut(address: string): string {
+        
+        let idx = address.indexOf(', Нижегородская обл')
+        if(idx != -1) address = address.substr(0, idx)
+        idx = address.indexOf(', Россия')
+        if(idx != -1) address = address.substr(0, idx)
+        return address
+
+    }
 }   
 
 export interface Location { lat: string, lng: string}
@@ -187,26 +196,33 @@ export function getMapImage(options: any) {
 
 export async function searchMap(place: Place): Promise<any> {
 
+    const options =<any>config.get('options')
+    const markers: string[] = new Array()
     let location: Location // = {lat: '56.317530', lng: '44.000717'}
     let rows: any
     try {
-
-        location = await getLocation(place.id)
+        // if location is unknown request location
+        place.location = place.location ? place.location : await getLocation(place.id)
+        
+        isAddressExist(place.description).then(exist => {
+            if (exist) {    // if this place exist in DB change modified Date to NOW
+                popPlace(place.description)
+             } else {       // If not Save New Place to DB
+                savePlace(place)
+             }
+        }).catch(error => { console.error(error) })
+        // search closest properties from DB
         rows = await getNear(Number(location.lat), Number(location.lng))
-  //      savePlace(place.description,location.lat, location.lng, place.id)
 
-     } catch(error) { throw error}
-    const options =<any>config.get('options')
+     } catch(error) { console.error(error) }
+    // adding location of map center
     options.center = location.lat+','+location.lng
-    const markers: string[] = new Array()
+    // prepare array of markers color:red|markers:(from A to Z)|location.lat,location.lng
     for(var i = 0, char = 65; i< rows.length; i++, char++){
             markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
     }
-    if(markers.length > 0) {
-        options.markers = markers
-    } else {
-        options.center = location.lat+','+location.lng
-    }
+    // add markers of properies at map
+    if(markers.length > 0) options.markers = markers
     //  map image request
     return await getMapImage(options)
 }
