@@ -88,9 +88,10 @@ export function isAddressExist(input: string) {
         
         const client = new pg.Client(conString)            
         client.connect()
-        client.query('SELECT place_id FROM places WHERE description = \'' + input + '\' LIMIT 5', ( error, result) => {
+        client.query('SELECT place_id FROM places WHERE description = \'' + input + '\' LIMIT 1', ( error, result) => {
             if(error)   reject(error)
-            if(result) resolve(true)
+            if(result.rowCount) resolve(true)
+            else resolve(false)
             client.end()
         })
     })
@@ -104,10 +105,9 @@ export function popPlace(input: string) {
         client.connect()
         client.query('UPDATE places SET modified = LOCALTIMESTAMP WHERE description = \'' + input + '\'', (error, result) => {
             if(error) reject(error)
-            if(result) { 
-                resolve(JSON.stringify(result))
-                // resolve('OK')
-            }
+            if(result.rowCount) { 
+                resolve('OK')
+            } 
             client.end() 
         })
     })

@@ -40,9 +40,6 @@ export function getPlace(input: string) {
 
         opts1.qs.input = input
 
-        // Reject error if input is too short
-        if(input.length < 5) reject(new Error('input string is too short'))
-
         request( opts1, (error, response, body) => {
 
             let info: any
@@ -57,7 +54,7 @@ export function getPlace(input: string) {
 			if(info.status != 'OK') { reject('status: '+ info.status); return }
 
 			// new array of place descriptions
-            data = info.predictions.map((item: any) => { 
+                data = info.predictions.map((item: any) => { 
                 // remove Нижегородская обл, Россия
                 
                 const description = cut(item.description)
@@ -165,8 +162,6 @@ export function getMapImage(options: any) {
             ]
             // markers: ['color:red|label:A|56.317200,44.000600',    
         }
-    console.log('markers '+ options.markers)
-    console.log('center ' + options.center)
 
     return new Promise<any>((resolve, reject) => {
        
@@ -193,7 +188,12 @@ export function getMapImage(options: any) {
         })
     })
 }
-
+/*
+*   Gets place, search for estates near it
+*   saves place to DB or makes it most popular
+*   returns map image bitmap array
+*
+*/
 export async function searchMap(place: Place): Promise<any> {
 
     const options =<any>config.get('options')
@@ -201,14 +201,16 @@ export async function searchMap(place: Place): Promise<any> {
     let location: Location // = {lat: '56.317530', lng: '44.000717'}
     let rows: any
     try {
-        // if location is unknown request location
-        place.location = place.location ? place.location : await getLocation(place.id)
-        
+        // if location is unknown request location()
+        if (!place.location) location = await getLocation(place.id)
+        else location = place.location
+        place.location = location
+
         isAddressExist(place.description).then(exist => {
             if (exist) {    // if this place exist in DB change modified Date to NOW
-                popPlace(place.description)
+                popPlace(place.description).then(status => { console.log('popStatus:'+status) }).catch(error => { console.error(error) })
              } else {       // If not Save New Place to DB
-                savePlace(place)
+                savePlace(place).then(status => { console.log('saveStatus:'+status) }).catch(error => { console.error(error) })
              }
         }).catch(error => { console.error(error) })
         // search closest properties from DB
@@ -225,4 +227,4 @@ export async function searchMap(place: Place): Promise<any> {
     if(markers.length > 0) options.markers = markers
     //  map image request
     return await getMapImage(options)
-}
+}   // searchMao

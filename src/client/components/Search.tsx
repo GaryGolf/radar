@@ -18,6 +18,7 @@ export default class Search extends React.Component<Props,State>{
     private menu: HTMLDivElement
     private socket: SocketIOClient.Socket
     private current: number
+    private backspace: boolean
 
     constructor(props: Props) {
 
@@ -25,6 +26,7 @@ export default class Search extends React.Component<Props,State>{
 
         this.socket = window.socket
         this.current = -1
+        this.backspace = false
         this.state =  { menu: [] } 
 
     }
@@ -55,7 +57,7 @@ export default class Search extends React.Component<Props,State>{
 
         const len: number = this.state.menu.length;
         const divs = this.menu.getElementsByTagName('div')
-        if(len < 1 || len != divs.length ) return
+        // if(len < 1 || len != divs.length ) return
 
         switch(event.keyCode) {
 
@@ -80,8 +82,20 @@ export default class Search extends React.Component<Props,State>{
                 divs.item(this.current).className = selectedStyle
                 this.input.value = this.state.menu[this.current].description
                 break
+            case 8:  // backspace
+
+                if(this.backspace) {
+                    // first time pressed - removes last symbol | second time - removes whole string
+                    this.input.value = ''
+                    this.setState({menu: []})
+                    this.backspace = false
+                }   else {
+
+                    this.backspace = true
+                } 
+                break
             default :
-                return
+                // this.socket.emit('search-places', this.input.value)
         }
     }
 
@@ -111,7 +125,7 @@ export default class Search extends React.Component<Props,State>{
     }
 
     inputHandler(event: KeyboardEvent) {
-        this.socket.emit('search-places', this.input.value)
+       this.socket.emit('search-places', this.input.value)
     }
 
     request(data: Object) { 

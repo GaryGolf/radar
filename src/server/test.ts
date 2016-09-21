@@ -23,8 +23,8 @@ console.log('test')
 
 // read file streets txt
 
-
 /*
+
 import * as fs from 'fs'
 
 let list: string[]
@@ -49,35 +49,6 @@ fs.readFile('./config/streets.txt', 'utf8', (error, data) =>{
     },1000)
     
 })
-
-
-function testSave(street: string): void {
-    // looking for place_id from google service
-    getPlace(street).then( (data: any[]) => {
-
-        let id = data[0].id
-        let description = data[0].description
-        let location: Location
-
-        // finding geocode 
-
-        getLocation(id).then( (data: Location) => {
-
-            location = data
-            
-            // save places to db
-            console.log(description+'    :'+id)
-            try{ 
-                savePlace( description, location.lat, location.lng, id)
-               // savePlace( street+', Нижний Новгород', location.lat, location.lng, id)
-            } catch (error) {
-                console.log('have got error from db')
-                console.error(error)
-            }
-
-        }).catch(error => { console.error(error) })
-    }).catch( error => { console.error(error) })
-}
 
 
 

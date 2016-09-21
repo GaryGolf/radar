@@ -26,35 +26,14 @@ io.on('connection', socket => {
         
         try {
 
-            let places: Place[] 
+            let places: Place[] = []
            
-            if (input.length < 5 ) places = await getPlacesFromDB(input)
-            if (!places || input.length > 4) places = await getPlace(input)
+            if (input.length < 5) places = await getPlacesFromDB(input)
+            if (!places.length || input.length > 4)  places = await getPlace(input)
             socket.emit('search-places', places )
 
         } catch (error)  { console.error(error) }
     })
-
-    // get map image with markers nearby place with input.id
-    // socket.on('search-map', input => {
-    //     // get location point
-    //     getLocation(input).then((location: Location) => {
-    //         // find estates nearby location
-    //         getNear(Number(location.lat), Number(location.lng)).then(rows => {
-    //             // prepare markers 
-    //             let options =<any>config.get('options')
-    //             const markers: string[] = new Array()
-    //             for(var i = 0, char = 65; i< rows.length; i++, char++){
-    //                  markers.push(`color:red|label:${String.fromCharCode(char)}|${rows[i].location.x},${rows[i].location.y}`)
-    //             }
-    //             options.markers = markers
-    //             //  map image request
-    //             getMapImage(options).then(buffer => {
-    //                  socket.emit('staticmap', buffer)
-    //             }).catch(error => { console.error(error) })
-    //         }).catch(error => { console.error(error) })
-    //     }).catch(error => { console.error(error) })
-    // })
 
     socket.on('search-map', async (place: Place) => {
 
@@ -76,8 +55,6 @@ io.on('connection', socket => {
 })
 
 app.use(express.static('public'))
-
-
 
 server.listen(3000, () => {
 	console.log('http.server started at port 3000;')
