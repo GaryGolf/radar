@@ -56,7 +56,7 @@ io.on('connection', socket => {
 
 app.use(express.static('public'))
 
-server.listen(3000, () => {
-	console.log('http.server started at port 3000;')
+server.listen(8080, () => {
+	console.log('http.server started at port 8080;')
 })
 

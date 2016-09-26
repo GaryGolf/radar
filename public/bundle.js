@@ -48,10 +48,12 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(2);
 	// import io from 'socket.io-client'
-	var StaticMap_1 = __webpack_require__(3);
-	var Search_1 = __webpack_require__(4);
-	ReactDOM.render(React.createElement(StaticMap_1.default, null), document.getElementById('map'));
-	ReactDOM.render(React.createElement(Search_1.default, null), document.getElementById('root'));
+	// import StaticMap from './components/StaticMap'
+	// import Search from './components/Search'
+	var List_1 = __webpack_require__(8);
+	// ReactDOM.render(<StaticMap/>,document.getElementById('map'))
+	// ReactDOM.render(<Search/>,document.getElementById('root'))
+	ReactDOM.render(React.createElement(List_1.default, null), document.getElementById('list'));
 
 
 /***/ },
@@ -70,172 +72,127 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	// <reference path="./Socket.d.ts" />
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	/// <reference path="Socket.d.ts" />
 	var React = __webpack_require__(1);
-	var StaticMap = (function (_super) {
-	    __extends(StaticMap, _super);
-	    function StaticMap(props) {
+	var ListItem_css_1 = __webpack_require__(4);
+	var ListItem = (function (_super) {
+	    __extends(ListItem, _super);
+	    function ListItem(props) {
 	        _super.call(this, props);
-	        this.socket = window.socket;
-	        this.state = { image: { src: null } };
-	        this.options = {
-	            center: '56.317530,44.000717',
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1',
-	            maptype: 'roadmap',
-	            size: '600x622',
-	            format: 'png',
-	            style: [
-	                'feature:all|saturation:-80',
-	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
-	                'feature:poi.business|element:labels|visibility:off',
-	                'feature:poi|element:geometry|lightness:45'
-	            ]
-	        };
+	        this.esd = this.props.EstateDescription;
+	        // {
+	        //         title: 'Шикарный офис в центре',
+	        //         subtitle: 'Оффисный центр, четвертый этаж, 25кв.м', 
+	        //         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora quia quos odio fugiat qui. Eaque ea reprehenderit doloremque. Odit distinctio nisi eos delectus eaque provident consequuntur perferendis maiores, saepe doloribus suscipit quasi ad aut nam sapiente quas iste quo quidem, reiciendis, accusamus quam eligendi.\nUllam earum doloribus recusandae, quis, minus ipsa obcaecati dolores modi odio, beatae iusto, quaerat. Dicta architecto in perferendis ut modi velit consequatur itaque suscipit, reiciendis officia laborum praesentium numquam fuga labore ea cum eius soluta sit magni eaque unde perspiciatis asperiores? Cupiditate minus quis distinctio sequi placeat dolores reiciendis, inventore officiis eos quas quo illum perspiciatis?',
+	        //         img: ['img/1ee70cab09e65d1bf_900.jpg','img/c3bae5812bc053fd4_900.jpg'],
+	        //         tag: 'A'
+	        //     } 
+	        this.containerStyle = ListItem_css_1.prepareAnimation(this.esd.img);
 	    }
-	    StaticMap.prototype.componentWillMount = function () {
+	    ListItem.prototype.componentWillMount = function () {
+	    };
+	    ListItem.prototype.componentDidMount = function () {
+	        ListItem_css_1.Style.inject(this.container);
+	    };
+	    ListItem.prototype.render = function () {
 	        var _this = this;
-	        this.socket.on('staticmap', function (buffer) {
-	            var bytes = new Uint8Array(buffer);
-	            var blob = new Blob([bytes.buffer], { type: 'image/png' });
-	            var src = URL.createObjectURL(blob);
-	            _this.setState({ image: { src: src } });
-	        });
+	        var description = this.esd.description.split('\n').map(function (paragraph, idx) { return React.createElement("p", {className: ListItem_css_1.descriptionStyle, key: idx}, paragraph); });
+	        return (React.createElement("div", {className: this.containerStyle, ref: function (element) { return _this.container = element; }}, 
+	            React.createElement("div", {className: ListItem_css_1.wrapperStyle}, 
+	                React.createElement("div", {className: ListItem_css_1.titleStyle}, this.esd.title), 
+	                React.createElement("div", {className: ListItem_css_1.subtitleStyle}, this.esd.subtitle), 
+	                description, 
+	                React.createElement("div", {className: ListItem_css_1.tagStyle}, this.esd.tag))
+	        ));
 	    };
-	    StaticMap.prototype.componentDidMount = function () {
-	        this.socket.emit('staticmap', this.options);
-	    };
-	    StaticMap.prototype.render = function () {
-	        return (React.createElement("div", null, this.state.image.src ? React.createElement("img", {src: this.state.image.src}) : null));
-	    };
-	    return StaticMap;
+	    return ListItem;
 	}(React.Component));
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = StaticMap;
+	exports.default = ListItem;
 
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/// <reference path="./Socket.d.ts" />
 	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var React = __webpack_require__(1);
-	var Search_css_1 = __webpack_require__(5);
-	var Search = (function (_super) {
-	    __extends(Search, _super);
-	    function Search(props) {
-	        _super.call(this, props);
-	        this.socket = window.socket;
-	        this.current = -1;
-	        this.backspace = false;
-	        this.state = { menu: [] };
+	var FreeStyle = __webpack_require__(5);
+	exports.Style = FreeStyle.create();
+	function prepareAnimation(img) {
+	    var animation = {};
+	    var animationDirections = [
+	        { from: 'right top', to: 'left bottom' },
+	        { from: 'left bottom', to: 'right top' },
+	        { from: 'right bottom', to: 'left top' },
+	        { from: 'left top', to: 'right bottom' }
+	    ];
+	    for (var i = 0, begin = 0; i < img.length; i++, begin += 100 / img.length) {
+	        var end = (i + 1 === img.length) ? 100 : begin + 100 / img.length - .1;
+	        var dir = animationDirections[Math.floor(Math.random() * animationDirections.length)];
+	        animation[begin + '%'] = { background: "url('" + img[i] + "') no-repeat " + dir.from };
+	        animation[end + '%'] = { background: "url('" + img[i] + "') no-repeat " + dir.to };
 	    }
-	    Search.prototype.componentWillMount = function () {
-	        var _this = this;
-	        // setup data receiver 
-	        this.socket.on('search-places', function (menu) {
-	            _this.setState({ menu: menu });
-	            _this.current = -1;
-	        });
-	    };
-	    Search.prototype.componentDidMount = function () {
-	        Search_css_1.Style.inject(this.menu);
-	        this.input.focus();
-	    };
-	    Search.prototype.clearSelectedStyle = function () {
-	        var divs = this.menu.getElementsByClassName(Search_css_1.selectedStyle);
-	        for (var i = 0; i < divs.length; i++) {
-	            divs.item(i).className = Search_css_1.menuItemStyle;
-	        }
-	    };
-	    Search.prototype.keyDownHandler = function (event) {
-	        var len = this.state.menu.length;
-	        var divs = this.menu.getElementsByTagName('div');
-	        // if(len < 1 || len != divs.length ) return
-	        switch (event.keyCode) {
-	            case 13:
-	                if (this.current == -1)
-	                    this.current = 0;
-	                this.request(this.state.menu[this.current]);
-	                this.input.value = this.state.menu[this.current].description;
-	                this.setState({ menu: [] });
-	                break;
-	            case 40:
-	                this.clearSelectedStyle();
-	                this.current = ++this.current % len;
-	                divs.item(this.current).className = Search_css_1.selectedStyle;
-	                this.input.value = this.state.menu[this.current].description;
-	                break;
-	            case 38:
-	                this.clearSelectedStyle();
-	                this.current = this.current > 0 ? --this.current : len - 1;
-	                divs.item(this.current).className = Search_css_1.selectedStyle;
-	                this.input.value = this.state.menu[this.current].description;
-	                break;
-	            case 8:
-	                if (this.backspace) {
-	                    // first time pressed - removes last symbol | second time - removes whole string
-	                    this.input.value = '';
-	                    this.setState({ menu: [] });
-	                    this.backspace = false;
-	                }
-	                else {
-	                    this.backspace = true;
-	                }
-	                break;
-	            default:
-	        }
-	    };
-	    Search.prototype.mouseClickHandler = function (event) {
-	        var _this = this;
-	        this.state.menu.forEach(function (item) {
-	            if (item.id === event.target.id) {
-	                _this.request(item);
-	                _this.input.value = item.description;
-	                _this.setState({ menu: [] });
-	            }
-	        });
-	    };
-	    Search.prototype.mouseOverHandler = function (event) {
-	        var divs = this.menu.getElementsByTagName('div');
-	        for (var i = 0; i < divs.length; i++) {
-	            if (divs.item(i) == event.target) {
-	                this.current = i;
-	                break;
-	            }
-	        }
-	        this.clearSelectedStyle();
-	        event.target.className = Search_css_1.selectedStyle;
-	    };
-	    Search.prototype.inputHandler = function (event) {
-	        this.socket.emit('search-places', this.input.value);
-	    };
-	    Search.prototype.request = function (data) {
-	        this.socket.emit('search-map', data);
-	    };
-	    Search.prototype.render = function () {
-	        var _this = this;
-	        return (React.createElement("div", {className: Search_css_1.menuStyle, ref: function (div) { return _this.menu = div; }}, 
-	            React.createElement("input", {className: Search_css_1.inputStyle, type: "search", placeholder: "введите адрес.", ref: function (input) { return _this.input = input; }, onInput: this.inputHandler.bind(this), onKeyDown: this.keyDownHandler.bind(this)}), 
-	            (this.state.menu.length > 0) ? (this.state.menu.map(function (item, idx) { return (React.createElement("div", {className: Search_css_1.menuItemStyle, id: item.id, key: idx, onClick: _this.mouseClickHandler.bind(_this), onMouseOver: _this.mouseOverHandler.bind(_this)}, item.description)); })) : null));
-	    };
-	    return Search;
-	}(React.Component));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = Search;
+	    var animationName = exports.Style.registerKeyframes(animation);
+	    var animationTimingFunction = (['linear', 'ease-in', 'ease-out', 'ease-in-out'])[Math.floor(Math.random() * 4)];
+	    var animationDuration = img.length * (5 + Math.floor(Math.random() * 5)) + 's';
+	    return exports.Style.registerStyle({
+	        maxWidth: '600px',
+	        height: '400px',
+	        padding: '8px',
+	        margin: '2px',
+	        borderRadius: '5px',
+	        flex: '1 500px',
+	        boxSizing: 'content-box',
+	        animationIterationCount: 'infinite',
+	        animationTimingFunction: animationTimingFunction,
+	        animationDuration: animationDuration,
+	        animationName: animationName
+	    });
+	}
+	exports.prepareAnimation = prepareAnimation;
+	exports.wrapperStyle = exports.Style.registerStyle({
+	    position: 'relative',
+	    background: 'linear-gradient(-30deg, rgba(0,0,0,.6), rgba(0,70,80,.3))',
+	    overflow: 'hidden',
+	    color: 'white',
+	    height: '100%',
+	    textShadow: '2px 2px 4px rgba(0,0,0,.3)',
+	    borderRadius: '5px'
+	});
+	exports.titleStyle = exports.Style.registerStyle({
+	    fontSize: '1.8em',
+	    padding: '10px',
+	    fontFamily: 'Times New Roman, Times, serif',
+	    fontWeight: 'bold',
+	    textAlign: 'right'
+	});
+	exports.subtitleStyle = exports.Style.registerStyle({
+	    padding: '10px',
+	    textAlign: 'right'
+	});
+	exports.descriptionStyle = exports.Style.registerStyle({
+	    paddingLeft: '10px',
+	    paddingRight: '10px',
+	    textAlign: 'justify'
+	});
+	exports.tagStyle = exports.Style.registerStyle({
+	    position: 'absolute',
+	    left: '10px',
+	    bottom: '10px',
+	    color: 'white',
+	    background: 'red',
+	    opacity: '1',
+	    width: '20px',
+	    height: '20px',
+	    borderRadius: '4px',
+	    textAlign: 'center'
+	});
 
 
 /***/ },
@@ -243,60 +200,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var FreeStyle = __webpack_require__(6);
-	exports.Style = FreeStyle.create();
-	exports.menuStyle = exports.Style.registerStyle({
-	    backgroundColor: 'white',
-	    fontFamily: 'Verdana, Geneva, Tahoma, sans-serif',
-	    fontSize: '90%',
-	    width: '560px',
-	    boxShadow: '3px 3px 10px #AAAAAA',
-	    padding: '6px'
-	});
-	exports.inputStyle = exports.Style.registerStyle({
-	    position: 'relative',
-	    left: '1px',
-	    width: '95%',
-	    margin: '5px',
-	    border: 'none',
-	    color: 'black',
-	    '&:focus': {
-	        outline: 'none'
-	    }
-	});
-	exports.menuItemStyle = exports.Style.registerStyle({
-	    width: 'calc(100%-3px)',
-	    padding: '4px',
-	    color: '#333333',
-	    whiteSpace: 'pre',
-	    overflow: 'hidden'
-	});
-	exports.selectedStyle = exports.Style.registerStyle({
-	    backgroundColor: 'silver',
-	    width: 'calc(100%-3px)',
-	    padding: '4px',
-	    color: '#333333',
-	    whiteSpace: 'pre',
-	    overflow: 'hidden'
-	});
-	exports.normalStyle = exports.Style.registerStyle({
-	    backgroundColor: 'white'
-	});
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var React = __webpack_require__(1);
-	var ReactCurrentOwner = __webpack_require__(7);
-	exports.FreeStyle = __webpack_require__(8);
+	var ReactCurrentOwner = __webpack_require__(6);
+	exports.FreeStyle = __webpack_require__(7);
 	/**
 	 * Create a specialized free style instance.
 	 */
@@ -405,7 +316,7 @@
 	//# sourceMappingURL=react-free-style.js.map
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports) {
 
 	/**
@@ -441,7 +352,7 @@
 	module.exports = ReactCurrentOwner;
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -954,6 +865,80 @@
 	}
 	exports.create = create;
 	//# sourceMappingURL=free-style.js.map
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/// <reference path="./Socket.d.ts" />
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var React = __webpack_require__(1);
+	var List_css_1 = __webpack_require__(9);
+	var ListItem_1 = __webpack_require__(3);
+	var List = (function (_super) {
+	    __extends(List, _super);
+	    function List(props) {
+	        _super.call(this, props);
+	    }
+	    List.prototype.componentWillMount = function () {
+	        this.a = [{
+	                title: 'Шикарный офис в центре',
+	                subtitle: 'Оффисный центр, четвертый этаж, 25кв.м',
+	                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora quia quos odio fugiat qui. Eaque ea reprehenderit doloremque. Odit distinctio nisi eos delectus eaque provident consequuntur perferendis maiores, saepe doloribus suscipit quasi ad aut nam sapiente quas iste quo quidem, reiciendis, accusamus quam eligendi.\nUllam earum doloribus recusandae, quis, minus ipsa obcaecati dolores modi odio, beatae iusto, quaerat. Dicta architecto in perferendis ut modi velit consequatur itaque suscipit, reiciendis officia laborum praesentium numquam fuga labore ea cum eius soluta sit magni eaque unde perspiciatis asperiores? Cupiditate minus quis distinctio sequi placeat dolores reiciendis, inventore officiis eos quas quo illum perspiciatis?',
+	                img: ['img/1ee70cab09e65d1bf_900.jpg', 'img/c3bae5812bc053fd4_900.jpg'],
+	                tag: 'A'
+	            },
+	            {
+	                title: ' Магазин на красной линии',
+	                subtitle: '97м.кв',
+	                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia voluptas voluptatum, dolorum praesentium alias nihil, commodi laudantium dignissimos atque, molestiae cum. Aliquam officia, beatae incidunt officiis quas facere laboriosam laudantium eos. Magni molestiae at officiis quisquam sequi. Non deleniti mollitia, officia eveniet voluptatibus, fugit illo delectus minus odit sequi, enim magnam, omnis neque. Veritatis quam, sint magni dolor quos odio esse doloribus amet sequi harum. Tempora recusandae fugiat, nisi quis doloribus, voluptate, harum, quo facilis voluptates beatae mollitia et soluta consectetur ipsa. Neque sunt illo inventore maxime beatae quia unde quo, dolores ab minus modi iste molestiae, consequuntur, eligendi rem dignissimos distinctio aliquam sapiente quis tempore saepe voluptas? Dolore laudantium incidunt aperiam. Illum consequuntur, odit ut voluptatibus esse autem quia enim soluta animi fuga nihil est ullam dolorem maiores minus.',
+	                tag: 'B',
+	                img: ['img/366e860ebd645ba3e_900.jpg', 'img/ebb0de675f5c3e358_900.jpg']
+	            },
+	            {
+	                title: 'Уютное Кафе',
+	                subtitle: '64м.кв',
+	                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere expedita voluptatem corrupti voluptatum nemo explicabo temporibus, labore fuga, quae dolorem possimus, dicta hic culpa. Excepturi dicta doloremque inventore dolores, perspiciatis consectetur tempora tenetur similique officiis magni asperiores natus, laboriosam id a deleniti sapiente culpa, at rerum nesciunt quibusdam soluta quae aut repellendus! Reprehenderit velit sequi reiciendis debitis quasi deleniti natus nisi, non nostrum id beatae expedita consequuntur numquam saepe. Non.',
+	                tag: 'C',
+	                img: ['img/fa9d3ac22f33cca91_900.jpg', 'img/ce7cf0f9bfee28f14_900.jpg', 'img/c1efaa7bdf2b6e920_900.jpg', 'img/3d78848928321c054_900.jpg', 'img/fa9d3ac22f33cca91_900.jpg']
+	            }
+	        ];
+	    };
+	    List.prototype.componentDidMount = function () {
+	        List_css_1.Style.inject(this.container);
+	    };
+	    List.prototype.render = function () {
+	        var _this = this;
+	        var listItems = this.a.map(function (item, idx) {
+	            return (React.createElement(ListItem_1.default, {key: idx, EstateDescription: item}));
+	        });
+	        return (React.createElement("div", {className: List_css_1.flexContainer, ref: function (element) { return _this.container = element; }}, listItems));
+	    };
+	    return List;
+	}(React.Component));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = List;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var FreeStyle = __webpack_require__(5);
+	exports.Style = FreeStyle.create();
+	exports.flexContainer = exports.Style.registerStyle({
+	    display: 'flex',
+	    justifyContent: 'flex-start',
+	    flexDirection: 'row',
+	    flexWrap: 'wrap'
+	});
+
 
 /***/ }
 /******/ ]);

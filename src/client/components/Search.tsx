@@ -94,6 +94,11 @@ export default class Search extends React.Component<Props,State>{
                     this.backspace = true
                 } 
                 break
+            case 27 : //escape
+                this.input.value = ''
+                this.setState({menu: []})
+                this.backspace = false
+                break
             default :
                 // this.socket.emit('search-places', this.input.value)
         }
