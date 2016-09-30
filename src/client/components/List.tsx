@@ -5,7 +5,7 @@ import * as IO from 'socket.io-client'
 import { Style, flexContainer } from './List.css'
 import ListItem from './ListItem'
 
-interface Props {}
+interface Props { children?: React.ReactNode }
 interface State {}
 
 export default class List extends React.Component <Props, State> {
@@ -54,12 +54,13 @@ export default class List extends React.Component <Props, State> {
 
         const listItems = this.a.map((item: any, idx: number) => {
             return (
-                <ListItem key={idx} EstateDescription={item} />
+                <ListItem key={idx} info={item} />
             )
         })
 
         return (
             <div className={flexContainer} ref={element => this.container = element}>
+                {this.props.children}
                 {listItems}
             </div>
         )

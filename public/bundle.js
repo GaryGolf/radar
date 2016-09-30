@@ -40,8 +40,9 @@
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -50,153 +51,34 @@
 	// import io from 'socket.io-client'
 	// import StaticMap from './components/StaticMap'
 	// import Search from './components/Search'
-	var List_1 = __webpack_require__(8);
+	// import List from './components/List'
+	// import ListItem from './components/ListItem'
+	// import OnePageScroll from './components/OnePageScroll'
+	var MobileLayout_1 = __webpack_require__(183);
 	// ReactDOM.render(<StaticMap/>,document.getElementById('map'))
 	// ReactDOM.render(<Search/>,document.getElementById('root'))
-	ReactDOM.render(React.createElement(List_1.default, null), document.getElementById('list'));
+	// ReactDOM.render(<List/>,document.getElementById('list'))
+	// ReactDOM.render(<OnePageScroll/>, document.getElementById('list'))
+	ReactDOM.render(React.createElement(MobileLayout_1.default, null), document.getElementById('list'));
 
 
 /***/ },
-/* 1 */
+
+/***/ 1:
 /***/ function(module, exports) {
 
 	module.exports = React;
 
 /***/ },
-/* 2 */
+
+/***/ 2:
 /***/ function(module, exports) {
 
 	module.exports = ReactDOM;
 
 /***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
 
-	// <reference path="./Socket.d.ts" />
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var React = __webpack_require__(1);
-	var ListItem_css_1 = __webpack_require__(4);
-	var ListItem = (function (_super) {
-	    __extends(ListItem, _super);
-	    function ListItem(props) {
-	        _super.call(this, props);
-	        this.esd = this.props.EstateDescription;
-	        // {
-	        //         title: 'Шикарный офис в центре',
-	        //         subtitle: 'Оффисный центр, четвертый этаж, 25кв.м', 
-	        //         description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora quia quos odio fugiat qui. Eaque ea reprehenderit doloremque. Odit distinctio nisi eos delectus eaque provident consequuntur perferendis maiores, saepe doloribus suscipit quasi ad aut nam sapiente quas iste quo quidem, reiciendis, accusamus quam eligendi.\nUllam earum doloribus recusandae, quis, minus ipsa obcaecati dolores modi odio, beatae iusto, quaerat. Dicta architecto in perferendis ut modi velit consequatur itaque suscipit, reiciendis officia laborum praesentium numquam fuga labore ea cum eius soluta sit magni eaque unde perspiciatis asperiores? Cupiditate minus quis distinctio sequi placeat dolores reiciendis, inventore officiis eos quas quo illum perspiciatis?',
-	        //         img: ['img/1ee70cab09e65d1bf_900.jpg','img/c3bae5812bc053fd4_900.jpg'],
-	        //         tag: 'A'
-	        //     } 
-	        this.containerStyle = ListItem_css_1.prepareAnimation(this.esd.img);
-	    }
-	    ListItem.prototype.componentWillMount = function () {
-	    };
-	    ListItem.prototype.componentDidMount = function () {
-	        ListItem_css_1.Style.inject(this.container);
-	    };
-	    ListItem.prototype.render = function () {
-	        var _this = this;
-	        var description = this.esd.description.split('\n').map(function (paragraph, idx) { return React.createElement("p", {className: ListItem_css_1.descriptionStyle, key: idx}, paragraph); });
-	        return (React.createElement("div", {className: this.containerStyle, ref: function (element) { return _this.container = element; }}, 
-	            React.createElement("div", {className: ListItem_css_1.wrapperStyle}, 
-	                React.createElement("div", {className: ListItem_css_1.titleStyle}, this.esd.title), 
-	                React.createElement("div", {className: ListItem_css_1.subtitleStyle}, this.esd.subtitle), 
-	                description, 
-	                React.createElement("div", {className: ListItem_css_1.tagStyle}, this.esd.tag))
-	        ));
-	    };
-	    return ListItem;
-	}(React.Component));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = ListItem;
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var FreeStyle = __webpack_require__(5);
-	exports.Style = FreeStyle.create();
-	function prepareAnimation(img) {
-	    var animation = {};
-	    var animationDirections = [
-	        { from: 'right top', to: 'left bottom' },
-	        { from: 'left bottom', to: 'right top' },
-	        { from: 'right bottom', to: 'left top' },
-	        { from: 'left top', to: 'right bottom' }
-	    ];
-	    for (var i = 0, begin = 0; i < img.length; i++, begin += 100 / img.length) {
-	        var end = (i + 1 === img.length) ? 100 : begin + 100 / img.length - .1;
-	        var dir = animationDirections[Math.floor(Math.random() * animationDirections.length)];
-	        animation[begin + '%'] = { background: "url('" + img[i] + "') no-repeat " + dir.from };
-	        animation[end + '%'] = { background: "url('" + img[i] + "') no-repeat " + dir.to };
-	    }
-	    var animationName = exports.Style.registerKeyframes(animation);
-	    var animationTimingFunction = (['linear', 'ease-in', 'ease-out', 'ease-in-out'])[Math.floor(Math.random() * 4)];
-	    var animationDuration = img.length * (5 + Math.floor(Math.random() * 5)) + 's';
-	    return exports.Style.registerStyle({
-	        maxWidth: '600px',
-	        height: '400px',
-	        padding: '8px',
-	        margin: '2px',
-	        borderRadius: '5px',
-	        flex: '1 500px',
-	        boxSizing: 'content-box',
-	        animationIterationCount: 'infinite',
-	        animationTimingFunction: animationTimingFunction,
-	        animationDuration: animationDuration,
-	        animationName: animationName
-	    });
-	}
-	exports.prepareAnimation = prepareAnimation;
-	exports.wrapperStyle = exports.Style.registerStyle({
-	    position: 'relative',
-	    background: 'linear-gradient(-30deg, rgba(0,0,0,.6), rgba(0,70,80,.3))',
-	    overflow: 'hidden',
-	    color: 'white',
-	    height: '100%',
-	    textShadow: '2px 2px 4px rgba(0,0,0,.3)',
-	    borderRadius: '5px'
-	});
-	exports.titleStyle = exports.Style.registerStyle({
-	    fontSize: '1.8em',
-	    padding: '10px',
-	    fontFamily: 'Times New Roman, Times, serif',
-	    fontWeight: 'bold',
-	    textAlign: 'right'
-	});
-	exports.subtitleStyle = exports.Style.registerStyle({
-	    padding: '10px',
-	    textAlign: 'right'
-	});
-	exports.descriptionStyle = exports.Style.registerStyle({
-	    paddingLeft: '10px',
-	    paddingRight: '10px',
-	    textAlign: 'justify'
-	});
-	exports.tagStyle = exports.Style.registerStyle({
-	    position: 'absolute',
-	    left: '10px',
-	    bottom: '10px',
-	    color: 'white',
-	    background: 'red',
-	    opacity: '1',
-	    width: '20px',
-	    height: '20px',
-	    borderRadius: '4px',
-	    textAlign: 'center'
-	});
-
-
-/***/ },
-/* 5 */
+/***/ 5:
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -316,7 +198,8 @@
 	//# sourceMappingURL=react-free-style.js.map
 
 /***/ },
-/* 6 */
+
+/***/ 6:
 /***/ function(module, exports) {
 
 	/**
@@ -352,7 +235,8 @@
 	module.exports = ReactCurrentOwner;
 
 /***/ },
-/* 7 */
+
+/***/ 7:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -867,10 +751,10 @@
 	//# sourceMappingURL=free-style.js.map
 
 /***/ },
-/* 8 */
+
+/***/ 183:
 /***/ function(module, exports, __webpack_require__) {
 
-	/// <reference path="./Socket.d.ts" />
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -878,68 +762,93 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var React = __webpack_require__(1);
-	var List_css_1 = __webpack_require__(9);
-	var ListItem_1 = __webpack_require__(3);
-	var List = (function (_super) {
-	    __extends(List, _super);
-	    function List(props) {
+	var FreeStyle = __webpack_require__(5);
+	var MobileLayout = (function (_super) {
+	    __extends(MobileLayout, _super);
+	    function MobileLayout(props) {
 	        _super.call(this, props);
+	        this.RFS = FreeStyle.create();
+	        this.Styles = {};
+	        this.isLeftMenuActive = false;
+	        window.onclick = function (event) { return console.log('orientation change'); };
 	    }
-	    List.prototype.componentWillMount = function () {
-	        this.a = [{
-	                title: 'Шикарный офис в центре',
-	                subtitle: 'Оффисный центр, четвертый этаж, 25кв.м',
-	                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Tempora quia quos odio fugiat qui. Eaque ea reprehenderit doloremque. Odit distinctio nisi eos delectus eaque provident consequuntur perferendis maiores, saepe doloribus suscipit quasi ad aut nam sapiente quas iste quo quidem, reiciendis, accusamus quam eligendi.\nUllam earum doloribus recusandae, quis, minus ipsa obcaecati dolores modi odio, beatae iusto, quaerat. Dicta architecto in perferendis ut modi velit consequatur itaque suscipit, reiciendis officia laborum praesentium numquam fuga labore ea cum eius soluta sit magni eaque unde perspiciatis asperiores? Cupiditate minus quis distinctio sequi placeat dolores reiciendis, inventore officiis eos quas quo illum perspiciatis?',
-	                img: ['img/1ee70cab09e65d1bf_900.jpg', 'img/c3bae5812bc053fd4_900.jpg'],
-	                tag: 'A'
-	            },
-	            {
-	                title: ' Магазин на красной линии',
-	                subtitle: '97м.кв',
-	                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia voluptas voluptatum, dolorum praesentium alias nihil, commodi laudantium dignissimos atque, molestiae cum. Aliquam officia, beatae incidunt officiis quas facere laboriosam laudantium eos. Magni molestiae at officiis quisquam sequi. Non deleniti mollitia, officia eveniet voluptatibus, fugit illo delectus minus odit sequi, enim magnam, omnis neque. Veritatis quam, sint magni dolor quos odio esse doloribus amet sequi harum. Tempora recusandae fugiat, nisi quis doloribus, voluptate, harum, quo facilis voluptates beatae mollitia et soluta consectetur ipsa. Neque sunt illo inventore maxime beatae quia unde quo, dolores ab minus modi iste molestiae, consequuntur, eligendi rem dignissimos distinctio aliquam sapiente quis tempore saepe voluptas? Dolore laudantium incidunt aperiam. Illum consequuntur, odit ut voluptatibus esse autem quia enim soluta animi fuga nihil est ullam dolorem maiores minus.',
-	                tag: 'B',
-	                img: ['img/366e860ebd645ba3e_900.jpg', 'img/ebb0de675f5c3e358_900.jpg']
-	            },
-	            {
-	                title: 'Уютное Кафе',
-	                subtitle: '64м.кв',
-	                description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere expedita voluptatem corrupti voluptatum nemo explicabo temporibus, labore fuga, quae dolorem possimus, dicta hic culpa. Excepturi dicta doloremque inventore dolores, perspiciatis consectetur tempora tenetur similique officiis magni asperiores natus, laboriosam id a deleniti sapiente culpa, at rerum nesciunt quibusdam soluta quae aut repellendus! Reprehenderit velit sequi reiciendis debitis quasi deleniti natus nisi, non nostrum id beatae expedita consequuntur numquam saepe. Non.',
-	                tag: 'C',
-	                img: ['img/fa9d3ac22f33cca91_900.jpg', 'img/ce7cf0f9bfee28f14_900.jpg', 'img/c1efaa7bdf2b6e920_900.jpg', 'img/3d78848928321c054_900.jpg', 'img/fa9d3ac22f33cca91_900.jpg']
-	            }
-	        ];
-	    };
-	    List.prototype.componentDidMount = function () {
-	        List_css_1.Style.inject(this.container);
-	    };
-	    List.prototype.render = function () {
-	        var _this = this;
-	        var listItems = this.a.map(function (item, idx) {
-	            return (React.createElement(ListItem_1.default, {key: idx, EstateDescription: item}));
+	    MobileLayout.prototype.prepareStyle = function () {
+	        this.Styles.container = this.RFS.registerStyle({
+	            // fontSize: '2em',
+	            display: 'block',
+	            position: 'absolute',
+	            top: '0px',
+	            left: '0px',
+	            width: '100%',
+	            minHeight: '100%',
+	            background: 'white'
 	        });
-	        return (React.createElement("div", {className: List_css_1.flexContainer, ref: function (element) { return _this.container = element; }}, listItems));
+	        this.Styles.menu = this.RFS.registerStyle({
+	            display: 'block',
+	            position: 'absolute',
+	            top: '0px',
+	            left: '0px',
+	            minWidth: '100%',
+	            minHeight: '600%',
+	            zIndex: '0',
+	            color: 'white',
+	            background: 'rgba(10,10,10,.5)',
+	            fontSize: '2em'
+	        });
+	        this.Styles.displayNone = this.RFS.registerStyle({
+	            display: 'none'
+	        });
+	        var slideKeyFarmes = this.RFS.registerKeyframes({
+	            'from': { transform: 'translateX(0)' },
+	            'to': { transform: 'translateX(75%)' }
+	        });
+	        this.Styles.slideForMenu = this.RFS.registerStyle({
+	            animationName: slideKeyFarmes,
+	            animationDuration: '1s',
+	            animationTimingFunction: 'cubic-bezier(.6,1,1,.9)',
+	            transform: 'translateX(75%)',
+	            boxShadow: '10, 10, 5, black'
+	        });
 	    };
-	    return List;
+	    MobileLayout.prototype.clickHandler = function (event) {
+	        if (this.isLeftMenuActive) {
+	            this.container.classList.remove(this.Styles.slideForMenu);
+	            // this.menu.classList.remove(this.Styles.displayNone)
+	            this.isLeftMenuActive = false;
+	        }
+	        else {
+	            this.container.classList.add(this.Styles.slideForMenu);
+	            // this.menu.classList.remove(this.Styles.displayNone)
+	            this.isLeftMenuActive = true;
+	        }
+	    };
+	    MobileLayout.prototype.componentWillMount = function () {
+	        this.prepareStyle();
+	    };
+	    MobileLayout.prototype.componentDidMount = function () {
+	        this.RFS.inject(this.container);
+	        // this.menu.classList.add(this.Styles.displayNone)
+	    };
+	    MobileLayout.prototype.render = function () {
+	        var _this = this;
+	        var menu = (React.createElement("div", {className: this.Styles.menu, ref: function (element) { return _this.menu = element; }}, 
+	            React.createElement("div", null, " Create New "), 
+	            React.createElement("div", null, " Hold "), 
+	            React.createElement("div", null, " Save As "), 
+	            React.createElement("div", null, " Paste ")));
+	        return (React.createElement("div", null, 
+	            menu, 
+	            React.createElement("div", {className: this.Styles.container, ref: function (element) { return _this.container = element; }, onClick: this.clickHandler.bind(this)}, 
+	                React.createElement("div", null, "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus rem, dolorum nobis, qui a maiores eos, quis dolore, iusto alias vitae eius. Nemo quos dolor asperiores! Quas, voluptas, inventore? Expedita odio pariatur, error dicta est modi nemo cumque enim, non ipsum nesciunt ab. Nobis quos accusantium doloribus voluptas itaque asperiores repellendus dolorum consequuntur vitae ab modi in adipisci error a quaerat ipsa ut ipsum suscipit nisi odio, ex, deleniti laboriosam ratione fuga inventore. Voluptates magni delectus voluptas quo repellendus, deserunt maiores aperiam dolore. Necessitatibus corporis iste a. Asperiores nesciunt incidunt explicabo eius reprehenderit architecto reiciendis esse inventore officiis maiores ipsa molestiae doloremque autem aspernatur dignissimos mollitia iure deleniti, quisquam excepturi tempora corrupti libero optio earum. Nihil veniam magni, eos eum vel eveniet quidem sequi rem voluptate earum placeat, nesciunt rerum quaerat. Debitis saepe officiis quam recusandae beatae illo cum tempora sed sequi expedita natus laborum ad suscipit reprehenderit hic adipisci veritatis, placeat omnis, magni. Natus, inventore accusantium suscipit, illo quas quis, animi cumque ipsa maiores quam commodi ut quo porro voluptates necessitatibus possimus! Reprehenderit ex eligendi aliquam blanditiis sapiente repudiandae reiciendis, sit deserunt ratione. Reprehenderit quidem alias suscipit impedit omnis amet molestiae iure dicta sequi ut nulla cum quas fuga tenetur, repellat necessitatibus illum, assumenda, magni commodi veritatis repudiandae nobis at architecto. Quas cumque impedit ad explicabo, quae accusantium aspernatur alias quisquam minima officia iure iste quaerat hic totam nemo placeat nostrum quis maiores repellendus corporis, fugit doloremque vel perspiciatis. Aperiam quaerat voluptates quos et vel deleniti fugit commodi atque ullam laudantium consequatur, quas esse, facere vero expedita at pariatur aspernatur magnam quae impedit obcaecati id tempore alias recusandae. Fugit nostrum sint inventore dignissimos eligendi aperiam excepturi. Consequatur corporis unde, sequi ad soluta ea eum quis illum impedit quidem, a facilis necessitatibus, cupiditate pariatur, ab voluptates doloribus omnis? Quod aut quo, eligendi nisi cum pariatur facere, unde laborum ipsam odio ea, impedit. Perferendis aliquid quas deleniti, quod nemo enim, in corporis nesciunt, tenetur beatae excepturi nostrum et officia atque! Officia vitae dolorum error doloribus nam molestiae sequi laboriosam quibusdam reprehenderit maxime iusto dolor, inventore tenetur impedit et eveniet aliquam veniam quidem ratione hic voluptate nemo? Corporis nihil excepturi ratione accusamus quidem autem molestias aliquam asperiores itaque error, quae suscipit earum soluta optio ad ut culpa expedita modi placeat architecto. Consectetur ullam officia modi amet, quo eos aut eveniet! Consectetur quae molestias soluta eius quas sint repellat eligendi reiciendis autem labore aliquam nulla deleniti voluptates eos, nisi. Nemo labore ullam laboriosam, laborum possimus perferendis repellendus. Labore eaque dignissimos laborum dolore suscipit tempore consequatur earum rerum hic debitis accusamus amet corporis facilis molestias animi quaerat, deserunt laudantium! Ea eaque laboriosam hic illo blanditiis rem reprehenderit delectus ab! Delectus eos error amet laudantium ipsa, voluptatibus dicta blanditiis ducimus tempore? Sint voluptatum id iure aspernatur laborum deleniti! Repellendus voluptates amet fuga incidunt eos eius dignissimos reiciendis nesciunt libero dolor neque adipisci voluptatum odit obcaecati, fugit, cupiditate dolores nisi ipsam accusamus facere itaque saepe recusandae laboriosam illum? Molestias fugit ea consectetur ipsa alias neque a eius possimus molestiae non deleniti, adipisci atque velit odio nemo ut quia quos dolorum qui laudantium, magnam quam repellendus sed tenetur. Consequatur aperiam eligendi totam possimus quia, maiores cumque laudantium beatae voluptatum nemo veritatis, quidem ipsam. Illum possimus cupiditate, sequi iusto minima iure laudantium. Amet libero eaque, aliquam praesentium, expedita porro velit vel dolor natus non modi nisi vero. Eaque laborum aperiam cum nihil dolore, facilis exercitationem voluptatem, saepe velit at, explicabo ullam aliquid harum vitae aut. Sed impedit oloribus quod quasi unde. Sunt quasi distinctio labore, natus amet dolores excepturi culpa voluptas accusantium dolorem, dignissimos quae rerum eius maiores doloribus quidem! Nemo iste optio dolores earum aliquam, eligendi quam voluptate consequatur aperiam? Maiores optio illum, est corrupti vitae nesciunt cupiditate enim quod possimus nemo asperiores. Molestias, velit, nostrum.")
+	            )));
+	    };
+	    return MobileLayout;
 	}(React.Component));
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = List;
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var FreeStyle = __webpack_require__(5);
-	exports.Style = FreeStyle.create();
-	exports.flexContainer = exports.Style.registerStyle({
-	    display: 'flex',
-	    justifyContent: 'flex-start',
-	    flexDirection: 'row',
-	    flexWrap: 'wrap'
-	});
+	exports.default = MobileLayout;
 
 
 /***/ }
-/******/ ]);
+
+/******/ });
 //# sourceMappingURL=bundle.js.map
