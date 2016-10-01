@@ -40,45 +40,42 @@
 /******/ 	return __webpack_require__(0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 0:
+/******/ ([
+/* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(2);
 	// import io from 'socket.io-client'
-	// import StaticMap from './components/StaticMap'
+	var StaticMap_1 = __webpack_require__(7);
 	// import Search from './components/Search'
 	// import List from './components/List'
 	// import ListItem from './components/ListItem'
 	// import OnePageScroll from './components/OnePageScroll'
-	var MobileLayout_1 = __webpack_require__(183);
-	// ReactDOM.render(<StaticMap/>,document.getElementById('map'))
+	// import MobileLayout from './components/MobileLayout'
+	ReactDOM.render(React.createElement(StaticMap_1.default, null), document.getElementById('layout'));
 	// ReactDOM.render(<Search/>,document.getElementById('root'))
 	// ReactDOM.render(<List/>,document.getElementById('list'))
 	// ReactDOM.render(<OnePageScroll/>, document.getElementById('list'))
-	ReactDOM.render(React.createElement(MobileLayout_1.default, null), document.getElementById('list'));
+	// ReactDOM.render(<MobileLayout/>, document.getElementById('layout')) 
 
 
 /***/ },
-
-/***/ 1:
+/* 1 */
 /***/ function(module, exports) {
 
 	module.exports = React;
 
 /***/ },
-
-/***/ 2:
+/* 2 */
 /***/ function(module, exports) {
 
 	module.exports = ReactDOM;
 
 /***/ },
-
-/***/ 5:
+/* 3 */,
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -88,8 +85,8 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var React = __webpack_require__(1);
-	var ReactCurrentOwner = __webpack_require__(6);
-	exports.FreeStyle = __webpack_require__(7);
+	var ReactCurrentOwner = __webpack_require__(5);
+	exports.FreeStyle = __webpack_require__(6);
 	/**
 	 * Create a specialized free style instance.
 	 */
@@ -198,8 +195,7 @@
 	//# sourceMappingURL=react-free-style.js.map
 
 /***/ },
-
-/***/ 6:
+/* 5 */
 /***/ function(module, exports) {
 
 	/**
@@ -235,8 +231,7 @@
 	module.exports = ReactCurrentOwner;
 
 /***/ },
-
-/***/ 7:
+/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -751,8 +746,7 @@
 	//# sourceMappingURL=free-style.js.map
 
 /***/ },
-
-/***/ 183:
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -761,94 +755,336 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	/// <reference path="Socket.d.ts" />
 	var React = __webpack_require__(1);
-	var FreeStyle = __webpack_require__(5);
-	var MobileLayout = (function (_super) {
-	    __extends(MobileLayout, _super);
-	    function MobileLayout(props) {
+	var ReactFreeStyle = __webpack_require__(4);
+	var Search_1 = __webpack_require__(8);
+	// if (!Number.prototype.toRadians) {
+	//             Number.prototype.toRadians = () => { return this * Math.PI / 180; };
+	// }
+	var StaticMap = (function (_super) {
+	    __extends(StaticMap, _super);
+	    function StaticMap(props) {
 	        _super.call(this, props);
-	        this.RFS = FreeStyle.create();
-	        this.Styles = {};
-	        this.isLeftMenuActive = false;
-	        window.onclick = function (event) { return console.log('orientation change'); };
+	        this.socket = window.socket;
+	        this.place = null;
+	        this.state = { image: { src: null } };
+	        this.Style = ReactFreeStyle.create();
+	        this.styles = {};
+	        this.options = {
+	            center: '56.27,44.00',
+	            language: 'ru',
+	            zoom: '12',
+	            scale: '1',
+	            maptype: 'roadmap',
+	            size: '600x622',
+	            format: 'png',
+	            style: [
+	                'feature:all|saturation:-80',
+	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+	                'feature:poi.business|element:labels|visibility:off',
+	                'feature:poi|element:geometry|lightness:45'
+	            ]
+	        };
 	    }
-	    MobileLayout.prototype.prepareStyle = function () {
-	        this.Styles.container = this.RFS.registerStyle({
-	            // fontSize: '2em',
-	            display: 'block',
-	            position: 'absolute',
-	            top: '0px',
-	            left: '0px',
+	    StaticMap.prototype.prepreStyle = function () {
+	        this.styles.container = this.Style.registerStyle({
 	            width: '100%',
-	            minHeight: '100%',
-	            background: 'white'
+	            height: '100%',
+	            overfow: 'hidden',
+	            background: 'white',
+	            '@media only screen and (min-width: 1024px)': {
+	                width: '600px',
+	                height: '600px'
+	            }
 	        });
-	        this.Styles.menu = this.RFS.registerStyle({
-	            display: 'block',
-	            position: 'absolute',
-	            top: '0px',
-	            left: '0px',
-	            minWidth: '100%',
-	            minHeight: '600%',
-	            zIndex: '0',
-	            color: 'white',
-	            background: 'rgba(10,10,10,.5)',
-	            fontSize: '2em'
-	        });
-	        this.Styles.displayNone = this.RFS.registerStyle({
-	            display: 'none'
-	        });
-	        var slideKeyFarmes = this.RFS.registerKeyframes({
-	            'from': { transform: 'translateX(0)' },
-	            'to': { transform: 'translateX(75%)' }
-	        });
-	        this.Styles.slideForMenu = this.RFS.registerStyle({
-	            animationName: slideKeyFarmes,
-	            animationDuration: '1s',
-	            animationTimingFunction: 'cubic-bezier(.6,1,1,.9)',
-	            transform: 'translateX(75%)',
-	            boxShadow: '10, 10, 5, black'
+	        this.styles.staticmap = this.Style.registerStyle({
+	            width: '100%',
+	            height: 'auto'
 	        });
 	    };
-	    MobileLayout.prototype.clickHandler = function (event) {
-	        if (this.isLeftMenuActive) {
-	            this.container.classList.remove(this.Styles.slideForMenu);
-	            // this.menu.classList.remove(this.Styles.displayNone)
-	            this.isLeftMenuActive = false;
+	    StaticMap.prototype.prepareOptions = function () {
+	        var options = {
+	            center: '56.2965,43.9361',
+	            language: 'ru',
+	            zoom: '12',
+	            scale: '1',
+	            maptype: 'roadmap',
+	            size: '600x622',
+	            format: 'png',
+	            style: [
+	                'feature:all|saturation:-80',
+	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+	                'feature:poi.business|element:labels|visibility:off',
+	                'feature:poi|element:geometry|lightness:45'
+	            ]
+	        };
+	        if (!this.container)
+	            return null;
+	        var width = this.container.clientWidth || 600;
+	        var height = this.container.clientHeight || 600;
+	        var ratio = width / height;
+	        if (this.place) {
+	            var markers = new Array();
+	            for (var i = 0, char = 65; i < this.place.rows.length; i++, char++) {
+	                markers.push("color:red|label:" + String.fromCharCode(char) + "|" + this.place.rows[i].location.x + "," + this.place.rows[i].location.y);
+	            }
+	            options.zoom = '15';
+	            if (markers.length > 0)
+	                options.markers = markers;
+	            options.center = this.place.location.lat + ',' + this.place.location.lng;
+	        }
+	        if (width > 640 || height > 618) {
+	            if (618 * ratio > 640) {
+	                options.size = 640 + 'x' + (Math.ceil(640 / ratio) + 22);
+	            }
+	            else {
+	                options.size = Math.ceil(618 * ratio) + 'x' + 640;
+	            }
 	        }
 	        else {
-	            this.container.classList.add(this.Styles.slideForMenu);
-	            // this.menu.classList.remove(this.Styles.displayNone)
-	            this.isLeftMenuActive = true;
+	            options.size = width + 'x' + (height + 22);
 	        }
+	        console.log(options.size);
+	        return options;
 	    };
-	    MobileLayout.prototype.componentWillMount = function () {
-	        this.prepareStyle();
-	    };
-	    MobileLayout.prototype.componentDidMount = function () {
-	        this.RFS.inject(this.container);
-	        // this.menu.classList.add(this.Styles.displayNone)
-	    };
-	    MobileLayout.prototype.render = function () {
+	    StaticMap.prototype.componentWillMount = function () {
 	        var _this = this;
-	        var menu = (React.createElement("div", {className: this.Styles.menu, ref: function (element) { return _this.menu = element; }}, 
-	            React.createElement("div", null, " Create New "), 
-	            React.createElement("div", null, " Hold "), 
-	            React.createElement("div", null, " Save As "), 
-	            React.createElement("div", null, " Paste ")));
-	        return (React.createElement("div", null, 
-	            menu, 
-	            React.createElement("div", {className: this.Styles.container, ref: function (element) { return _this.container = element; }, onClick: this.clickHandler.bind(this)}, 
-	                React.createElement("div", null, "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus rem, dolorum nobis, qui a maiores eos, quis dolore, iusto alias vitae eius. Nemo quos dolor asperiores! Quas, voluptas, inventore? Expedita odio pariatur, error dicta est modi nemo cumque enim, non ipsum nesciunt ab. Nobis quos accusantium doloribus voluptas itaque asperiores repellendus dolorum consequuntur vitae ab modi in adipisci error a quaerat ipsa ut ipsum suscipit nisi odio, ex, deleniti laboriosam ratione fuga inventore. Voluptates magni delectus voluptas quo repellendus, deserunt maiores aperiam dolore. Necessitatibus corporis iste a. Asperiores nesciunt incidunt explicabo eius reprehenderit architecto reiciendis esse inventore officiis maiores ipsa molestiae doloremque autem aspernatur dignissimos mollitia iure deleniti, quisquam excepturi tempora corrupti libero optio earum. Nihil veniam magni, eos eum vel eveniet quidem sequi rem voluptate earum placeat, nesciunt rerum quaerat. Debitis saepe officiis quam recusandae beatae illo cum tempora sed sequi expedita natus laborum ad suscipit reprehenderit hic adipisci veritatis, placeat omnis, magni. Natus, inventore accusantium suscipit, illo quas quis, animi cumque ipsa maiores quam commodi ut quo porro voluptates necessitatibus possimus! Reprehenderit ex eligendi aliquam blanditiis sapiente repudiandae reiciendis, sit deserunt ratione. Reprehenderit quidem alias suscipit impedit omnis amet molestiae iure dicta sequi ut nulla cum quas fuga tenetur, repellat necessitatibus illum, assumenda, magni commodi veritatis repudiandae nobis at architecto. Quas cumque impedit ad explicabo, quae accusantium aspernatur alias quisquam minima officia iure iste quaerat hic totam nemo placeat nostrum quis maiores repellendus corporis, fugit doloremque vel perspiciatis. Aperiam quaerat voluptates quos et vel deleniti fugit commodi atque ullam laudantium consequatur, quas esse, facere vero expedita at pariatur aspernatur magnam quae impedit obcaecati id tempore alias recusandae. Fugit nostrum sint inventore dignissimos eligendi aperiam excepturi. Consequatur corporis unde, sequi ad soluta ea eum quis illum impedit quidem, a facilis necessitatibus, cupiditate pariatur, ab voluptates doloribus omnis? Quod aut quo, eligendi nisi cum pariatur facere, unde laborum ipsam odio ea, impedit. Perferendis aliquid quas deleniti, quod nemo enim, in corporis nesciunt, tenetur beatae excepturi nostrum et officia atque! Officia vitae dolorum error doloribus nam molestiae sequi laboriosam quibusdam reprehenderit maxime iusto dolor, inventore tenetur impedit et eveniet aliquam veniam quidem ratione hic voluptate nemo? Corporis nihil excepturi ratione accusamus quidem autem molestias aliquam asperiores itaque error, quae suscipit earum soluta optio ad ut culpa expedita modi placeat architecto. Consectetur ullam officia modi amet, quo eos aut eveniet! Consectetur quae molestias soluta eius quas sint repellat eligendi reiciendis autem labore aliquam nulla deleniti voluptates eos, nisi. Nemo labore ullam laboriosam, laborum possimus perferendis repellendus. Labore eaque dignissimos laborum dolore suscipit tempore consequatur earum rerum hic debitis accusamus amet corporis facilis molestias animi quaerat, deserunt laudantium! Ea eaque laboriosam hic illo blanditiis rem reprehenderit delectus ab! Delectus eos error amet laudantium ipsa, voluptatibus dicta blanditiis ducimus tempore? Sint voluptatum id iure aspernatur laborum deleniti! Repellendus voluptates amet fuga incidunt eos eius dignissimos reiciendis nesciunt libero dolor neque adipisci voluptatum odit obcaecati, fugit, cupiditate dolores nisi ipsam accusamus facere itaque saepe recusandae laboriosam illum? Molestias fugit ea consectetur ipsa alias neque a eius possimus molestiae non deleniti, adipisci atque velit odio nemo ut quia quos dolorum qui laudantium, magnam quam repellendus sed tenetur. Consequatur aperiam eligendi totam possimus quia, maiores cumque laudantium beatae voluptatum nemo veritatis, quidem ipsam. Illum possimus cupiditate, sequi iusto minima iure laudantium. Amet libero eaque, aliquam praesentium, expedita porro velit vel dolor natus non modi nisi vero. Eaque laborum aperiam cum nihil dolore, facilis exercitationem voluptatem, saepe velit at, explicabo ullam aliquid harum vitae aut. Sed impedit oloribus quod quasi unde. Sunt quasi distinctio labore, natus amet dolores excepturi culpa voluptas accusantium dolorem, dignissimos quae rerum eius maiores doloribus quidem! Nemo iste optio dolores earum aliquam, eligendi quam voluptate consequatur aperiam? Maiores optio illum, est corrupti vitae nesciunt cupiditate enim quod possimus nemo asperiores. Molestias, velit, nostrum.")
-	            )));
+	        this.socket.on('staticmap', function (buffer) {
+	            var bytes = new Uint8Array(buffer);
+	            var blob = new Blob([bytes.buffer], { type: 'image/png' });
+	            var src = URL.createObjectURL(blob);
+	            _this.setState({ image: { src: src } });
+	        });
+	        this.socket.on('staticmap-rows', function (place) {
+	            _this.place = place;
+	            var options = _this.prepareOptions();
+	            if (options)
+	                _this.socket.emit('staticmap', options);
+	        });
+	        window.addEventListener('resize', this.windowResizeHandler.bind(this));
+	        this.prepreStyle();
 	    };
-	    return MobileLayout;
+	    StaticMap.prototype.componentDidMount = function () {
+	        this.Style.inject(this.container);
+	        var options = this.prepareOptions();
+	        if (options)
+	            this.socket.emit('staticmap', options);
+	    };
+	    StaticMap.prototype.componentWillUnmount = function () {
+	        window.removeEventListener('resize', this.windowResizeHandler.bind(this));
+	    };
+	    StaticMap.prototype.windowResizeHandler = function (event) {
+	        var options = this.prepareOptions();
+	        if (options)
+	            this.socket.emit('staticmap', options);
+	    };
+	    StaticMap.prototype.render = function () {
+	        var _this = this;
+	        var areas = null;
+	        if (this.place && this.place.rows && this.place.rows.length > 0) {
+	            var center_1 = { lat: this.place.location.lat, lng: this.place.location.lng };
+	            var toRad = function (f) { return Number(f) * Math.PI / 180; };
+	            areas = new Array();
+	            areas = this.place.rows.map(function (item, idx) {
+	                var Cx = 300;
+	                var Cy = 322;
+	                var dx = (Math.ceil((item.location.x - Number(center_1.lat)) * 22000)) + 12 + Cx;
+	                var dy = (Math.ceil((Number(center_1.lat) - item.location.x) * 44000)) + Cy;
+	                console.log(dx + 'x' + dy);
+	                // console.log(dx+'x'+dy)
+	                var coords = dx + "," + dy + ",30";
+	                return React.createElement("area", {key: idx, shape: "circle", coords: coords, alt: item.name, href: 'javascript:console.log("' + item.name + '")'});
+	            });
+	        }
+	        return (React.createElement("div", {className: this.styles.container, ref: function (element) { return _this.container = element; }}, 
+	            this.state.image.src ? React.createElement("img", {className: this.styles.staticmap, useMap: "#staticmap", src: this.state.image.src}) : null, 
+	            areas ? React.createElement("map", {name: "staticmap"}, 
+	                " ", 
+	                areas, 
+	                " ") : null, 
+	            React.createElement(Search_1.default, null)));
+	    };
+	    return StaticMap;
 	}(React.Component));
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = MobileLayout;
+	exports.default = StaticMap;
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/// <reference path="./Socket.d.ts" />
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var React = __webpack_require__(1);
+	var Search_css_1 = __webpack_require__(9);
+	var Search = (function (_super) {
+	    __extends(Search, _super);
+	    function Search(props) {
+	        _super.call(this, props);
+	        this.socket = window.socket;
+	        this.current = -1;
+	        this.backspace = false;
+	        this.state = { menu: [] };
+	    }
+	    Search.prototype.componentWillMount = function () {
+	        var _this = this;
+	        // setup data receiver 
+	        this.socket.on('search-places', function (menu) {
+	            _this.setState({ menu: menu });
+	            _this.current = -1;
+	        });
+	    };
+	    Search.prototype.componentDidMount = function () {
+	        Search_css_1.Style.inject(this.menu);
+	        this.input.focus();
+	    };
+	    Search.prototype.clearSelectedStyle = function () {
+	        var divs = this.menu.getElementsByClassName(Search_css_1.selectedStyle);
+	        for (var i = 0; i < divs.length; i++) {
+	            divs.item(i).className = Search_css_1.menuItemStyle;
+	        }
+	    };
+	    Search.prototype.keyDownHandler = function (event) {
+	        var len = this.state.menu.length;
+	        var divs = this.menu.getElementsByTagName('div');
+	        // if(len < 1 || len != divs.length ) return
+	        switch (event.keyCode) {
+	            case 13:
+	                if (this.current == -1)
+	                    this.current = 0;
+	                this.request(this.state.menu[this.current]);
+	                this.input.value = this.state.menu[this.current].description;
+	                this.setState({ menu: [] });
+	                break;
+	            case 40:
+	                this.clearSelectedStyle();
+	                this.current = ++this.current % len;
+	                divs.item(this.current).className = Search_css_1.selectedStyle;
+	                this.input.value = this.state.menu[this.current].description;
+	                break;
+	            case 38:
+	                this.clearSelectedStyle();
+	                this.current = this.current > 0 ? --this.current : len - 1;
+	                divs.item(this.current).className = Search_css_1.selectedStyle;
+	                this.input.value = this.state.menu[this.current].description;
+	                break;
+	            case 8:
+	                if (this.backspace) {
+	                    // first time pressed - removes last symbol | second time - removes whole string
+	                    this.input.value = '';
+	                    this.setState({ menu: [] });
+	                    this.backspace = false;
+	                }
+	                else {
+	                    this.backspace = true;
+	                }
+	                break;
+	            case 27:
+	                this.input.value = '';
+	                this.setState({ menu: [] });
+	                this.backspace = false;
+	                break;
+	            default:
+	        }
+	    };
+	    Search.prototype.mouseClickHandler = function (event) {
+	        var _this = this;
+	        this.state.menu.forEach(function (item) {
+	            if (item.id === event.target.id) {
+	                _this.request(item);
+	                _this.input.value = item.description;
+	                _this.setState({ menu: [] });
+	            }
+	        });
+	    };
+	    Search.prototype.mouseOverHandler = function (event) {
+	        var divs = this.menu.getElementsByTagName('div');
+	        for (var i = 0; i < divs.length; i++) {
+	            if (divs.item(i) == event.target) {
+	                this.current = i;
+	                break;
+	            }
+	        }
+	        this.clearSelectedStyle();
+	        event.target.className = Search_css_1.selectedStyle;
+	    };
+	    Search.prototype.inputHandler = function (event) {
+	        this.socket.emit('search-places', this.input.value);
+	    };
+	    Search.prototype.request = function (data) {
+	        this.socket.emit('search-map', data);
+	    };
+	    Search.prototype.render = function () {
+	        var _this = this;
+	        return (React.createElement("div", {className: Search_css_1.menuStyle, ref: function (div) { return _this.menu = div; }}, 
+	            React.createElement("input", {className: Search_css_1.inputStyle, type: "search", placeholder: "введите адрес.", ref: function (input) { return _this.input = input; }, onInput: this.inputHandler.bind(this), onKeyDown: this.keyDownHandler.bind(this)}), 
+	            (this.state.menu.length > 0) ? (this.state.menu.map(function (item, idx) { return (React.createElement("div", {className: Search_css_1.menuItemStyle, id: item.id, key: idx, onClick: _this.mouseClickHandler.bind(_this), onMouseOver: _this.mouseOverHandler.bind(_this)}, item.description)); })) : null));
+	    };
+	    return Search;
+	}(React.Component));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = Search;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var FreeStyle = __webpack_require__(4);
+	exports.Style = FreeStyle.create();
+	exports.menuStyle = exports.Style.registerStyle({
+	    position: 'absolute',
+	    top: '6px',
+	    left: '6px',
+	    backgroundColor: 'white',
+	    fontFamily: 'Verdana, Geneva, Tahoma, sans-serif',
+	    fontSize: '.9em',
+	    width: '90%',
+	    boxShadow: '3px 3px 10px #AAAAAA',
+	    padding: '6px',
+	    '@media only screen and (min-width: 1024px)': {
+	        width: '500px',
+	    }
+	});
+	exports.inputStyle = exports.Style.registerStyle({
+	    position: 'relative',
+	    left: '1px',
+	    width: '95%',
+	    margin: '5px',
+	    border: 'none',
+	    color: 'black',
+	    '&:focus': {
+	        outline: 'none'
+	    }
+	});
+	exports.menuItemStyle = exports.Style.registerStyle({
+	    width: 'calc(100%-3px)',
+	    padding: '4px',
+	    color: '#333333',
+	    whiteSpace: 'pre',
+	    overflow: 'hidden'
+	});
+	exports.selectedStyle = exports.Style.registerStyle({
+	    backgroundColor: 'silver',
+	    width: 'calc(100%-3px)',
+	    padding: '4px',
+	    color: '#333333',
+	    whiteSpace: 'pre',
+	    overflow: 'hidden'
+	});
+	exports.normalStyle = exports.Style.registerStyle({
+	    backgroundColor: 'white'
+	});
 
 
 /***/ }
-
-/******/ });
+/******/ ]);
 //# sourceMappingURL=bundle.js.map

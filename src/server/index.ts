@@ -14,7 +14,7 @@ const options = config.get('options')
 const io: SocketIO.Server = socketio(server)
 
 
-import {Location, Place, getPlace, getLocation, getMapImage, searchMap } from './geoservice'
+import {Location, Place, getPlace, getLocation, getMapImage, searchMap, searchEstatesNearBy } from './geoservice'
 import { getNear, getPlacesFromDB } from './estate'
 
 
@@ -38,14 +38,17 @@ io.on('connection', socket => {
     socket.on('search-map', async (place: Place) => {
 
         try {
-            const buffer = await searchMap(place)
-            socket.emit('staticmap', buffer)
+
+            place =  await searchEstatesNearBy(place)
+            socket.emit('staticmap-rows', place)
+          //  const buffer = await searchMap(place)
+          //  socket.emit('staticmap', buffer)
         } catch (error) { console.error(error) }
         
     })
 
-    socket.on('staticmap', input => {
-        getMapImage(input).then(buffer => {
+    socket.on('staticmap', options => {
+        getMapImage(options).then(buffer => {
             socket.emit('staticmap', buffer)
         }).catch(error => {
             console.error(error)

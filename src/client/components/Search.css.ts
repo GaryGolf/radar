@@ -4,12 +4,18 @@ import * as FreeStyle from 'react-free-style'
 export const Style = FreeStyle.create()
 
 export const menuStyle = Style.registerStyle({
+    position: 'absolute',
+    top: '6px',
+    left: '6px',
     backgroundColor: 'white',
     fontFamily: 'Verdana, Geneva, Tahoma, sans-serif',
-    fontSize: '90%',
-    width: '560px',
+    fontSize: '.9em',
+    width: '90%',
     boxShadow: '3px 3px 10px #AAAAAA',
-    padding: '6px'
+    padding: '6px',
+    '@media only screen and (min-width: 1024px)': {
+        width:'500px',
+    }
 })
 
 export const inputStyle = Style.registerStyle({

@@ -20,8 +20,9 @@ export default class MobileLayout extends React.Component<Props, State> {
         this.Styles = {}
         this.isLeftMenuActive = false
 
-        window.onclick = (event: Event) => console.log('orientation change')
+        // window.onclick = (event: Event) => console.log('orientation change')
 
+        window.addEventListener('resize',this.resizeHandler.bind(this))
     }
 
     prepareStyle() {
@@ -70,6 +71,12 @@ export default class MobileLayout extends React.Component<Props, State> {
 
 
     }
+
+    resizeHandler(event: Event) {
+
+         console.log('width '+ screen.width+ '  height '+ screen.height)
+    }
+
     clickHandler(event: MouseEvent) {
 
         if(this.isLeftMenuActive) {
@@ -88,6 +95,10 @@ export default class MobileLayout extends React.Component<Props, State> {
 
         this.prepareStyle()
         
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize',this.resizeHandler.bind(this))
     }
 
     componentDidMount () {

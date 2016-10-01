@@ -30,7 +30,7 @@ const opts2 = {
 
 
 
-export interface Place { id: string, description: string, location?: Location }
+export interface Place { id: string, description: string, location?: Location, rows?: any }
 
 export function getPlace(input: string) {
 
@@ -174,7 +174,13 @@ export function getMapImage(options: any) {
             const width = image.bitmap.width
         
             image.crop(0,0,width,height)
-            .getBuffer(Jimp.MIME_PNG,(error, buffer) => {
+            for(var i=300; i < 600; i++)   
+                for(var j = 0; j < 350; j+= 50)
+                    image.setPixelColor(0x111111FF, i, j ) // sets the colour of that pixel 
+            for(var i =0; i < 300; i++)
+                for(var j = 300; j < 600; j += 50 )
+                    image.setPixelColor(0x111111FF, j, i ) 
+            image.getBuffer(Jimp.MIME_PNG,(error, buffer) => {
                 
                 if(!error) {
                     resolve(buffer)
@@ -227,4 +233,27 @@ export async function searchMap(place: Place): Promise<any> {
     if(markers.length > 0) options.markers = markers
     //  map image request
     return await getMapImage(options)
-}   // searchMao
+}   // searchMap
+
+export async function searchEstatesNearBy(place: Place): Promise<Place> {
+
+    try {
+
+        if(!place.location) place.location = await getLocation(place.id)
+        isAddressExist(place.description).then(exist => {
+        if (exist) {    // if this place exist in DB change modified Date to NOW
+                popPlace(place.description).then(status => { console.log('popStatus:'+status) }).catch(error => { console.error(error) })
+             } else {       // If not Save New Place to DB
+                savePlace(place).then(status => { console.log('saveStatus:'+status) }).catch(error => { console.error(error) })
+             }
+        }).catch(error => { console.error(error) })
+
+        place.rows = await getNear(Number(place.location.lat), Number(place.location.lng))
+
+        // console.log(JSON.stringify(place))
+
+        return place
+
+    } catch(error) { console.error(error) }
+
+}
