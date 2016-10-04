@@ -48,7 +48,7 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(2);
 	// import io from 'socket.io-client'
-	var StaticMap_1 = __webpack_require__(7);
+	var StaticMap_1 = __webpack_require__(3);
 	// import Search from './components/Search'
 	// import List from './components/List'
 	// import ListItem from './components/ListItem'
@@ -74,7 +74,192 @@
 	module.exports = ReactDOM;
 
 /***/ },
-/* 3 */,
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	/// <reference path="Socket.d.ts" />
+	var React = __webpack_require__(1);
+	var ReactFreeStyle = __webpack_require__(4);
+	var Search_1 = __webpack_require__(7);
+	// if (!Number.prototype.toRadians) {
+	//             Number.prototype.toRadians = () => { return this * Math.PI / 180; };
+	// }
+	var StaticMap = (function (_super) {
+	    __extends(StaticMap, _super);
+	    function StaticMap(props) {
+	        _super.call(this, props);
+	        this.socket = window.socket;
+	        this.place = null;
+	        this.state = { image: { src: null } };
+	        this.Style = ReactFreeStyle.create();
+	        this.styles = {};
+	        this.options = {
+	            center: '56.27,44.00',
+	            language: 'ru',
+	            zoom: '12',
+	            scale: '1',
+	            maptype: 'roadmap',
+	            size: '600x622',
+	            format: 'png',
+	            style: [
+	                'feature:all|saturation:-80',
+	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+	                'feature:poi.business|element:labels|visibility:off',
+	                'feature:poi|element:geometry|lightness:45'
+	            ]
+	        };
+	    }
+	    StaticMap.prototype.prepreStyle = function () {
+	        this.styles.container = this.Style.registerStyle({
+	            width: '100%',
+	            height: '100%',
+	            overfow: 'hidden',
+	            background: 'white',
+	            '@media only screen and (min-width: 1024px)': {
+	                width: '600px',
+	                height: '600px'
+	            }
+	        });
+	        this.styles.staticmap = this.Style.registerStyle({
+	            width: '100%',
+	            height: 'auto'
+	        });
+	    };
+	    StaticMap.prototype.prepareOptions = function () {
+	        var options = {
+	            center: '56.2965,43.9361',
+	            language: 'ru',
+	            zoom: '12',
+	            scale: '1',
+	            maptype: 'roadmap',
+	            size: '600x622',
+	            format: 'png',
+	            style: [
+	                'feature:all|saturation:-80',
+	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
+	                'feature:poi.business|element:labels|visibility:off',
+	                'feature:poi|element:geometry|lightness:45'
+	            ]
+	        };
+	        if (!this.container)
+	            return null;
+	        var width = this.container.clientWidth || 600;
+	        var height = this.container.clientHeight || 600;
+	        var ratio = width / height;
+	        if (this.place) {
+	            var markers = new Array();
+	            for (var i = 0, char = 65; i < this.place.rows.length; i++, char++) {
+	                // markers.push(`color:white|icon:|label:${String.fromCharCode(char)}|${this.place.rows[i].location.x},${this.place.rows[i].location.y}`)
+	                markers.push("icon:http://iconizer.net/files/Devine_icons/thumb/32/Home.png|" + this.place.rows[i].location.x + "," + this.place.rows[i].location.y);
+	            }
+	            // markers.push(`color:red|label:Z|${this.place.location.lat},${this.place.location.lng}`)
+	            options.zoom = '15';
+	            if (markers.length > 0)
+	                options.markers = markers;
+	            options.center = this.place.location.lat + ',' + this.place.location.lng;
+	        }
+	        if (width > 640 || height > 618) {
+	            if (618 * ratio > 640) {
+	                options.size = 640 + 'x' + (Math.ceil(640 / ratio) + 22);
+	            }
+	            else {
+	                options.size = Math.ceil(618 * ratio) + 'x' + 640;
+	            }
+	        }
+	        else {
+	            options.size = width + 'x' + (height + 22);
+	        }
+	        console.log(options.size);
+	        return options;
+	    };
+	    StaticMap.prototype.componentWillMount = function () {
+	        var _this = this;
+	        this.socket.on('staticmap', function (buffer) {
+	            var bytes = new Uint8Array(buffer);
+	            var blob = new Blob([bytes.buffer], { type: 'image/png' });
+	            var src = URL.createObjectURL(blob);
+	            _this.setState({ image: { src: src } });
+	        });
+	        this.socket.on('staticmap-rows', function (place) {
+	            _this.place = place;
+	            var options = _this.prepareOptions();
+	            if (options)
+	                _this.socket.emit('staticmap', options);
+	        });
+	        window.addEventListener('resize', this.windowResizeHandler.bind(this));
+	        this.prepreStyle();
+	    };
+	    StaticMap.prototype.componentDidMount = function () {
+	        this.Style.inject(this.container);
+	        var options = this.prepareOptions();
+	        if (options)
+	            this.socket.emit('staticmap', options);
+	    };
+	    StaticMap.prototype.componentWillUnmount = function () {
+	        window.removeEventListener('resize', this.windowResizeHandler.bind(this));
+	    };
+	    StaticMap.prototype.windowResizeHandler = function (event) {
+	        var options = this.prepareOptions();
+	        if (options)
+	            this.socket.emit('staticmap', options);
+	    };
+	    StaticMap.prototype.render = function () {
+	        var _this = this;
+	        var areas = null;
+	        if (this.place && this.place.rows && this.place.rows.length > 0) {
+	            var center_1 = { lat: this.place.location.lat, lng: this.place.location.lng };
+	            var toRad_1 = function (f) { return Number(f) * Math.PI / 180; };
+	            areas = new Array();
+	            areas = this.place.rows.map(function (item, idx) {
+	                var width = _this.container.clientWidth || 600;
+	                var height = _this.container.clientHeight || 600;
+	                var ratio = width / height;
+	                var Cx = Math.floor(_this.container.clientWidth / 2);
+	                var Cy = Math.floor(_this.container.clientHeight / 2);
+	                var Qx = 1370000;
+	                var Qy = 2500000;
+	                if (width > 640 || height > 618) {
+	                    if (618 * ratio > 640) {
+	                        Qx *= width / 640;
+	                        Qy *= width / 640;
+	                    }
+	                    else {
+	                        Qx *= height / 640;
+	                        Qy *= height / 640;
+	                    }
+	                }
+	                var x1 = toRad_1(center_1.lat);
+	                var x2 = toRad_1(item.location.x);
+	                var y1 = toRad_1(center_1.lng);
+	                var y2 = toRad_1(item.location.y);
+	                var dy = (Math.ceil((x1 - x2) * Qy)) + Cy;
+	                var dx = (Math.ceil((y2 - y1) * Qx)) + Cx;
+	                console.log(dx + 'x' + dy);
+	                var coords = dx + "," + dy + ",40";
+	                return React.createElement("area", {key: idx, shape: "circle", coords: coords, alt: item.name, href: 'javascript:console.log("' + item.name + '")'});
+	            });
+	        }
+	        return (React.createElement("div", {className: this.styles.container, ref: function (element) { return _this.container = element; }}, 
+	            this.state.image.src ? React.createElement("img", {className: this.styles.staticmap, useMap: "#staticmap", src: this.state.image.src}) : null, 
+	            areas ? React.createElement("map", {name: "staticmap"}, 
+	                " ", 
+	                areas, 
+	                " ") : null, 
+	            React.createElement(Search_1.default, null)));
+	    };
+	    return StaticMap;
+	}(React.Component));
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = StaticMap;
+
+
+/***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -749,172 +934,6 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	/// <reference path="Socket.d.ts" />
-	var React = __webpack_require__(1);
-	var ReactFreeStyle = __webpack_require__(4);
-	var Search_1 = __webpack_require__(8);
-	// if (!Number.prototype.toRadians) {
-	//             Number.prototype.toRadians = () => { return this * Math.PI / 180; };
-	// }
-	var StaticMap = (function (_super) {
-	    __extends(StaticMap, _super);
-	    function StaticMap(props) {
-	        _super.call(this, props);
-	        this.socket = window.socket;
-	        this.place = null;
-	        this.state = { image: { src: null } };
-	        this.Style = ReactFreeStyle.create();
-	        this.styles = {};
-	        this.options = {
-	            center: '56.27,44.00',
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1',
-	            maptype: 'roadmap',
-	            size: '600x622',
-	            format: 'png',
-	            style: [
-	                'feature:all|saturation:-80',
-	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
-	                'feature:poi.business|element:labels|visibility:off',
-	                'feature:poi|element:geometry|lightness:45'
-	            ]
-	        };
-	    }
-	    StaticMap.prototype.prepreStyle = function () {
-	        this.styles.container = this.Style.registerStyle({
-	            width: '100%',
-	            height: '100%',
-	            overfow: 'hidden',
-	            background: 'white',
-	            '@media only screen and (min-width: 1024px)': {
-	                width: '600px',
-	                height: '600px'
-	            }
-	        });
-	        this.styles.staticmap = this.Style.registerStyle({
-	            width: '100%',
-	            height: 'auto'
-	        });
-	    };
-	    StaticMap.prototype.prepareOptions = function () {
-	        var options = {
-	            center: '56.2965,43.9361',
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1',
-	            maptype: 'roadmap',
-	            size: '600x622',
-	            format: 'png',
-	            style: [
-	                'feature:all|saturation:-80',
-	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
-	                'feature:poi.business|element:labels|visibility:off',
-	                'feature:poi|element:geometry|lightness:45'
-	            ]
-	        };
-	        if (!this.container)
-	            return null;
-	        var width = this.container.clientWidth || 600;
-	        var height = this.container.clientHeight || 600;
-	        var ratio = width / height;
-	        if (this.place) {
-	            var markers = new Array();
-	            for (var i = 0, char = 65; i < this.place.rows.length; i++, char++) {
-	                markers.push("color:red|label:" + String.fromCharCode(char) + "|" + this.place.rows[i].location.x + "," + this.place.rows[i].location.y);
-	            }
-	            options.zoom = '15';
-	            if (markers.length > 0)
-	                options.markers = markers;
-	            options.center = this.place.location.lat + ',' + this.place.location.lng;
-	        }
-	        if (width > 640 || height > 618) {
-	            if (618 * ratio > 640) {
-	                options.size = 640 + 'x' + (Math.ceil(640 / ratio) + 22);
-	            }
-	            else {
-	                options.size = Math.ceil(618 * ratio) + 'x' + 640;
-	            }
-	        }
-	        else {
-	            options.size = width + 'x' + (height + 22);
-	        }
-	        console.log(options.size);
-	        return options;
-	    };
-	    StaticMap.prototype.componentWillMount = function () {
-	        var _this = this;
-	        this.socket.on('staticmap', function (buffer) {
-	            var bytes = new Uint8Array(buffer);
-	            var blob = new Blob([bytes.buffer], { type: 'image/png' });
-	            var src = URL.createObjectURL(blob);
-	            _this.setState({ image: { src: src } });
-	        });
-	        this.socket.on('staticmap-rows', function (place) {
-	            _this.place = place;
-	            var options = _this.prepareOptions();
-	            if (options)
-	                _this.socket.emit('staticmap', options);
-	        });
-	        window.addEventListener('resize', this.windowResizeHandler.bind(this));
-	        this.prepreStyle();
-	    };
-	    StaticMap.prototype.componentDidMount = function () {
-	        this.Style.inject(this.container);
-	        var options = this.prepareOptions();
-	        if (options)
-	            this.socket.emit('staticmap', options);
-	    };
-	    StaticMap.prototype.componentWillUnmount = function () {
-	        window.removeEventListener('resize', this.windowResizeHandler.bind(this));
-	    };
-	    StaticMap.prototype.windowResizeHandler = function (event) {
-	        var options = this.prepareOptions();
-	        if (options)
-	            this.socket.emit('staticmap', options);
-	    };
-	    StaticMap.prototype.render = function () {
-	        var _this = this;
-	        var areas = null;
-	        if (this.place && this.place.rows && this.place.rows.length > 0) {
-	            var center_1 = { lat: this.place.location.lat, lng: this.place.location.lng };
-	            var toRad = function (f) { return Number(f) * Math.PI / 180; };
-	            areas = new Array();
-	            areas = this.place.rows.map(function (item, idx) {
-	                var Cx = 300;
-	                var Cy = 322;
-	                var dx = (Math.ceil((item.location.x - Number(center_1.lat)) * 22000)) + 12 + Cx;
-	                var dy = (Math.ceil((Number(center_1.lat) - item.location.x) * 44000)) + Cy;
-	                console.log(dx + 'x' + dy);
-	                // console.log(dx+'x'+dy)
-	                var coords = dx + "," + dy + ",30";
-	                return React.createElement("area", {key: idx, shape: "circle", coords: coords, alt: item.name, href: 'javascript:console.log("' + item.name + '")'});
-	            });
-	        }
-	        return (React.createElement("div", {className: this.styles.container, ref: function (element) { return _this.container = element; }}, 
-	            this.state.image.src ? React.createElement("img", {className: this.styles.staticmap, useMap: "#staticmap", src: this.state.image.src}) : null, 
-	            areas ? React.createElement("map", {name: "staticmap"}, 
-	                " ", 
-	                areas, 
-	                " ") : null, 
-	            React.createElement(Search_1.default, null)));
-	    };
-	    return StaticMap;
-	}(React.Component));
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = StaticMap;
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/// <reference path="./Socket.d.ts" />
 	"use strict";
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -923,7 +942,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var React = __webpack_require__(1);
-	var Search_css_1 = __webpack_require__(9);
+	var Search_css_1 = __webpack_require__(8);
 	var Search = (function (_super) {
 	    __extends(Search, _super);
 	    function Search(props) {
@@ -1034,7 +1053,7 @@
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

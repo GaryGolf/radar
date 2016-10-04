@@ -113,8 +113,10 @@ export default class StaticMap extends React.Component< Props, State > {
 
             const markers: Array<string> = new Array()
             for(var i = 0, char = 65; i < this.place.rows.length; i++, char++){
-                markers.push(`color:red|label:${String.fromCharCode(char)}|${this.place.rows[i].location.x},${this.place.rows[i].location.y}`)
+                // markers.push(`color:white|icon:|label:${String.fromCharCode(char)}|${this.place.rows[i].location.x},${this.place.rows[i].location.y}`)
+                markers.push(`icon:http://iconizer.net/files/Devine_icons/thumb/32/Home.png|${this.place.rows[i].location.x},${this.place.rows[i].location.y}`)
             }
+            // markers.push(`color:red|label:Z|${this.place.location.lat},${this.place.location.lng}`)
             options.zoom = '15'
             if(markers.length > 0) options.markers = markers
             options.center = this.place.location.lat+','+this.place.location.lng
@@ -180,15 +182,34 @@ export default class StaticMap extends React.Component< Props, State > {
             areas = new Array()    
             areas = this.place.rows.map((item: any, idx: number) => {
 
-                const Cx = 300
-                const Cy = 322
-                const dx = (Math.ceil((item.location.x - Number(center.lat))* 22000)) + 12 + Cx
-                const dy = (Math.ceil((Number(center.lat) - item.location.x)* 44000))  + Cy
+                const width = this.container.clientWidth || 600
+                const height = this.container.clientHeight || 600
+                const ratio = width / height
+                const Cx = Math.floor(this.container.clientWidth/2)
+                const Cy = Math.floor(this.container.clientHeight/2)
+                let Qx = 1370000
+                let Qy = 2500000
 
-                console.log (dx+'x'+dy)
+                if(width > 640 || height > 618) {
+                    if(618 * ratio > 640) {  // image.width = 640
+                        Qx *= width/640
+                        Qy *= width/640
+                    } else {
+                        Qx *= height/640
+                        Qy *= height/640 
+                    }
+                }
 
-                // console.log(dx+'x'+dy)
-                const coords = `${dx},${dy},30`
+                const x1 = toRad(center.lat)
+                const x2 = toRad(item.location.x)
+                const y1 = toRad(center.lng)
+                const y2 = toRad(item.location.y)
+                const dy = (Math.ceil((x1 - x2)* Qy)) + Cy
+                const dx = (Math.ceil((y2 - y1)* Qx)) + Cx
+
+                
+                console.log(dx+'x'+dy)
+                const coords = `${dx},${dy},40`
                 return <area key={idx} shape="circle" coords={coords} alt={item.name} href={'javascript:console.log("'+item.name+'")'}/>
             })
         }
