@@ -175,37 +175,27 @@ export default class StaticMap extends React.Component< Props, State > {
         let areas: Array<React.ReactNode> = null
         
         if(this.place && this.place.rows && this.place.rows.length > 0) {
-            const center: Location = { lat: this.place.location.lat, lng: this.place.location.lng } 
 
             const toRad = (f:string)=>  Number(f) * Math.PI / 180
 
             areas = new Array()    
             areas = this.place.rows.map((item: any, idx: number) => {
 
-                const width = this.container.clientWidth || 600
-                const height = this.container.clientHeight || 600
+                const [width, height] = [ this.container.clientWidth || 600, this.container.clientHeight || 600 ]
+                const [Cx, Cy] = [ Math.floor(this.container.clientWidth/2), Math.floor(this.container.clientHeight/2) ]
                 const ratio = width / height
-                const Cx = Math.floor(this.container.clientWidth/2)
-                const Cy = Math.floor(this.container.clientHeight/2)
-                let Qx = 1370000
-                let Qy = 2500000
+
+                let [Qx, Qy] = [ 137e4, 250e4 ]  // carefully selected by left hand
 
                 if(width > 640 || height > 618) {
-                    if(618 * ratio > 640) {  // image.width = 640
-                        Qx *= width/640
-                        Qy *= width/640
-                    } else {
-                        Qx *= height/640
-                        Qy *= height/640 
-                    }
+                    let K = height/640
+                    if(618 * ratio > 640) K = width/640     // image.width = 640
+                        Qx *= K
+                        Qy *= K
                 }
 
-                const x1 = toRad(center.lat)
-                const x2 = toRad(item.location.x)
-                const y1 = toRad(center.lng)
-                const y2 = toRad(item.location.y)
-                const dy = (Math.ceil((x1 - x2)* Qy)) + Cy
-                const dx = (Math.ceil((y2 - y1)* Qx)) + Cx
+                const [x1, x2, y1, y2] = [ toRad(this.place.location.lat), toRad(item.location.x), toRad(this.place.location.lng), toRad(item.location.y) ]
+                const [dy, dx] = [(Math.ceil((x1 - x2)* Qy)) + Cy, (Math.ceil((y2 - y1)* Qx)) + Cx ]
 
                 
                 console.log(dx+'x'+dy)

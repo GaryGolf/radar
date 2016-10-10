@@ -174,13 +174,7 @@ export function getMapImage(options: any) {
             const width = image.bitmap.width
         
             image.crop(0,0,width,height)
-            for(var i=300; i < 600; i++)   
-                for(var j = 0; j < 350; j+= 50)
-                    image.setPixelColor(0x111111FF, i, j ) // sets the colour of that pixel 
-            for(var i =0; i < 300; i++)
-                for(var j = 300; j < 600; j += 50 )
-                    image.setPixelColor(0x111111FF, j, i ) 
-            image.getBuffer(Jimp.MIME_PNG,(error, buffer) => {
+                .getBuffer(Jimp.MIME_PNG,(error, buffer) => {
                 
                 if(!error) {
                     resolve(buffer)

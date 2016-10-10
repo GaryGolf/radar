@@ -213,33 +213,22 @@
 	        var _this = this;
 	        var areas = null;
 	        if (this.place && this.place.rows && this.place.rows.length > 0) {
-	            var center_1 = { lat: this.place.location.lat, lng: this.place.location.lng };
 	            var toRad_1 = function (f) { return Number(f) * Math.PI / 180; };
 	            areas = new Array();
 	            areas = this.place.rows.map(function (item, idx) {
-	                var width = _this.container.clientWidth || 600;
-	                var height = _this.container.clientHeight || 600;
+	                var _a = [_this.container.clientWidth || 600, _this.container.clientHeight || 600], width = _a[0], height = _a[1];
+	                var _b = [Math.floor(_this.container.clientWidth / 2), Math.floor(_this.container.clientHeight / 2)], Cx = _b[0], Cy = _b[1];
 	                var ratio = width / height;
-	                var Cx = Math.floor(_this.container.clientWidth / 2);
-	                var Cy = Math.floor(_this.container.clientHeight / 2);
-	                var Qx = 1370000;
-	                var Qy = 2500000;
+	                var _c = [137e4, 250e4], Qx = _c[0], Qy = _c[1]; // carefully selected by left hand
 	                if (width > 640 || height > 618) {
-	                    if (618 * ratio > 640) {
-	                        Qx *= width / 640;
-	                        Qy *= width / 640;
-	                    }
-	                    else {
-	                        Qx *= height / 640;
-	                        Qy *= height / 640;
-	                    }
+	                    var K = height / 640;
+	                    if (618 * ratio > 640)
+	                        K = width / 640; // image.width = 640
+	                    Qx *= K;
+	                    Qy *= K;
 	                }
-	                var x1 = toRad_1(center_1.lat);
-	                var x2 = toRad_1(item.location.x);
-	                var y1 = toRad_1(center_1.lng);
-	                var y2 = toRad_1(item.location.y);
-	                var dy = (Math.ceil((x1 - x2) * Qy)) + Cy;
-	                var dx = (Math.ceil((y2 - y1) * Qx)) + Cx;
+	                var _d = [toRad_1(_this.place.location.lat), toRad_1(item.location.x), toRad_1(_this.place.location.lng), toRad_1(item.location.y)], x1 = _d[0], x2 = _d[1], y1 = _d[2], y2 = _d[3];
+	                var _e = [(Math.ceil((x1 - x2) * Qy)) + Cy, (Math.ceil((y2 - y1) * Qx)) + Cx], dy = _e[0], dx = _e[1];
 	                console.log(dx + 'x' + dy);
 	                var coords = dx + "," + dy + ",40";
 	                return React.createElement("area", {key: idx, shape: "circle", coords: coords, alt: item.name, href: 'javascript:console.log("' + item.name + '")'});

@@ -4,6 +4,10 @@
   "description": "maps radar react socket.io",
   "main": "index.js",
   "scripts": {
+    "build": "npm-run-all --parallel build:*",
+    "build:client": "webpack -w",
+    "build:server": "tsc --target es2015 --outdir bin --module commonjs --watch ./src/server/index.ts",
+    "build:run": "nodemon ./bin",
     "dev": "echo test",
     "start": "notify-send \"node\" \"HTTPserver started port 3000\" -i gtk-info && nodemon ./bin",
     "server": "notify-send \"node\" \"HTTPserver started port 3000\" -i gtk-info && tsc --target es2015 --outdir bin --module commonjs ./src/server/index.ts && nodemon ./bin",
@@ -51,6 +55,7 @@
     "@types/jest": "^0.9.31",
     "@types/react-addons-test-utils": "^0.14.14",
     "jest": "^15.1.1",
+    "npm-run-all": "^3.1.0",
     "react-addons-test-utils": "^15.3.1",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",
