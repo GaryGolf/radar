@@ -181,11 +181,11 @@ export default class StaticMap extends React.Component< Props, State > {
             areas = new Array()    
             areas = this.place.rows.map((item: any, idx: number) => {
 
-                const [width, height] = [ this.container.clientWidth || 600, this.container.clientHeight || 600 ]
-                const [Cx, Cy] = [ Math.floor(this.container.clientWidth/2), Math.floor(this.container.clientHeight/2) ]
+                const [width, height]: [number, number] = [ this.container.clientWidth || 600, this.container.clientHeight || 600 ]
+                const [Cx, Cy]: [number, number] = [ Math.floor(this.container.clientWidth/2), Math.floor(this.container.clientHeight/2) ]
                 const ratio = width / height
 
-                let [Qx, Qy] = [ 137e4, 250e4 ]  // carefully selected by left hand
+                let [Qx, Qy]: [number, number] = [ 137e4, 250e4 ]  // carefully selected by left hand
 
                 if(width > 640 || height > 618) {
                     let K = height/640
@@ -194,8 +194,9 @@ export default class StaticMap extends React.Component< Props, State > {
                         Qy *= K
                 }
 
-                const [x1, x2, y1, y2] = [ toRad(this.place.location.lat), toRad(item.location.x), toRad(this.place.location.lng), toRad(item.location.y) ]
-                const [dy, dx] = [(Math.ceil((x1 - x2)* Qy)) + Cy, (Math.ceil((y2 - y1)* Qx)) + Cx ]
+                const [x1, x2, y1, y2]: [number, number, number, number] = [ toRad(this.place.location.lat), toRad(item.location.x), 
+                    toRad(this.place.location.lng), toRad(item.location.y) ]
+                const [dy, dx]: [number, number] = [(Math.ceil((x1 - x2)* Qy)) + Cy, (Math.ceil((y2 - y1)* Qx)) + Cx ]
 
                 
                 console.log(dx+'x'+dy)

@@ -1,7 +1,7 @@
 /// <reference path="./Socket.d.ts" />
 
 import * as React from 'react'
-import * as IO from 'socket.io-client'
+// import * as IO from 'socket.io-client'
 
 import { Style, css } from './Search.css'
 
@@ -41,44 +41,40 @@ export default class Search extends React.Component<Props,State>{
         })
     }
 
-    componentDidMount() {
+    componentDidMount() { 
         Style.inject(this.menu)
         this.input.focus()
-    }
-
-    clearSelectedStyle() {
-          
-        var divs = this.menu.getElementsByClassName(css.selected)
-        for(var i=0; i< divs.length; i++) {  
-            divs.item(i).classList.remove(css.selected)
-        }
     }
 
     keyDownHandler(event:KeyboardEvent) {
 
         const len: number = this.state.menu.length;
         const divs = this.menu.getElementsByTagName('div')
-        if(len < 1 || len != divs.length ) return
+        if(len < 1 || len !== divs.length )  { return } 
+
+        const clearSelected = () => {
+            const selected = this.menu.getElementsByClassName(css.selected)
+            for(var i=0; i< selected.length; i++) { selected.item(i).classList.remove(css.selected) }
+        }
 
         switch(event.keyCode) {
 
             case 13:    //Enter
-                if(this.current ==-1) this.current = 0
+                if(this.current === -1)  { this.current = 0 }
                 this.request(this.state.menu[this.current])
                 this.input.value = this.state.menu[this.current].description
                 this.setState({menu: []})
                 break
             case 40:    //Down
-                this.clearSelectedStyle()
-
+                
+                clearSelected()
                 this.current = ++this.current % len
                 divs.item(this.current).classList.add(css.selected)
                 this.input.value = this.state.menu[this.current].description
                 break
             case 38:    //Up
                 
-                this.clearSelectedStyle()
-
+                clearSelected()
                 this.current = this.current > 0 ? --this.current : len-1
                 divs.item(this.current).classList.add(css.selected)
                 this.input.value = this.state.menu[this.current].description

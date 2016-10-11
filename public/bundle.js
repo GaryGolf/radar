@@ -227,7 +227,8 @@
 	                    Qx *= K;
 	                    Qy *= K;
 	                }
-	                var _d = [toRad_1(_this.place.location.lat), toRad_1(item.location.x), toRad_1(_this.place.location.lng), toRad_1(item.location.y)], x1 = _d[0], x2 = _d[1], y1 = _d[2], y2 = _d[3];
+	                var _d = [toRad_1(_this.place.location.lat), toRad_1(item.location.x),
+	                    toRad_1(_this.place.location.lng), toRad_1(item.location.y)], x1 = _d[0], x2 = _d[1], y1 = _d[2], y2 = _d[3];
 	                var _e = [(Math.ceil((x1 - x2) * Qy)) + Cy, (Math.ceil((y2 - y1) * Qx)) + Cx], dy = _e[0], dx = _e[1];
 	                console.log(dx + 'x' + dy);
 	                var coords = dx + "," + dy + ",40";
@@ -939,6 +940,7 @@
 	    return t;
 	};
 	var React = __webpack_require__(1);
+	// import * as IO from 'socket.io-client'
 	var Search_css_1 = __webpack_require__(8);
 	var Search = (function (_super) {
 	    __extends(Search, _super);
@@ -961,33 +963,36 @@
 	        Search_css_1.Style.inject(this.menu);
 	        this.input.focus();
 	    };
-	    Search.prototype.clearSelectedStyle = function () {
-	        var divs = this.menu.getElementsByClassName(Search_css_1.css.selected);
-	        for (var i = 0; i < divs.length; i++) {
-	            divs.item(i).classList.remove(Search_css_1.css.selected);
-	        }
-	    };
 	    Search.prototype.keyDownHandler = function (event) {
+	        var _this = this;
 	        var len = this.state.menu.length;
 	        var divs = this.menu.getElementsByTagName('div');
-	        if (len < 1 || len != divs.length)
+	        if (len < 1 || len !== divs.length) {
 	            return;
+	        }
+	        var clearSelected = function () {
+	            var selected = _this.menu.getElementsByClassName(Search_css_1.css.selected);
+	            for (var i = 0; i < selected.length; i++) {
+	                selected.item(i).classList.remove(Search_css_1.css.selected);
+	            }
+	        };
 	        switch (event.keyCode) {
 	            case 13:
-	                if (this.current == -1)
+	                if (this.current === -1) {
 	                    this.current = 0;
+	                }
 	                this.request(this.state.menu[this.current]);
 	                this.input.value = this.state.menu[this.current].description;
 	                this.setState({ menu: [] });
 	                break;
 	            case 40:
-	                this.clearSelectedStyle();
+	                clearSelected();
 	                this.current = ++this.current % len;
 	                divs.item(this.current).classList.add(Search_css_1.css.selected);
 	                this.input.value = this.state.menu[this.current].description;
 	                break;
 	            case 38:
-	                this.clearSelectedStyle();
+	                clearSelected();
 	                this.current = this.current > 0 ? --this.current : len - 1;
 	                divs.item(this.current).classList.add(Search_css_1.css.selected);
 	                this.input.value = this.state.menu[this.current].description;
