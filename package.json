@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "npm-run-all --parallel build:*",
+    "build:run": "nodemon ./bin",
     "build:client": "webpack -w",
     "build:server": "tsc --target es2015 --outdir bin --module commonjs --watch ./src/server/index.ts",
-    "build:run": "nodemon ./bin",
     "dev": "echo test",
-    "start": "notify-send \"node\" \"HTTPserver started port 3000\" -i gtk-info && nodemon ./bin",
+    "start": "notify-send \"node\" \"HTTPserver started port 8080\" -i gtk-info && npm-run-all --parallel build:*",
     "server": "notify-send \"node\" \"HTTPserver started port 3000\" -i gtk-info && tsc --target es2015 --outdir bin --module commonjs ./src/server/index.ts && nodemon ./bin",
     "test": "tsc --project src/tests && jest",
     "psql": "sudo -u postgres psql -d test"
@@ -42,6 +42,7 @@
     "@types/socket.io-client": "^1.4.26",
     "config": "^1.21.0",
     "express": "^4.14.0",
+    "free-style": "^1.2.2",
     "jimp": "^0.2.27",
     "pg": "^6.1.0",
     "react": "^15.3.1",

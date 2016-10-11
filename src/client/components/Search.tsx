@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import * as IO from 'socket.io-client'
-import { Style, menuStyle, inputStyle, menuItemStyle, selectedStyle } from './Search.css'
+
+import { Style, css } from './Search.css'
 
 
 interface Location { lat: string, lng: string }
@@ -47,9 +48,9 @@ export default class Search extends React.Component<Props,State>{
 
     clearSelectedStyle() {
           
-        var divs = this.menu.getElementsByClassName(selectedStyle)
+        var divs = this.menu.getElementsByClassName(css.selected)
         for(var i=0; i< divs.length; i++) {  
-            divs.item(i).className = menuItemStyle 
+            divs.item(i).classList.remove(css.selected)
         }
     }
 
@@ -57,7 +58,7 @@ export default class Search extends React.Component<Props,State>{
 
         const len: number = this.state.menu.length;
         const divs = this.menu.getElementsByTagName('div')
-        // if(len < 1 || len != divs.length ) return
+        if(len < 1 || len != divs.length ) return
 
         switch(event.keyCode) {
 
@@ -71,7 +72,7 @@ export default class Search extends React.Component<Props,State>{
                 this.clearSelectedStyle()
 
                 this.current = ++this.current % len
-                divs.item(this.current).className = selectedStyle
+                divs.item(this.current).classList.add(css.selected)
                 this.input.value = this.state.menu[this.current].description
                 break
             case 38:    //Up
@@ -79,7 +80,7 @@ export default class Search extends React.Component<Props,State>{
                 this.clearSelectedStyle()
 
                 this.current = this.current > 0 ? --this.current : len-1
-                divs.item(this.current).className = selectedStyle
+                divs.item(this.current).classList.add(css.selected)
                 this.input.value = this.state.menu[this.current].description
                 break
             case 8:  // backspace
@@ -95,9 +96,9 @@ export default class Search extends React.Component<Props,State>{
                 } 
                 break
             case 27 : //escape
-                this.input.value = ''
+                // this.input.value = ''
                 this.setState({menu: []})
-                this.backspace = false
+                // this.backspace = false
                 break
             default :
                 // this.socket.emit('search-places', this.input.value)
@@ -118,17 +119,6 @@ export default class Search extends React.Component<Props,State>{
         
     }
 
-    mouseOverHandler(event: MouseEvent) {
-
-        
-        const divs = this.menu.getElementsByTagName('div')
-        for(var i=0; i < divs.length; i++ ) {
-            if(divs.item(i) == event.target) { this.current = i; break }
-        }
-        this.clearSelectedStyle()
-        event.target.className = selectedStyle
-    }
-
     inputHandler(event: KeyboardEvent) {
        this.socket.emit('search-places', this.input.value)
     }
@@ -139,22 +129,26 @@ export default class Search extends React.Component<Props,State>{
 
     render() {
 
+        const inputHandlers = {
+            onInput: this.inputHandler.bind(this),
+            onKeyDown: this.keyDownHandler.bind(this) 
+        }
+
+        const menuHandlers = {
+            onClick: this.mouseClickHandler.bind(this)
+        }
+
         return (
-            <div className={menuStyle} ref={div => this.menu = div}>
-                <input className={inputStyle} type="search" placeholder="введите адрес."
-                    ref={input => this.input = input}
-                    onInput={this.inputHandler.bind(this)} 
-                    onKeyDown={this.keyDownHandler.bind(this)}/>
+            <div className={css.menu} ref={div => this.menu = div}>
+                <input className={css.input} type="text" placeholder="введите адрес"
+                    ref={input => this.input = input} {...inputHandlers} />
                 {(this.state.menu.length > 0) ? (this.state.menu.map((item,idx) => (
-                        <div className={menuItemStyle} id={item.id} key={idx}
-                        onClick={this.mouseClickHandler.bind(this)}
-                        onMouseOver={this.mouseOverHandler.bind(this)} >
+                        <div className={css.menuItem} id={item.id} key={idx} {...menuHandlers} >
                             {item.description}
                         </div>
                 ))) : null }
             </div>
         )
     }
-
 }
 

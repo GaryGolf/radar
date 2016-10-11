@@ -930,6 +930,14 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var __assign = (this && this.__assign) || Object.assign || function(t) {
+	    for (var s, i = 1, n = arguments.length; i < n; i++) {
+	        s = arguments[i];
+	        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+	            t[p] = s[p];
+	    }
+	    return t;
+	};
 	var React = __webpack_require__(1);
 	var Search_css_1 = __webpack_require__(8);
 	var Search = (function (_super) {
@@ -954,15 +962,16 @@
 	        this.input.focus();
 	    };
 	    Search.prototype.clearSelectedStyle = function () {
-	        var divs = this.menu.getElementsByClassName(Search_css_1.selectedStyle);
+	        var divs = this.menu.getElementsByClassName(Search_css_1.css.selected);
 	        for (var i = 0; i < divs.length; i++) {
-	            divs.item(i).className = Search_css_1.menuItemStyle;
+	            divs.item(i).classList.remove(Search_css_1.css.selected);
 	        }
 	    };
 	    Search.prototype.keyDownHandler = function (event) {
 	        var len = this.state.menu.length;
 	        var divs = this.menu.getElementsByTagName('div');
-	        // if(len < 1 || len != divs.length ) return
+	        if (len < 1 || len != divs.length)
+	            return;
 	        switch (event.keyCode) {
 	            case 13:
 	                if (this.current == -1)
@@ -974,13 +983,13 @@
 	            case 40:
 	                this.clearSelectedStyle();
 	                this.current = ++this.current % len;
-	                divs.item(this.current).className = Search_css_1.selectedStyle;
+	                divs.item(this.current).classList.add(Search_css_1.css.selected);
 	                this.input.value = this.state.menu[this.current].description;
 	                break;
 	            case 38:
 	                this.clearSelectedStyle();
 	                this.current = this.current > 0 ? --this.current : len - 1;
-	                divs.item(this.current).className = Search_css_1.selectedStyle;
+	                divs.item(this.current).classList.add(Search_css_1.css.selected);
 	                this.input.value = this.state.menu[this.current].description;
 	                break;
 	            case 8:
@@ -995,9 +1004,9 @@
 	                }
 	                break;
 	            case 27:
-	                this.input.value = '';
+	                // this.input.value = ''
 	                this.setState({ menu: [] });
-	                this.backspace = false;
+	                // this.backspace = false
 	                break;
 	            default:
 	        }
@@ -1012,17 +1021,6 @@
 	            }
 	        });
 	    };
-	    Search.prototype.mouseOverHandler = function (event) {
-	        var divs = this.menu.getElementsByTagName('div');
-	        for (var i = 0; i < divs.length; i++) {
-	            if (divs.item(i) == event.target) {
-	                this.current = i;
-	                break;
-	            }
-	        }
-	        this.clearSelectedStyle();
-	        event.target.className = Search_css_1.selectedStyle;
-	    };
 	    Search.prototype.inputHandler = function (event) {
 	        this.socket.emit('search-places', this.input.value);
 	    };
@@ -1031,9 +1029,16 @@
 	    };
 	    Search.prototype.render = function () {
 	        var _this = this;
-	        return (React.createElement("div", {className: Search_css_1.menuStyle, ref: function (div) { return _this.menu = div; }}, 
-	            React.createElement("input", {className: Search_css_1.inputStyle, type: "search", placeholder: "введите адрес.", ref: function (input) { return _this.input = input; }, onInput: this.inputHandler.bind(this), onKeyDown: this.keyDownHandler.bind(this)}), 
-	            (this.state.menu.length > 0) ? (this.state.menu.map(function (item, idx) { return (React.createElement("div", {className: Search_css_1.menuItemStyle, id: item.id, key: idx, onClick: _this.mouseClickHandler.bind(_this), onMouseOver: _this.mouseOverHandler.bind(_this)}, item.description)); })) : null));
+	        var inputHandlers = {
+	            onInput: this.inputHandler.bind(this),
+	            onKeyDown: this.keyDownHandler.bind(this)
+	        };
+	        var menuHandlers = {
+	            onClick: this.mouseClickHandler.bind(this)
+	        };
+	        return (React.createElement("div", {className: Search_css_1.css.menu, ref: function (div) { return _this.menu = div; }}, 
+	            React.createElement("input", __assign({className: Search_css_1.css.input, type: "text", placeholder: "введите адрес", ref: function (input) { return _this.input = input; }}, inputHandlers)), 
+	            (this.state.menu.length > 0) ? (this.state.menu.map(function (item, idx) { return (React.createElement("div", __assign({className: Search_css_1.css.menuItem, id: item.id, key: idx}, menuHandlers), item.description)); })) : null));
 	    };
 	    return Search;
 	}(React.Component));
@@ -1046,51 +1051,49 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var FreeStyle = __webpack_require__(4);
+	var FreeStyle = __webpack_require__(6);
 	exports.Style = FreeStyle.create();
-	exports.menuStyle = exports.Style.registerStyle({
-	    position: 'absolute',
-	    top: '6px',
-	    left: '6px',
-	    backgroundColor: 'white',
-	    fontFamily: 'Verdana, Geneva, Tahoma, sans-serif',
-	    fontSize: '.9em',
-	    width: '90%',
-	    boxShadow: '3px 3px 10px #AAAAAA',
-	    padding: '6px',
-	    '@media only screen and (min-width: 1024px)': {
-	        width: '500px',
-	    }
-	});
-	exports.inputStyle = exports.Style.registerStyle({
-	    position: 'relative',
-	    left: '1px',
-	    width: '95%',
-	    margin: '5px',
-	    border: 'none',
-	    color: 'black',
-	    '&:focus': {
-	        outline: 'none'
-	    }
-	});
-	exports.menuItemStyle = exports.Style.registerStyle({
-	    width: 'calc(100%-3px)',
-	    padding: '4px',
-	    color: '#333333',
-	    whiteSpace: 'pre',
-	    overflow: 'hidden'
-	});
-	exports.selectedStyle = exports.Style.registerStyle({
-	    backgroundColor: 'silver',
-	    width: 'calc(100%-3px)',
-	    padding: '4px',
-	    color: '#333333',
-	    whiteSpace: 'pre',
-	    overflow: 'hidden'
-	});
-	exports.normalStyle = exports.Style.registerStyle({
-	    backgroundColor: 'white'
-	});
+	exports.css = {
+	    input: exports.Style.registerStyle({
+	        position: 'relative',
+	        left: '1px',
+	        width: '95%',
+	        margin: '5px',
+	        border: 'none',
+	        color: 'black',
+	        '&:focus': {
+	            outline: 'none'
+	        }
+	    }),
+	    menu: exports.Style.registerStyle({
+	        position: 'absolute',
+	        top: '6px',
+	        left: '6px',
+	        backgroundColor: 'white',
+	        fontFamily: 'Verdana, Geneva, Tahoma, sans-serif',
+	        fontSize: '.9em',
+	        width: '90%',
+	        boxShadow: '3px 3px 10px #AAAAAA',
+	        padding: '6px',
+	        '@media only screen and (min-width: 1024px)': {
+	            width: '500px',
+	        }
+	    }),
+	    menuItem: exports.Style.registerStyle({
+	        width: 'calc(100%-3px)',
+	        padding: '4px',
+	        color: '#333333',
+	        whiteSpace: 'pre',
+	        overflow: 'hidden',
+	        '&:hover': {
+	            cursor: 'pointer',
+	            backgroundColor: 'silver'
+	        }
+	    }),
+	    selected: exports.Style.registerStyle({
+	        backgroundColor: 'silver'
+	    })
+	};
 
 
 /***/ }
