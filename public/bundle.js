@@ -85,11 +85,25 @@
 	};
 	/// <reference path="Socket.d.ts" />
 	var React = __webpack_require__(1);
-	var ReactFreeStyle = __webpack_require__(4);
-	var Search_1 = __webpack_require__(7);
-	// if (!Number.prototype.toRadians) {
-	//             Number.prototype.toRadians = () => { return this * Math.PI / 180; };
-	// }
+	var FreeStyle = __webpack_require__(4);
+	var Search_1 = __webpack_require__(5);
+	var Style = FreeStyle.create();
+	var css = {
+	    container: Style.registerStyle({
+	        width: '100%',
+	        height: '100%',
+	        overfow: 'hidden',
+	        background: 'white',
+	        '@media only screen and (min-width: 1024px)': {
+	            width: '600px',
+	            height: '600px'
+	        }
+	    }),
+	    staticmap: Style.registerStyle({
+	        width: '100%',
+	        height: 'auto'
+	    })
+	};
 	var StaticMap = (function (_super) {
 	    __extends(StaticMap, _super);
 	    function StaticMap(props) {
@@ -97,40 +111,7 @@
 	        this.socket = window.socket;
 	        this.place = null;
 	        this.state = { image: { src: null } };
-	        this.Style = ReactFreeStyle.create();
-	        this.styles = {};
-	        this.options = {
-	            center: '56.27,44.00',
-	            language: 'ru',
-	            zoom: '12',
-	            scale: '1',
-	            maptype: 'roadmap',
-	            size: '600x622',
-	            format: 'png',
-	            style: [
-	                'feature:all|saturation:-80',
-	                'feature:road.arterial|element:geometry|hue:0x00FFEE|saturation:50',
-	                'feature:poi.business|element:labels|visibility:off',
-	                'feature:poi|element:geometry|lightness:45'
-	            ]
-	        };
 	    }
-	    StaticMap.prototype.prepreStyle = function () {
-	        this.styles.container = this.Style.registerStyle({
-	            width: '100%',
-	            height: '100%',
-	            overfow: 'hidden',
-	            background: 'white',
-	            '@media only screen and (min-width: 1024px)': {
-	                width: '600px',
-	                height: '600px'
-	            }
-	        });
-	        this.styles.staticmap = this.Style.registerStyle({
-	            width: '100%',
-	            height: 'auto'
-	        });
-	    };
 	    StaticMap.prototype.prepareOptions = function () {
 	        var options = {
 	            center: '56.2965,43.9361',
@@ -147,8 +128,9 @@
 	                'feature:poi|element:geometry|lightness:45'
 	            ]
 	        };
-	        if (!this.container)
+	        if (!this.container) {
 	            return null;
+	        }
 	        var width = this.container.clientWidth || 600;
 	        var height = this.container.clientHeight || 600;
 	        var ratio = width / height;
@@ -158,10 +140,10 @@
 	                // markers.push(`color:white|icon:|label:${String.fromCharCode(char)}|${this.place.rows[i].location.x},${this.place.rows[i].location.y}`)
 	                markers.push("icon:http://iconizer.net/files/Devine_icons/thumb/32/Home.png|" + this.place.rows[i].location.x + "," + this.place.rows[i].location.y);
 	            }
-	            // markers.push(`color:red|label:Z|${this.place.location.lat},${this.place.location.lng}`)
 	            options.zoom = '15';
-	            if (markers.length > 0)
+	            if (markers.length > 0) {
 	                options.markers = markers;
+	            }
 	            options.center = this.place.location.lat + ',' + this.place.location.lng;
 	        }
 	        if (width > 640 || height > 618) {
@@ -175,7 +157,6 @@
 	        else {
 	            options.size = width + 'x' + (height + 22);
 	        }
-	        console.log(options.size);
 	        return options;
 	    };
 	    StaticMap.prototype.componentWillMount = function () {
@@ -189,27 +170,40 @@
 	        this.socket.on('staticmap-rows', function (place) {
 	            _this.place = place;
 	            var options = _this.prepareOptions();
-	            if (options)
+	            if (options) {
 	                _this.socket.emit('staticmap', options);
+	            }
 	        });
 	        window.addEventListener('resize', this.windowResizeHandler.bind(this));
-	        this.prepreStyle();
 	    };
 	    StaticMap.prototype.componentDidMount = function () {
-	        this.Style.inject(this.container);
+	        Style.inject(this.container);
 	        var options = this.prepareOptions();
-	        if (options)
+	        if (options) {
 	            this.socket.emit('staticmap', options);
+	        }
 	    };
 	    StaticMap.prototype.componentWillUnmount = function () {
 	        window.removeEventListener('resize', this.windowResizeHandler.bind(this));
 	    };
 	    StaticMap.prototype.windowResizeHandler = function (event) {
 	        var options = this.prepareOptions();
-	        if (options)
+	        if (options) {
 	            this.socket.emit('staticmap', options);
+	        }
 	    };
 	    StaticMap.prototype.render = function () {
+	        var _this = this;
+	        var areas = this.createAreas();
+	        return (React.createElement("div", {className: css.container, ref: function (element) { return _this.container = element; }}, 
+	            this.state.image.src ? React.createElement("img", {className: css.staticmap, useMap: "#staticmap", src: this.state.image.src}) : null, 
+	            areas ? React.createElement("map", {name: "staticmap"}, 
+	                " ", 
+	                areas, 
+	                " ") : null, 
+	            React.createElement(Search_1.default, null)));
+	    };
+	    StaticMap.prototype.createAreas = function () {
 	        var _this = this;
 	        var areas = null;
 	        if (this.place && this.place.rows && this.place.rows.length > 0) {
@@ -222,26 +216,20 @@
 	                var _c = [137e4, 250e4], Qx = _c[0], Qy = _c[1]; // carefully selected by left hand
 	                if (width > 640 || height > 618) {
 	                    var K = height / 640;
-	                    if (618 * ratio > 640)
-	                        K = width / 640; // image.width = 640
+	                    if (618 * ratio > 640) {
+	                        K = width / 640;
+	                    } // image.width = 640
 	                    Qx *= K;
 	                    Qy *= K;
 	                }
 	                var _d = [toRad_1(_this.place.location.lat), toRad_1(item.location.x),
 	                    toRad_1(_this.place.location.lng), toRad_1(item.location.y)], x1 = _d[0], x2 = _d[1], y1 = _d[2], y2 = _d[3];
 	                var _e = [(Math.ceil((x1 - x2) * Qy)) + Cy, (Math.ceil((y2 - y1) * Qx)) + Cx], dy = _e[0], dx = _e[1];
-	                console.log(dx + 'x' + dy);
 	                var coords = dx + "," + dy + ",40";
 	                return React.createElement("area", {key: idx, shape: "circle", coords: coords, alt: item.name, href: 'javascript:console.log("' + item.name + '")'});
 	            });
 	        }
-	        return (React.createElement("div", {className: this.styles.container, ref: function (element) { return _this.container = element; }}, 
-	            this.state.image.src ? React.createElement("img", {className: this.styles.staticmap, useMap: "#staticmap", src: this.state.image.src}) : null, 
-	            areas ? React.createElement("map", {name: "staticmap"}, 
-	                " ", 
-	                areas, 
-	                " ") : null, 
-	            React.createElement(Search_1.default, null)));
+	        return areas;
 	    };
 	    return StaticMap;
 	}(React.Component));
@@ -251,162 +239,6 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var React = __webpack_require__(1);
-	var ReactCurrentOwner = __webpack_require__(5);
-	exports.FreeStyle = __webpack_require__(6);
-	/**
-	 * Create a specialized free style instance.
-	 */
-	var ReactFreeStyle = (function (_super) {
-	    __extends(ReactFreeStyle, _super);
-	    function ReactFreeStyle() {
-	        _super.apply(this, arguments);
-	        /**
-	         * Expose the `StyleElement` for use.
-	         */
-	        this.Element = StyleElement;
-	    }
-	    /**
-	     * Create a React component that inherits from a user component. This is
-	     * required for methods on the user component to continue working once
-	     * wrapped with the style functionality.
-	     */
-	    ReactFreeStyle.prototype.component = function (Component) {
-	        var freeStyle = this;
-	        var displayName = Component.displayName || Component.name;
-	        return (function (_super) {
-	            __extends(FreeStyleComponent, _super);
-	            function FreeStyleComponent() {
-	                _super.apply(this, arguments);
-	                this._freeStyle = freeStyle;
-	                this._parentFreeStyle = this.context.freeStyle || new ReactFreeStyle();
-	            }
-	            FreeStyleComponent.prototype.getChildContext = function () {
-	                return {
-	                    freeStyle: this._parentFreeStyle
-	                };
-	            };
-	            FreeStyleComponent.prototype.componentWillUpdate = function () {
-	                // Hook into component updates to keep styles in sync over hot code
-	                // reloads. This works great with React Hot Loader!
-	                if (this._freeStyle.id !== freeStyle.id) {
-	                    this._parentFreeStyle.unmerge(this._freeStyle);
-	                    this._parentFreeStyle.merge(freeStyle);
-	                    this._freeStyle = freeStyle;
-	                }
-	            };
-	            FreeStyleComponent.prototype.componentWillMount = function () {
-	                this._parentFreeStyle.merge(this._freeStyle);
-	            };
-	            FreeStyleComponent.prototype.componentWillUnmount = function () {
-	                this._parentFreeStyle.unmerge(this._freeStyle);
-	            };
-	            FreeStyleComponent.prototype.render = function () {
-	                return React.createElement(Component, this.props);
-	            };
-	            FreeStyleComponent.displayName = "FreeStyleComponent" + (displayName ? "<" + displayName + ">" : '');
-	            FreeStyleComponent.contextTypes = {
-	                freeStyle: React.PropTypes.object
-	            };
-	            FreeStyleComponent.childContextTypes = {
-	                freeStyle: React.PropTypes.object.isRequired
-	            };
-	            return FreeStyleComponent;
-	        }(React.Component));
-	    };
-	    return ReactFreeStyle;
-	}(exports.FreeStyle.FreeStyle));
-	exports.ReactFreeStyle = ReactFreeStyle;
-	/**
-	 * Create the <style /> element.
-	 */
-	var StyleElement = (function (_super) {
-	    __extends(StyleElement, _super);
-	    function StyleElement() {
-	        var _this = this;
-	        _super.apply(this, arguments);
-	        this.onChange = function () {
-	            if (ReactCurrentOwner.current != null) {
-	                console.warn('React Free Style: Inline styles can not be registered during `render`. If you want to register styles dynamically, you should use `componentWillMount` and `componentWillUnmount` to manage styles (remember to use `FreeStyle#get(id)` and `FreeStyle#remove(instance)` to remove styles after use)');
-	            }
-	            return _this.forceUpdate();
-	        };
-	    }
-	    StyleElement.prototype.componentWillMount = function () {
-	        ;
-	        this.context.freeStyle.addChangeListener(this.onChange);
-	    };
-	    StyleElement.prototype.componentWillUnmount = function () {
-	        ;
-	        this.context.freeStyle.removeChangeListener(this.onChange);
-	    };
-	    StyleElement.prototype.render = function () {
-	        return React.createElement('style', {
-	            dangerouslySetInnerHTML: { __html: this.context.freeStyle.getStyles() }
-	        });
-	    };
-	    StyleElement.displayName = 'Style';
-	    StyleElement.contextTypes = {
-	        freeStyle: React.PropTypes.object.isRequired
-	    };
-	    return StyleElement;
-	}(React.Component));
-	exports.StyleElement = StyleElement;
-	/**
-	 * Create a React Free Style instance.
-	 */
-	function create() {
-	    return new ReactFreeStyle();
-	}
-	exports.create = create;
-	//# sourceMappingURL=react-free-style.js.map
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copyright 2013-present, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactCurrentOwner
-	 */
-	
-	'use strict';
-	
-	/**
-	 * Keeps track of the current owner.
-	 *
-	 * The current owner is the component who should own any components that are
-	 * currently being constructed.
-	 */
-	
-	var ReactCurrentOwner = {
-	
-	  /**
-	   * @internal
-	   * @type {ReactComponent}
-	   */
-	  current: null
-	
-	};
-	
-	module.exports = ReactCurrentOwner;
-
-/***/ },
-/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -921,7 +753,7 @@
 	//# sourceMappingURL=free-style.js.map
 
 /***/ },
-/* 7 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/// <reference path="./Socket.d.ts" />
@@ -941,7 +773,7 @@
 	};
 	var React = __webpack_require__(1);
 	// import * as IO from 'socket.io-client'
-	var Search_css_1 = __webpack_require__(8);
+	var Search_css_1 = __webpack_require__(6);
 	var Search = (function (_super) {
 	    __extends(Search, _super);
 	    function Search(props) {
@@ -1052,11 +884,11 @@
 
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var FreeStyle = __webpack_require__(6);
+	var FreeStyle = __webpack_require__(4);
 	exports.Style = FreeStyle.create();
 	exports.css = {
 	    input: exports.Style.registerStyle({
